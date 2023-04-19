@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>127_SANISHRI TO DODHARI.kmz</name>
+	<StyleMap id="inline8">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline1</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="inline1">
+		<LineStyle>
+			<color>ff00ff00</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="inline0">
+		<LineStyle>
+			<color>ff00ff00</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Placemark>
+		<name>127_SANISHRI TO DODHARI</name>
+		<styleUrl>#inline8</styleUrl>
+		<LineString>
+			<tessellate>1</tessellate>
+			<coordinates>
+				81.23582843485937,28.36588904599178,0 81.23855375096666,28.36486599219517,0 81.24070867525575,28.36370354642104,0 81.2452321650571,28.36177855250863,0 81.24869796666891,28.36031399801745,0 81.25109408567681,28.35987697372107,0 81.25572261119888,28.35518534752539,0 81.26150788620414,28.35030014095537,0 81.26608065887911,28.34094024546159,0 81.27190962675766,28.32811082547644,0 81.27324144488379,28.31743494679202,0 
+			</coordinates>
+		</LineString>
+	</Placemark>
+</Document>
+</kml>

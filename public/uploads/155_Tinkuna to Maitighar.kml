@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>155_Tinkuna to Maitighar.kmz</name>
+	<Style id="inline">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="inline0">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="inline1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark>
+		<name>155_Tinkuna to Maitighar</name>
+		<styleUrl>#inline1</styleUrl>
+		<LineString>
+			<tessellate>1</tessellate>
+			<coordinates>
+				85.34934154968046,27.67866626754492,0 85.34949202783469,27.68117225966194,0 85.34932672961891,27.6831187408147,0 85.34768593700979,27.68505409207532,0 85.34462424001507,27.68627303790943,0 85.34168320441593,27.68695090009474,0 85.337257101077,27.68776377333821,0 85.33140860256559,27.68916794442541,0 85.32800339339489,27.69064044547072,0 85.32380650756944,27.69261299803857,0 85.32219707428048,27.69340053803893,0 85.32069059899936,27.69408766889985,0 
+			</coordinates>
+		</LineString>
+	</Placemark>
+</Document>
+</kml>

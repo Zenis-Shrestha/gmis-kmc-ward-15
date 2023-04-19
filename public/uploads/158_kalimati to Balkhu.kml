@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>158_kalimati to Balkhu.kmz</name>
+	<Style id="inline">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="inline0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline1</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="inline1">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Placemark>
+		<name>158_kalimati to Balkhu</name>
+		<styleUrl>#inline0</styleUrl>
+		<LineString>
+			<tessellate>1</tessellate>
+			<coordinates>
+				85.29930466126928,27.69842829366414,0 85.29914614296001,27.69772369873809,0 85.29885830817753,27.69677663355884,0 85.29873710858693,27.69607557679979,0 85.29850348762768,27.69399472705726,0 85.29837393963129,27.69271637925046,0 85.29911660453867,27.69105439395031,0 85.29937158524699,27.69018996214023,0 85.29941544974977,27.68974356933754,0 85.29891472650488,27.68895737881628,0 85.29816198042605,27.68794565811359,0 85.29812932555215,27.68664139723546,0 85.2982241360115,27.68494883257983,0 
+			</coordinates>
+		</LineString>
+	</Placemark>
+</Document>
+</kml>

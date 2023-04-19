@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>161_Lainchaur to Chabahil.kmz</name>
+	<StyleMap id="inline18">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline33</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline24</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="inline33">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="inline24">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Placemark>
+		<name>161_Lainchaur to Chabahil</name>
+		<styleUrl>#inline18</styleUrl>
+		<LineString>
+			<tessellate>1</tessellate>
+			<coordinates>
+				85.34612155766988,27.71703120996663,0 85.34677357942219,27.71814892919863,0 85.34656536879626,27.71961821501876,0 85.3452423352804,27.72279914914752,0 85.34476203851898,27.72441426149839,0 85.34534772530891,27.72666271833964,0 85.34572486894706,27.72884232559152,0 85.34516090409109,27.73061596495895,0 85.34224503573708,27.73528209668107,0 85.34009245969499,27.73844395803942,0 85.33719784617472,27.74015021416053,0 85.33445458292604,27.73799178260115,0 85.32877004625691,27.73298595118142,0 85.32463920483988,27.72938954141685,0 85.32491380695424,27.72885499390817,0 85.32484769250664,27.7282748557403,0 85.32411923293475,27.72809771261807,0 85.32267468813018,27.72543372968849,0 85.32162464161998,27.72361807576666,0 85.31988715382363,27.72094559403711,0 85.31751108332891,27.71882036255504,0 85.31667964162917,27.71799327638978,0 85.31583867484699,27.71698264760963,0 
+			</coordinates>
+		</LineString>
+	</Placemark>
+</Document>
+</kml>

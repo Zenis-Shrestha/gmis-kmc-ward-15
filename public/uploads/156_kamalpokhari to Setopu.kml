@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>156_kamalpokhari to Setopu.kmz</name>
+	<Style id="inline">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="inline0">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="inline1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark>
+		<name>156_kamalpokhari to Setopu</name>
+		<styleUrl>#inline1</styleUrl>
+		<LineString>
+			<tessellate>1</tessellate>
+			<coordinates>
+				85.3221417252408,27.71036181091301,0 85.32374394029846,27.71014924265354,0 85.32452430481699,27.71022550275762,0 85.32606576979309,27.70998818521607,0 85.3278365240632,27.7095710861567,0 85.3295915738484,27.70920921346486,0 85.3315928630083,27.70862761940862,0 85.33192214220095,27.70860215046914,0 85.33253665097845,27.70851106181845,0 85.3334257848162,27.70819806462512,0 85.33553129706885,27.70819033743859,0 85.33711207934977,27.70807664905648,0 85.33672445901618,27.70677263642024,0 85.33644525848646,27.70494209975658,0 85.3363664089154,27.70371602236217,0 85.3362272049425,27.70284835600934,0 
+			</coordinates>
+		</LineString>
+	</Placemark>
+</Document>
+</kml>

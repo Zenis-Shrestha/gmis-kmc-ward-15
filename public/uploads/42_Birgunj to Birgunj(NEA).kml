@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>4_Birgunj to Birgunj(NEA).kmz</name>
+	<Style id="sn_ylw-pushpin">
+		<LineStyle>
+			<color>ff00ff00</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Placemark>
+		<name>Birgunj to Birgunj(NEA)</name>
+		<styleUrl>#sn_ylw-pushpin</styleUrl>
+		<LineString>
+			<tessellate>1</tessellate>
+			<coordinates>
+				84.88287823698686,27.01724006820375,0 84.88278691626421,27.01721801635049,0 84.88099868814339,27.01788495506751,0 84.88127838724158,27.01839026296033,0 84.88277114400987,27.02057566515489,0 84.88314232452154,27.02107583896476,0 84.88407859246777,27.02258140868416,0 84.88431250097221,27.02296998413688,0 84.8854689444904,27.0246086411559,0 84.88688043668992,27.02680337408362,0 84.88917634429609,27.03002079133161,0 84.88981021906122,27.02984445318968,0 84.89006416362193,27.03010743754425,0 
+			</coordinates>
+		</LineString>
+	</Placemark>
+</Document>
+</kml>

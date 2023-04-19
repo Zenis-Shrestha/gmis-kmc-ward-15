@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>137_Chandrauta to Krishnanagar.kmz</name>
+	<Style id="inline">
+		<LineStyle>
+			<color>ff00ff00</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="inline0">
+		<LineStyle>
+			<color>ff00ff00</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="inline6">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark>
+		<name>137_Chandrauta to Krishnanagar</name>
+		<styleUrl>#inline6</styleUrl>
+		<LineString>
+			<tessellate>1</tessellate>
+			<coordinates>
+				82.86310721479069,27.64891780245446,0 82.8643226273165,27.64907059439157,0 82.86136331366649,27.629471449725,0 82.86002895738781,27.62200483509616,0 82.86016675354097,27.61889271526237,0 82.86491211049965,27.58444822306896,0 82.86414009426947,27.58097528486191,0 82.84866119091994,27.55352410343296,0 82.84570710472168,27.54625964339961,0 82.84384126090265,27.54177068962247,0 82.83740366198933,27.53133318077076,0 82.83425573732687,27.52603808507292,0 82.83078830278951,27.52390769565372,0 82.82698817625025,27.52370576762913,0 82.82192285596118,27.52033425689156,0 82.81896127273366,27.51752679842043,0 82.81587340913583,27.51688323861887,0 82.81335150304001,27.51654320605109,0 82.79681722357364,27.51138529571978,0 82.79502382972305,27.51307528395714,0 
+			</coordinates>
+		</LineString>
+	</Placemark>
+</Document>
+</kml>

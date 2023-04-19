@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>24_Butwal to Butwal NEA.kmz</name>
+	<StyleMap id="inline">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline1</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="inline0">
+		<LineStyle>
+			<color>ff00ff00</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="inline1">
+		<LineStyle>
+			<color>ff00ff00</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Placemark>
+		<name>Butwal to Butwal NEA</name>
+		<styleUrl>#inline</styleUrl>
+		<LineString>
+			<tessellate>1</tessellate>
+			<coordinates>
+				83.46739101089671,27.66829993107851,0 83.4673555029437,27.66841700356225,0 83.4665455710485,27.6684368756114,0 83.4665145937831,27.66782017322704,0 83.46755335870607,27.66785298461268,0 83.46807835170282,27.66794232837471,0 83.46859953466314,27.66814515986242,0 83.46910659525304,27.66846275501063,0 83.46959119093927,27.6687116525256,0 83.47015185855858,27.66896763467309,0 83.47061375926606,27.6689981689054,0 83.47099654311396,27.66903033382873,0 83.47126195356626,27.66898045758579,0 
+			</coordinates>
+		</LineString>
+	</Placemark>
+</Document>
+</kml>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>162_Naya Baneshowar to Old Baneshowar.kmz</name>
+	<Style id="inline">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="inline0">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="inline1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark>
+		<name>162_Naya Baneshowar to Old Baneshowar</name>
+		<styleUrl>#inline1</styleUrl>
+		<LineString>
+			<tessellate>1</tessellate>
+			<coordinates>
+				85.33837504251488,27.68768716871575,0 85.33872640684265,27.68950757879209,0 85.33886269108686,27.69065853602985,0 85.33602387936656,27.69103452297648,0 85.33617830422638,27.69181831469808,0 85.33622997817956,27.69264420826249,0 85.33666794532441,27.6932627685766,0 85.33708071196315,27.69380912943364,0 85.33743476497511,27.69554081578952,0 85.33762625447885,27.69611505250426,0 85.33778013997939,27.69732369864717,0 85.33826678274419,27.69911992379326,0 85.33864766499032,27.70000133801496,0 85.33960816463767,27.7006000770194,0 85.34009287212639,27.7015065186405,0 85.34170559883084,27.70102433465862,0 85.3403887091179,27.70182172117304,0 85.34098896396901,27.70292349408273,0 
+			</coordinates>
+		</LineString>
+	</Placemark>
+</Document>
+</kml>
