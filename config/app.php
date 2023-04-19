@@ -225,6 +225,8 @@ return [
         'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
+         'Pusher' => \Pusher\Pusher::class,
+
 
     ],
 
