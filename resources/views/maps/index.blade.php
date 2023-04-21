@@ -104,10 +104,11 @@
                     
                  </div>
                
-                 <div   ><strong>Export to:</strong>
+                 <div><strong>Export to:</strong>
                  <form method="get" action="/getExportCSV">
                             <input type="hidden" name="lat" value="" id="lat" />
                             <input type="hidden" name="long" value="" id="long" />
+                            <input type="hidden" name="bin" value="" id="bin" />
                             
                             <button type="submit" id="buildings-export-btn"  class="btn btn-default">Excel</button>
                         </form>
@@ -122,9 +123,23 @@
             </div>
             <div id="export-popup" class="ol-popup" style="display: none;">
                 <a href="#" id="export-popup-closer" class="ol-popup-closer"></a>
-                <div id="export-popup-content"></div>
+                <div id="export-popup-content">
+                
+                </div>
             </div>
 
+            <div id="export-area-popup" class="ol-area-popup">
+                <a href="#" id="export-area-popup-closer" class="ol-popup-closer"></a>
+                <div id="export-area-popup-content">
+                
+                 <form method="get" action="/getAreaExportCSV">
+                 <strong>Export to:</strong>
+                 <input type="hidden" name="geom" value="" id="geom" />
+                            <button type="submit" id="buildings-export-btn"  class="btn btn-default">CSV</button>
+                            
+                        </form>
+                </div>
+            </div>
             <div id="map-right-sidebar">
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
@@ -451,6 +466,26 @@
                                     </div>
                                 </div>
                             </div>
+
+
+
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="heading-15">
+
+                                <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-15" aria-expanded="false" aria-controls="collapse-15">
+                                    <i class=" more-less glyphicon glyphicon-plus" style="float:right;"></i>
+                                    Summary Information
+                                </a>
+                                </h4> 
+                                </div>
+                                <div id="collapse-15" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-15">
+                                    <div class="panel-body">
+                                        <a href="#" id="export_control_2" class="btn btn-default map-control" data-toggle="tooltip" data-placement="bottom" title="Export"><i class="fa fa-share-square-o"></i></a>
+                                    </div>
+                                </div>
+                            </div>
                             <!-- <div class="panel panel-default">
                                 <div class="panel-heading" role="tab" id="heading-12">
                                     <h4 class="panel-title">
@@ -759,11 +794,16 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
 //    console.log(mapbounds);
 //    console.log(mapbounds.transform('EPSG:4326', 'EPSG:3857'));
     // URL of GeoServer
-    var gurl = "<?php echo Config::get("constants.GURL_URL"); ?>/";
+    // var gurl = "<?php echo Config::get("constants.GURL_URL"); ?>/";
+    var gurl = "http://localhost:8080/geoserver/dharan_gmis/";
     var gurl_wms = gurl + 'wms';
     var gurl_wfs = gurl + 'wfs';
     // URL of GeoServer Legends
     var gurl_legend = gurl_wms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=";
+
+    // URL of GeoServer Legends
+    var gurl_legend = gurl_wms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=";
+
 
     // Base Layers Object
     var bLayer = {
@@ -1648,6 +1688,9 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         }
         if(eLayer.export_polygon) {
             eLayer.export_polygon.layer.getSource().clear();
+        }
+        if(eLayer.export_drawn_polygon) {
+            eLayer.export_drawn_polygon.layer.getSource().clear();
         }
         map.removeOverlay(staticMeasureTooltip);
     }
@@ -2580,6 +2623,40 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         return false;
     };
 
+
+       /**
+    * Elements that make up the popup for export.
+    */
+    var exportAreaPopupContainer = document.getElementById('expor-area-popup');
+    var exportAreaPopupContent = document.getElementById('export-area-popup-content');
+    var exportPopupCloser = document.getElementById('export-area-popup-closer');
+
+    /**
+    * Create an overlay to anchor the popup to the map.
+    */
+    var exportAreaPopupOverlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
+        element: exportAreaPopupContainer,
+        autoPan: true,
+        autoPanAnimation: {
+            duration: 250
+        }
+    }));
+
+    $(exportAreaPopupContainer).show();
+
+    map.addOverlay(exportAreaPopupOverlay);
+
+    /**
+    * Add a click handler to hide the popup for export.
+    * @return {boolean} Don't follow the href.
+    */
+    exportPopupCloser.onclick = function() {
+        exportAreaPopupOverlay.setPosition(undefined);
+        exportPopupCloser.blur();
+        return false;
+    };
+
+
     // Add handler to report information tool button click
     $('#export_control').click(function(e){
         e.preventDefault();
@@ -2622,6 +2699,123 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
             map.addInteraction(drag);
         }
     });
+
+
+    $('#export_control_2').click(function(e) {
+    e.preventDefault();
+    disableAllControls();
+    $('.map-control').removeClass('map-control-active');
+    if (currentControl == 'export_control_2') {
+        currentControl = '';
+    } else {
+        currentControl = 'export_control_2';
+        $('#export_control_2').addClass('map-control-active');
+
+        if (!eLayer.expor_drawn_polygon) {
+            var exportDrawnPolygonLayer = new ol.layer.Vector({
+                source: new ol.source.Vector()
+            });
+            addExtraLayer('export_drawn_polygon', 'Export Drawn Polygon', exportDrawnPolygonLayer);
+        }
+
+        draw = new ol.interaction.Draw({
+            source: eLayer.export_drawn_polygon.layer.getSource(),
+            type: 'Polygon'
+        });
+
+        draw.on('drawstart', function(evt) {
+            eLayer.export_drawn_polygon.layer.getSource().clear();
+            popup.setPosition(undefined);
+        });
+
+        draw.on('drawend', function(evt) {
+            var format = new ol.format.WKT();
+    var geom = format.writeGeometry(evt.feature.getGeometry().clone().transform('EPSG:3857', 'EPSG:4326'));
+    document.getElementById('geom').value = geom;
+    popup.setPosition(evt.feature.getGeometry().getLastCoordinate());
+    
+            });
+                    
+   
+
+        map.addInteraction(draw);
+    }
+});
+
+     
+
+
+
+
+
+
+    // $('#export_control_2').click(function(e){
+    //     e.preventDefault();
+    //     disableAllControls();
+    //     $('.map-control').removeClass('map-control-active');
+    //     if(currentControl == 'export_control_2') {
+    //         currentControl = '';
+    //         // $('#pan_control').addClass('map-control-active');
+    //     }
+    //     else {
+    //         currentControl = 'export_control_2';
+    //         $('#export_control_2').addClass('map-control-active');
+
+    //         if(!eLayer.expor_drawn_polygon) {
+    //             var exportDrawnPolygonLayer = new ol.layer.Vector({
+    //                 // visible: false,
+    //                 source: new ol.source.Vector()
+    //             });
+
+    //             addExtraLayer('export_drawn_polygon', 'Export Drawn Polygon', exportDrawnPolygonLayer);
+    //         }
+
+    //         // map.removeInteraction(draw);
+    //         draw = new ol.interaction.Draw({
+    //             source: eLayer.export_drawn_polygon.layer.getSource(),
+    //             type: 'Polygon'
+    //         });
+
+    //         draw.on('drawstart', function(evt){
+    //             eLayer.export_drawn_polygon.layer.getSource().clear();
+    //             exportPopupOverlay.setPosition(undefined);
+    //         });
+    //         draw.on('drawend', function(evt){
+    //             displayPopup(evt.feature.getGeometry());
+    //         });
+
+    //         map.addInteraction(draw);
+    //         drag = new Drag();
+    //         drag.layer = 'expor-drawn_polygon';
+    //         map.addInteraction(drag);
+    //     }
+    // });
+
+
+    // function displayPopup(geometry) {
+    //     var format = new ol.format.WKT();
+    //     var geom = format.writeGeometry(geometry.clone().transform('EPSG:3857', 'EPSG:4326'));
+    //     $('#geom').val(geom);
+    //     console.log(geom);
+
+    //     exportAreaPopupOverlay.setPosition(geometry.getInteriorPoint().getCoordinates());
+    //     $.ajax({
+    //         url: '{{ url("getAreaExportCSV") }}' +  '/' + geom,
+    //         method: 'get',
+    //         success: function(response) {
+    //             // Handle successful response
+    //             console.log(response);
+    //         },
+    //         error: function(xhr, status, error) {
+    //             // Handle error response
+    //             console.log(error);
+    //         }
+    //     }); 
+    // }
+
+
+
+
 
     function displayExportPopup(geometry) {
         // showExtraLayer('export_polygon');
@@ -2710,6 +2904,21 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
     }; 
 
 
+    function addTabIfDataExists(id, title, data) {
+    // Check if tab with same ID already exists
+    if ($('#popup-tab').find('#' + id).length) {
+      // Tab already exists, do not append
+      return;
+    }
+
+    // Create new tab
+    var tab = '<li role="presentation"><a href="#' + id + '" aria-controls="analysis" role="tab" data-toggle="tab">' + title + '</a></li>';
+    $('#popup-tab .nav-tabs').append(tab);
+
+    // Create new tab content
+    var tabContent = '<div role="tabpanel" class="tab-pane" id="' + id + '">' + data + '</div>';
+    $('#popup-tab .tab-content').append(tabContent);
+  }
                                   
     // Display information about building
     function displayBuildingInformation(evt) {
@@ -2720,6 +2929,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
 
         $('#lat').val( lat);
         $('#long').val(long);
+     
 
         // $('#map-right-sidebar #building-tab').html("");
 
@@ -2739,15 +2949,18 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
 
         displayAjaxLoader();
         var url = '{{ url("getBuildingInformation") }}' +  '/' + long + '/' + lat;
-     
+        
         $.ajax({
             url: url,
             type: 'get',
             success: function(data)
           
             {
+                              var bin  = data.data1[0].bin;
+                              $('#bin').val(bin);
+
                             if(data != null) {
-                                
+                               
                               
                                     var format = new ol.format.WKT();
                                     var html = '';
@@ -2767,9 +2980,6 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                                     buildingFeature.setStyle(buildingStyle);
                                     eLayer.selected_buildings.layer.getSource().addFeature(buildingFeature);
 
-
-                                 
-                                  
                                     var buildingGeom = buildingFeature.getGeometry();
                                   
                                         var buildingCenter = ol.extent.getCenter(buildingGeom.getExtent());
@@ -2777,7 +2987,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                                         Overlay.setPosition(buildingCenter);
 
             
-                                            if( data.data1[0]){
+                                        if( data.data1[0]){
                                         html += '<table class="table table-bordered table-striped">';
                                         html += '<thead>'
                                         html += '<tr>';
@@ -2810,7 +3020,10 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                                         
                                         html += '<div>';
                                         if(data.data1[0].photo_path){
-                                            html += '<img src="' + data.data1[0].photo_path + '" style="max-width:100%;" />';
+                                            html += '<div style="display: flex; justify-content: center; align-items: center;">';
+                                            html += '<img src="' + data.data1[0].photo_path + '" style="height:250px;" />';
+                                            html += '</div>';
+
                                         }
                                         else {
                                             html += '<div style="text-align: center;">';
@@ -2818,11 +3031,15 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                                             html += '</div>';
                                         }
                                         html += '</div>';
-                                       
+                                        
+                                        addTabIfDataExists('building_', 'Building Details', html);
+                                   
+                                        $('#popup-tab  #building_').html(html);
 
                                     }
                                     
                                   if(data.data2 != ''){
+                                    
                                     var buildingStyle_business = new ol.style.Style({
                                         image: new ol.style.Icon({
                                             anchor: [0.55, 1],
@@ -2882,11 +3099,13 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                              }
                              
                             htmlbusiness += '</tbody>';
-                            htmlbusiness += '</table>';} 
+                            htmlbusiness += '</table>';
+                        
+                            addTabIfDataExists('building-business-tax_', 'Business Details', htmlbusiness);
+                                    } 
                             if(data.data2 == ''){
-                                htmlbusiness += '<pre>';
-                                htmlbusiness += '                       No data available                         ';
-                                htmlbusiness += '</pre>';
+                                $('#popup-tab .nav-tabs a[href="#building-business-tax_"]').parent().remove();
+                                 $('#popup-tab #building-business-tax_').remove();
 
                             }
 
@@ -2897,10 +3116,8 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                                             anchor: [0.55, 1],
                                             src: '{{ url("/")}}/img/marker.png'
                                         })
-                                          
-                                  
                                     });
-                                    var buildingFeature_rent = format.readFeature(data.data2[0].geom, {
+                                    var buildingFeature_rent = format.readFeature(data.data3[0].geom, {
                                         dataProjection: 'EPSG:4326',
                                         featureProjection: 'EPSG:3857'
                                     });
@@ -2908,7 +3125,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                                     buildingFeature_rent.setStyle(buildingStyle_rent);
                                     eLayer.selected_buildings.layer.getSource().addFeature(buildingFeature_rent);
 
-                             htmlrent += '<table class="table table-bordered table-striped">';
+                            htmlrent += '<table class="table table-bordered table-striped">';
                             htmlrent += '<thead>';
                             htmlrent += '<tr>';
                             htmlrent += '<th>SN</th>';
@@ -2957,16 +3174,18 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                              
                              htmlrent += '</tbody>';
                              htmlrent += '</table>';
+
+                             addTabIfDataExists('building-rent-tax_', 'Rent Details', htmlrent);
                            
                             }
                             if(data.data3 == ''){
                                
-                               htmlrent += '<pre>';
-                               htmlrent += '                       No data available                         ';
-                               htmlrent += '</pre>';
-;
+                                $('#popup-tab .nav-tabs a[href="#building-rent-tax_"]').parent().remove();
+                                 $('#popup-tab #building-rent-tax_').remove();
+
                             }
-                      
+                          
+
                         $('#popup-tab  #building_').html(html);
                         $('#popup-tab  #building-business-tax_').html(htmlbusiness);
                         $('#popup-tab #building-rent-tax_').html(htmlrent);
@@ -3258,6 +3477,25 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         $('#featureinfo-collapse').collapse('show');
         $(".mini-submenu-bottom-left").click();
     }
+
+    var popupAreaCloser = document.getElementById('export-area-popup-closer');
+    // Create the popup
+var popup = new ol.Overlay({
+  element: document.getElementById('export-area-popup'),
+  autoPan: true,
+  autoPanAnimation: {
+    duration: 250
+  }
+});
+// Add the popup to the map
+map.addOverlay(popup);
+
+popupAreaCloser.onclick = function() {
+        popup.setPosition(undefined);
+        popupCloser.blur();
+        return false;
+    };
+
 
     /**
     * Elements that make up the popup.

@@ -325,6 +325,17 @@
     border: 1px solid #cccccc;
     bottom: 12px;
       }
+      .ol-area-popup{
+        position: absolute;
+        background-color: white;
+        -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+        filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #cccccc;
+        bottom: 12px;
+        min-width: 150px;
+      }
       .ol-popup {
         position: absolute;
         background-color: white;
