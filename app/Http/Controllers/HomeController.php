@@ -45,11 +45,6 @@ class HomeController extends Controller
         $chartGroups['bldg']['charts'][] = $this->getBldgPrmtStsByWard();
         $chartGroups['bldg']['charts'][] = $this->getBldgAddZone();
 
-        $chartGroups['rvnsts']['title'] = 'Revenue Status';
-        $chartGroups['rvnsts']['charts'] = array();
-        $chartGroups['rvnsts']['charts'][] = $this->getBldgTxSts();
-        $chartGroups['rvnsts']['charts'][] = $this->getBldgTxStsByWard();
-
         $chartGroups['wtrsnt']['title'] = 'Water and Sanitation Facility';
         $chartGroups['wtrsnt']['charts'] = array();
         $chartGroups['wtrsnt']['charts'][] = $this->getBldgToilet();

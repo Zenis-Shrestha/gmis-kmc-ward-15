@@ -114,6 +114,8 @@ Route::get('roads/add', 'RoadController@add')->name('roads.add');
 Route::resource('roads', 'RoadController', ['except' => ['create']]);
 
 // Tax Payment routes
+Route::get('tax-payment-dashboard/report', 'TaxPaymentDashboardController@buildingsTaxReportPdf');
+Route::resource('tax-payment-dashboard','TaxPaymentDashboardController');
 
 Route::get('tax-payment/data', 'TaxPaymentController@getData')->name('tax-payment.getData');
 Route::get('tax-payment/export', 'TaxPaymentController@export')->name('tax-payment.export');

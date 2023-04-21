@@ -38,9 +38,9 @@ class MapsController extends Controller
         $bands = Band::pluck('band_name', 'id')->all();*/
         $wards = Ward::orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
         $bylaws = ByLaw::orderBy('name', 'asc')->pluck('name', 'name')->all();
-        $page_title = "Map";
+        $pageTitle = "Map";
         // return view('maps.index', compact('page_title','districts','operators','vdcs','bands'));
-        return view('maps.index', compact('wards', 'bylaws', 'page_title'));
+        return view('maps.index', compact('wards', 'bylaws', 'pageTitle'));
     }
 
     public function map1()

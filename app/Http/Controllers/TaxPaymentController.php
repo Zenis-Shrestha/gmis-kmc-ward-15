@@ -7,13 +7,21 @@ use Illuminate\Http\Request;
 use App\TaxPaymentStatus;
 use App\Ward;
 use App\DueYear;
+use DataTables;
 use Illuminate\Support\Facades\DB as DB;
 use Illuminate\Support\Facades\Validator;
-use Datatables;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Artisan;
+use Box\Spout\Writer\Style\StyleBuilder;
+use Box\Spout\Common\Type;
+use Box\Spout\Writer\Style\Color;
+use Box\Spout\Writer\WriterFactory;
+use Box\Spout\Writer\AbstractWriter;
 use Maatwebsite\Excel\Facades\Excel;
-use App\TaxPayment;
-use Redirect;
+use App\Imports\TaxImport;
+use Maatwebsite\Excel\HeadingRowImport;
+use MilanTarami\NepaliCalendar\Facades\NepaliCalendar;
+use App\NepaliDateToday;
 
 class TaxPaymentController extends Controller
 {
@@ -24,7 +32,7 @@ class TaxPaymentController extends Controller
      */
     public function index()
     {
-        $pageTitle = "Building Tax Payments";
+         $pageTitle = "Building Tax Payments";
         $wards = Ward::orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
         $dueYears = DueYear::getInAscOrder();
         return view('taxpayment-info.index', compact('pageTitle','wards', 'dueYears'));
@@ -33,7 +41,7 @@ class TaxPaymentController extends Controller
     public function getData(Request $request)
     {
 
-        $buildingData = DB::table('tax_payment_status AS tax')
+        $buildingData = DB::table('bldg_tax_payment_status AS tax')
                                 ->leftjoin('due_years AS due', 'due.value', '=', 'tax.due_year')
                                 ->leftjoin('bldg AS b', 'tax.bin', '=', 'b.bin')
                                 ->select('tax.*', 'due.name', 'b.ward')
@@ -92,134 +100,63 @@ class TaxPaymentController extends Controller
                 
                 if ($stored)
                 {
+                    $storage = Storage::disk('importtax')->path('/');
+                    $location = preg_replace('/\\\\/', '', $storage);
 
-                    $location  = Storage::disk('importtax')->getDriver()->getAdapter()->getPathPrefix();
-                  
-                    //checking csv file has all heading row keys
-                    Excel::load($location.$filename, function($reader) {
-
-                        // Getting all results
-                        $results = $reader->get();
-
-                        // ->all() is a wrapper for ->get() and will work the same
-                        $results = $reader->all();
-                        $heading = $results->getHeading();
-                        $heading_row_errors = array();
-                        if ( count($heading) < 5 or count($heading) >  5 ) {
-                           
-
-                            return redirect()->route('tax-payment.create');
-
-                            return back()->withErrors(['field_name' => ['Your custom message here.']]);
-
-                            $heading_row_errors = "Total no. of columns must be 5";
-                            return Redirect::back()->withErrors(['msg' => $heading_row_errors]);
-                        } else {
-                        if ($heading[0] != 'bin') {
-                            
-                            $heading_row_errors['bin'] = "Heading row : bin is required";
-                        }
-                        if ($heading[1] != 'owner_name') {
-                            $heading_row_errors['owner_name'] = "Heading row : owner_name is required";
-                        }
-                        if ($heading[2] != 'gender') {
-                            $heading_row_errors['gender'] = "Heading row : gender is required";
-                        }
-                        if ($heading[3] != 'contact_no') {
-                            $heading_row_errors['contact_no'] = "Heading row : contact_no is required";
-                        }
-                        if ($heading[4] != 'last_payment_date') {
-                            $heading_row_errors['last_payment_date'] = "Heading row : last_payment_date is required";
-                        }
-                        
-                        }
-                        if (count($heading_row_errors) > 0) {
-                            
-                        return Redirect('tax-payment/create')->withErrors(['msg' => $heading_row_errors]);
-
-                          $heading_cell_errors = array();
-                            foreach($results as $key => $value) 
-                            {
-                              if($value->bin == '')
-                              {
-                                 
-                                   $heading_cell_errors['bin'] = "Heading row : bin is empty or null";
-                              }
-                              if (count($heading_cell_errors) > 0) {
-                                 return Redirect::to('https://stackoverflow.com/');
-                                  //return Redirect::back()->withErrors(['msg' => $heading_cell_errors]);
-                                  return redirect()->route('tax-payment.create');
-
-                                    //return Redirect('/tax-payment/create')->withErrors(['msg' => $heading_cell_errors]);
-                               }
-
-                            }
-                        }
-                        
-                    });
-                        
-                            \DB::statement('TRUNCATE TABLE tax_payments RESTART IDENTITY');
-                            \DB::statement('ALTER SEQUENCE IF exists tax_payments_id_seq RESTART WITH 1');
+                    $file_selection = Storage::disk('importtax')->listContents();
+                    $filename = $file_selection[0]['basename'];
                     
-                   //echo $location;die;
-                    Excel::filter('chunk')->load($location.$filename)->chunk(1000, function($results)
-                    {
-                            $heading_cell_errors = array();
-                            foreach($results as $key => $value) 
-                            {
-                              if($value->bin == '')
-                              {
-                                 
-                                   $heading_cell_errors['bin'] = "Heading row : bin is empty or null";
-                              }
-                              if (count($heading_cell_errors) > 0) {
-                                 return Redirect::to('https://stackoverflow.com/');
-                                  //return Redirect::back()->withErrors(['msg' => $heading_cell_errors]);
-                                  return redirect()->route('tax-payment.create');
-
-                                    //return Redirect('/tax-payment/create')->withErrors(['msg' => $heading_cell_errors]);
-                               }
-                               else {
-                                        $tax_data[] = ['bin' => $value->bin, 'owner_name' => $value->owner_name, 'gender' => $value->gender, 'contact_no' => $value->contact_no, 'last_payment_date' => $value->last_payment_date];
-                                        TaxPayment::insert($tax_data);
-                                        \Session::flash('success','File improted successfully.');
-                               }
-                            }
-                            if(!empty($tax_data)){
-                                
-                            }
-                            else{
-                                return Redirect('taxpayment-info.create')->withErrors(['msg' => $heading_row_errors]);
-
-                            }
-                    });
+                    //checking csv file has all heading row keys
+                    $headings = (new HeadingRowImport)->toArray($location.$filename);
+                    $heading_row_errors = array();
+                    if (!in_array("bin", $headings[0][0])) {
+                        $heading_row_errors['bin'] = "Heading row : bin is required";
+                    }
+                    
+                    if (!in_array("fiscal_year", $headings[0][0])) {
+                        $heading_row_errors['fiscal_year'] = "Heading row : fiscal_year is required";
+                    }
+                    if (count($heading_row_errors) > 0) {
+                    return back()->withErrors($heading_row_errors);
+                    }
+                    $today_nepali = NepaliCalendar::AD2BS(today());
+                    $year_nepali = substr($today_nepali, 0, 4);
+                    $fiscal_year_end = $year_nepali + 1;
+                    $nepali_date_today = new NepaliDateToday();
+                    $nepali_date_today_record = $nepali_date_today->first();
+                    $nepali_date_today_record->date_today = $today_nepali;
+                    $nepali_date_today_record->year = $year_nepali;
+                    $nepali_date_today_record->fiscal_year_end = $fiscal_year_end . '-03-31';
+                    $nepali_date_today_record->save();
+                    
+                    \DB::statement('TRUNCATE TABLE bldg_tax_payments RESTART IDENTITY');
+                    \DB::statement('ALTER SEQUENCE IF exists bldg_tax_payments_id_seq RESTART WITH 1');
+                    
+                    $import = new TaxImport();
+                    $import->import($location.$filename);
+                   
                     $message = 'Successfully Imported Building Tax Payments From Excel.';
-                    $filter = \DB::statement("select fnc_taxpaymentstatus()");
+                    $filter = \DB::statement("select fnc_bldgtaxpaymentstatus()");
                     
                     if($filter){
-                        $matchCount = DB::table('tax_payment_status')->where('match', true)->count();
-                        $unMatchCount = DB::table('tax_payment_status')->where('match', false)->count();
+                        $matchCount = DB::table('bldg_tax_payment_status')->where('match', true)->count();
+                        $unMatchCount = DB::table('bldg_tax_payment_status')->where('match', false)->count();
                         $message = 'Successfully Imported Building Tax Payments From Excel.';
                         $message .= ' No. of matched row is '.$matchCount;
                         $message .= ' and no. of unmatched row is '.$unMatchCount.'.';
                     }
-                    //\DB::statement('select taxpayment_info.fnc_insrtupd_taxbuildowner()');
+                    
 
                     return redirect('tax-payment')->with('success',$message);
-                        }
-                
-                   
-                    
-                    
                     
                 }
                 else{
                     $message = 'Building Tax Payments Not Imported From Excel.';
                 }
 
-        
-        
-       // return redirect('tax-payment/create');
+        }
+        flash('Could not import from excel. Try Again');
+        return redirectredirect('tax-payment');
     }
 
     public function export()
