@@ -794,8 +794,8 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
 //    console.log(mapbounds);
 //    console.log(mapbounds.transform('EPSG:4326', 'EPSG:3857'));
     // URL of GeoServer
-    // var gurl = "<?php echo Config::get("constants.GURL_URL"); ?>/";
-    var gurl = "http://localhost:8080/geoserver/dharan_gmis/";
+    var gurl = "<?php echo Config::get("constants.GURL_URL"); ?>/";
+    
     var gurl_wms = gurl + 'wms';
     var gurl_wfs = gurl + 'wfs';
     // URL of GeoServer Legends
@@ -1108,6 +1108,16 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
             filters: [],
             group: 'buildings',
         },
+        
+        bldg_tax_payment_status: {
+            name: 'Tax Payment Status',
+            styles: {},
+            clipLegend: true,
+            showCount: true,
+            filters: [],
+            group: 'buildings',
+        },
+        
         @if(auth()->user()->can('Tax Payment Status Buildings Map Layer') || auth()->user()->can('Water Payment Status Map Layer'))
         @can('Tax Payment Status Buildings Map Layer')
         bldg_tax_status_layer: {
