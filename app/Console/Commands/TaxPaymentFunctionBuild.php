@@ -14,7 +14,7 @@ class TaxPaymentFunctionBuild extends Command
      *
      * @var string
      */
-    protected $signature = 'buildfunction:tax';
+    protected $signature = 'buildfunction:tax-bldg';
 
     /**
      * The console command description.
@@ -41,7 +41,7 @@ class TaxPaymentFunctionBuild extends Command
     public function handle()
     {
         // function and triggers to update grids & wardpl when jhe_buildings has changes
-        DB::unprepared(Config::get('taxpayment-info.fnc_create_taxpaymentstatus'));
+        DB::unprepared(Config::get('taxpayment-info.fnc_create_bldgtaxpaymentstatus'));
         //DB::unprepared(Config::get('taxpayment-info.fnc_insrtupd_taxbuildowner'));
 
 

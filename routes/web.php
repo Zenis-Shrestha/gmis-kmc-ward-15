@@ -1,4 +1,5 @@
 <?php
+
 Auth::routes();
 
 Route::get('/', 'HomeController@index');
@@ -113,6 +114,8 @@ Route::get('roads/add', 'RoadController@add')->name('roads.add');
 Route::resource('roads', 'RoadController', ['except' => ['create']]);
 
 // Tax Payment routes
+Route::get('tax-payment-dashboard/report', 'TaxPaymentDashboardController@buildingsTaxReportPdf');
+Route::resource('tax-payment-dashboard','TaxPaymentDashboardController');
 
 Route::get('tax-payment/data', 'TaxPaymentController@getData')->name('tax-payment.getData');
 Route::get('tax-payment/export', 'TaxPaymentController@export')->name('tax-payment.export');
@@ -766,7 +769,14 @@ Route::get('searchStreetsByKeywords/{keywords}', function($keywords){
 });
 
 
-Route::get('getExportCSV', function()  {
+Route::get('getExportCSV', 'MapsController@getBuildingsReportCSV')->name('export-buildings');
+
+
+Route::get('getAreaExportCSV', 'MapsController@getBuildingsAreaReportCSV')->name('export-buildings');
+
+
+
+Route::get('get', function()  {
     \Maatwebsite\Excel\Facades\Excel::create('Building Information', function($excel) {
 
         
@@ -820,9 +830,9 @@ Route::get('getExportCSV', function()  {
             ST_AsText(geom) AS geom"
             . " FROM bldg_business_tax"
             . " WHERE bin = " . (int)$results_buildings[0]->bin;
-            $buildingResults1 = DB::select($buildingbusiness);
+            $buildingResults = DB::select($buildingbusiness);
             
-            $excel->sheet('Buildings Business Details', function ($sheet) use ($buildingResults1) {
+            $excel->sheet('Buildings Business Details', function ($sheet) use ($buildingResults) {
             $rows = array();
             foreach ($buildingResults1 as $building) {
             $rows[] = array(

@@ -63,8 +63,6 @@
         <thead>
           <tr>
             <th>BIN</th>
-            <th>Owner</th>
-            <th>Gender</th>
             <th>Years Due</th>
             <th>Ward</th>
             <th>Match</th>
@@ -104,8 +102,6 @@ $(function() {
         },
         columns: [
             { data: 'bin', name: 'bin' },
-            { data: 'owner_name', name: 'owner_name' },
-            { data: 'gender', name: 'gender' },
             { data: 'name', name: 'name' },
             { data: 'ward', name: 'ward' },
             { data: 'match', render : function (data, type, row) {

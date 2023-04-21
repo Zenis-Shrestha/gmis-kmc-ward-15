@@ -12,6 +12,11 @@ use App\Operator;
 use App\Band;
 use App\Ward;
 use App\ByLaw;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\BuildingsInfoExport;
+use App\Exports\BuildingsMultisheet;
+use App\Exports\BuildingsAreaMultisheet;
+
 
 class MapsController extends Controller
 {
@@ -33,9 +38,9 @@ class MapsController extends Controller
         $bands = Band::pluck('band_name', 'id')->all();*/
         $wards = Ward::orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
         $bylaws = ByLaw::orderBy('name', 'asc')->pluck('name', 'name')->all();
-        $page_title = "Map";
+        $pageTitle = "Map";
         // return view('maps.index', compact('page_title','districts','operators','vdcs','bands'));
-        return view('maps.index', compact('wards', 'bylaws', 'page_title'));
+        return view('maps.index', compact('wards', 'bylaws', 'pageTitle'));
     }
 
     public function map1()
@@ -46,5 +51,20 @@ class MapsController extends Controller
         $bands = Band::pluck('band_name', 'id')->all();
         $page_title = "Map";
         return view('maps.map1', compact('page_title','districts','operators','vdcs','bands'));
+    }
+
+    
+    public function getBuildingsReportCSV()
+    {
+        ob_end_clean();
+        return Excel::download(new BuildingsMultisheet(request()->lat, request()->long, request()->bin), 'buildings.xlsx');
+        
+    }
+
+    public function getBuildingsAreaReportCSV()
+    {
+        ob_end_clean();
+        return Excel::download(new BuildingsAreaMultisheet(request()->geom), 'Building Infromation.xlsx');
+        
     }
 }

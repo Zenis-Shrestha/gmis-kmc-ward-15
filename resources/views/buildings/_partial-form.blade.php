@@ -108,7 +108,7 @@
             {!! Form::text('hhpop', null, ['class' => 'form-control', 'placeholder' => __('Household populations')]) !!}
         </div>
     </div>
-    <div class="form-group col-md-6">
+    {{-- <div class="form-group col-md-6">
         {!! Form::label('txpyrid', __('Tax Payer\'s ID'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
             {!! Form::text('txpyrid', null, ['class' => 'form-control', 'placeholder' => __('Tax Payer\'s ID')]) !!}
@@ -125,7 +125,7 @@
         <div class="col-sm-8">
             {!! Form::select('btxsts', $taxStatuses, null, ['class' => 'form-control', 'placeholder' => __('--- Choose tax paid status ---')]) !!}
         </div>
-    </div>
+    </div> --}}
 
     <div class="form-group col-md-6">
         {!! Form::label('sngwoman', __('Single Woman'), ['class' => 'col-sm-4 control-label']) !!}

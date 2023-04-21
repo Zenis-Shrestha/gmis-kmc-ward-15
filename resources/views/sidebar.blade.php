@@ -33,6 +33,9 @@
             <li class="treeview">
                 <a href="#"><i class="fa fa-upload" aria-hidden="true"></i><span>Data Import</span></a>
                 <ul class="treeview-menu">
+                     @ability('super-admin', 'list-building-tax')
+                    <li><a href="{{ action('TaxPaymentDashboardController@index') }}"><i class="fa fa-circle-o"></i>Dashboard</a></li>
+                    @endability
                     @ability('super-admin', 'list-building-tax')
                     <li><a href="{{ action('TaxPaymentController@index') }}"><i class="fa fa-circle-o"></i>Building Tax</a></li>
                     @endability
