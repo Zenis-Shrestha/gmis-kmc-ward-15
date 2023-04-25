@@ -17,6 +17,7 @@
                 @ability('super-admin', 'export-buildings-kml')
                 <a href="#" id="export-kml" class="btn btn-info">Export to KML</a>
                 @endability
+                <a href="#" id="export-pdf" class="btn btn-info">Export to PDF</a>
             </div><!-- /.box-header -->
             <div class="box-body">
                 <form class="form-horizontal" id="filter-form">
@@ -189,11 +190,16 @@ $(function() {
     $("#export-kml").on("click", function(e) {
         e.preventDefault();
         var cql_param = getCQLParams();
-
         window.location.href="<?php echo Config::get("constants.GURL_URL"); ?>/wfs?service=WFS&version=1.0.0&request=GetFeature&authkey=1f74cf78-a13c-4b0c-a5d1-dd67f7ce671a&typeName=dharan_gmis:bldg&CQL_FILTER=" + cql_param +
             "&outputFormat=KML";
 
     });
+
+    $("#export-pdf").click(function(e) {
+        e.preventDefault();
+        const url = `report`;
+        window.open(url, "Monthly Report");
+    })
 
     function getCQLParams() {
             bin = $('#bin_text').val();

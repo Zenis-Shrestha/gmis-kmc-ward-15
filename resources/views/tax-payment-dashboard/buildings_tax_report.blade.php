@@ -14,11 +14,14 @@
                 border: 0.5px solid #dddddd;
                 text-align: left;
                 padding: 8px;
+                color:#252936;
+                
             }
 
             tr:nth-child(even) {
                 background-color: #ddddde;
                 border : 0.5px solid;
+
             }
             .text-right {
                 text-align: right !important;
@@ -44,8 +47,9 @@
     </table>
        
         
-        <h3>Building Tax Payment Status</h3>
-        <table id="data-table" class="table table-bordered table-striped" width="100%" style="margin-top:50px">
+    <h3 style="text-align:center; color:#414141;">Building Tax Payment Status</h3>
+
+        <table id="data-table" class="table table-bordered table-striped" width="100%" style="margin-top:30px">
             <tr>
               <th> Ward</th>
               <th> No. of buildings</th>
@@ -53,14 +57,15 @@
               <th> Due</th>
               <th> Data to be collected</th>
             </tr>
+            @foreach($results_one as $data)
             <tr>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
+                <td >{{ $data-> ward }}</td>
+                <td >{{ $data-> count }}</td>
+                <td >{{ $data-> no_due }}</td>
+                <td>{{ $data-> due }}</td>
+                <td>{{ $data-> no_data }}</td>
             </tr>
-           
+            @endforeach
         </table>
         <table id="data-table" class="table table-bordered table-striped" width="100%" style="margin-top:50px">
             <tr>
@@ -74,17 +79,19 @@
               <th> 5 Year+</th>
               <th> No Data</th>
             </tr>
+            @foreach($results_two as $data)
             <tr>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
+            <td>{{ $data-> ward }}</td>
+                <td>{{ $data-> count }}</td>
+                <td>{{ $data-> no_due }}</td>
+                <td>{{ $data-> due_one }}</td>
+                <td>{{ $data-> due_two }}</td>
+                <td>{{ $data-> due_three}}</td>
+                <td>{{ $data-> due_four }}</td>
+                <td>{{ $data-> due_five }}</td>
+                <td>{{ $data-> no_data }}</td>
             </tr>
+            @endforeach
            
         </table>
        
