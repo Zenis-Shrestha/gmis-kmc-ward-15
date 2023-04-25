@@ -2711,6 +2711,32 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
     });
 
 
+    function displayExportPopup(geometry) {
+        // showExtraLayer('export_polygon');
+        var format = new ol.format.WKT();
+        var geom = format.writeGeometry(geometry.clone().transform('EPSG:3857', 'EPSG:4326'));
+
+        var layers = [];
+        $.each(mLayer, function(key, value) {
+            // if(value.layer.getVisible()) {
+                layers.push('dharan_gmis:' + key);
+            // }
+        });
+
+        var exportLink = gurl_wfs + '?request=GetFeature&service=WFS&version=1.0.0&authkey=1f74cf78-a13c-4b0c-a5d1-dd67f7ce671a&typeName=' + layers.join(',') + '&CQL_FILTER=WITHIN(geom, ' + geom + ')&outputFormat=';
+
+        var html = '';
+        html += '<div>Export to:</div>'
+        html += '<div class="btn-group">'
+        html += '<a href="' + exportLink + 'JSON" target="_blank" class="btn btn-default">JSON</a>';
+        html += '<a href="' + exportLink + 'KML" target="_blank" class="btn btn-default">KML</a>';
+        html += '<a href="' + exportLink + 'SHAPE-ZIP" target="_blank" class="btn btn-default">Shape File</a>';
+        html += '</div>';
+        exportPopupContent.innerHTML = html;
+        exportPopupOverlay.setPosition(geometry.getInteriorPoint().getCoordinates());
+    }
+
+
     $('#export_control_2').click(function(e) {
     e.preventDefault();
     disableAllControls();
@@ -2752,105 +2778,6 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
     }
 });
 
-     
-
-
-
-
-
-
-    // $('#export_control_2').click(function(e){
-    //     e.preventDefault();
-    //     disableAllControls();
-    //     $('.map-control').removeClass('map-control-active');
-    //     if(currentControl == 'export_control_2') {
-    //         currentControl = '';
-    //         // $('#pan_control').addClass('map-control-active');
-    //     }
-    //     else {
-    //         currentControl = 'export_control_2';
-    //         $('#export_control_2').addClass('map-control-active');
-
-    //         if(!eLayer.expor_drawn_polygon) {
-    //             var exportDrawnPolygonLayer = new ol.layer.Vector({
-    //                 // visible: false,
-    //                 source: new ol.source.Vector()
-    //             });
-
-    //             addExtraLayer('export_drawn_polygon', 'Export Drawn Polygon', exportDrawnPolygonLayer);
-    //         }
-
-    //         // map.removeInteraction(draw);
-    //         draw = new ol.interaction.Draw({
-    //             source: eLayer.export_drawn_polygon.layer.getSource(),
-    //             type: 'Polygon'
-    //         });
-
-    //         draw.on('drawstart', function(evt){
-    //             eLayer.export_drawn_polygon.layer.getSource().clear();
-    //             exportPopupOverlay.setPosition(undefined);
-    //         });
-    //         draw.on('drawend', function(evt){
-    //             displayPopup(evt.feature.getGeometry());
-    //         });
-
-    //         map.addInteraction(draw);
-    //         drag = new Drag();
-    //         drag.layer = 'expor-drawn_polygon';
-    //         map.addInteraction(drag);
-    //     }
-    // });
-
-
-    // function displayPopup(geometry) {
-    //     var format = new ol.format.WKT();
-    //     var geom = format.writeGeometry(geometry.clone().transform('EPSG:3857', 'EPSG:4326'));
-    //     $('#geom').val(geom);
-    //     console.log(geom);
-
-    //     exportAreaPopupOverlay.setPosition(geometry.getInteriorPoint().getCoordinates());
-    //     $.ajax({
-    //         url: '{{ url("getAreaExportCSV") }}' +  '/' + geom,
-    //         method: 'get',
-    //         success: function(response) {
-    //             // Handle successful response
-    //             console.log(response);
-    //         },
-    //         error: function(xhr, status, error) {
-    //             // Handle error response
-    //             console.log(error);
-    //         }
-    //     }); 
-    // }
-
-
-
-
-
-    function displayExportPopup(geometry) {
-        // showExtraLayer('export_polygon');
-        var format = new ol.format.WKT();
-        var geom = format.writeGeometry(geometry.clone().transform('EPSG:3857', 'EPSG:4326'));
-
-        var layers = [];
-        $.each(mLayer, function(key, value) {
-            // if(value.layer.getVisible()) {
-                layers.push('dharan_gmis:' + key);
-            // }
-        });
-
-        var exportLink = gurl_wfs + '?request=GetFeature&service=WFS&version=1.0.0&authkey=1f74cf78-a13c-4b0c-a5d1-dd67f7ce671a&typeName=' + layers.join(',') + '&CQL_FILTER=WITHIN(geom, ' + geom + ')&outputFormat=';
-
-        var html = '';
-        html += '<div>Export to:</div>'
-        html += '<div class="btn-group">'
-        html += '<a href="' + exportLink + 'JSON" target="_blank" class="btn btn-default">JSON</a>';
-        html += '<a href="' + exportLink + 'KML" target="_blank" class="btn btn-default">KML</a>';
-        html += '<a href="' + exportLink + 'SHAPE-ZIP" target="_blank" class="btn btn-default">Shape File</a>';
-        html += '</div>';
-        exportPopupContent.innerHTML = html;
-        exportPopupOverlay.setPosition(geometry.getInteriorPoint().getCoordinates());
-    }
 
     if(layer != '' && field != '' && val != ''){
         handleZoomToExtent(layer, field, val, true, null);

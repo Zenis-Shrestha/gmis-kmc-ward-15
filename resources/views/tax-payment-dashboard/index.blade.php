@@ -26,16 +26,7 @@
     @endforeach
 </div>
 @endforeach
-<h3>Export Report</h3>
-<div class="row">
-    <div class="col-md-6">
-        <div class="box box-success">
-            <div class="box-header with-border">
-                <a class="btn btn-info pdf" id="pdf">Export to PDF</a>
-            </div>
-        </div>
-    </div>
-</div>
+
 @stop
 @push('scripts')
 <script type="text/javascript">
@@ -152,12 +143,7 @@
             @endforeach
         @endforeach
         
-    $('[id="pdf"]').click(function(e) {
-        // e.preventDefault();
-        
-        const url = `tax-payment-dashboard/report/`;
-        window.open(url, "Monthly Report");
-    })
+  
     });
 </script>
 @endpush
