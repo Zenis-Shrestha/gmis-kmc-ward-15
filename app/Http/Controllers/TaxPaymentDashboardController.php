@@ -121,12 +121,39 @@ class TaxPaymentDashboardController extends Controller
     }
     
     public function buildingsTaxReportPdf(){
-        
+        $query = "SELECT w.ward, count(b.bin),
+        COUNT(DISTINCT b.bin) filter (where btps.due_year = '0' AND due_year is not Null)  AS no_due,
+        COUNT(DISTINCT b.bin) filter (where btps.due_year > '0'AND due_year is not Null)  AS due,
+        COUNT(DISTINCT b.bin) filter (where due_year is Null)  AS no_data
+        FROM wardpl w LEFT JOIN bldg b ON b.ward = w.ward
+        LEFT JOIN bldg_tax_payment_status btps
+        ON b.bin= btps.bin
+        GROUP BY w.ward
+        ORDER BY w.ward ASC";
+        $results_one = DB::select($query);
+       
 
-        
-
-        return PDF::loadView('tax-payment-dashboard.buildings_tax_report')->inline('Buildings Tax Report.pdf');
-          
+        $detailed_query = "SELECT w.ward, count(b.bin),
+        COUNT(DISTINCT b.bin) filter (where btps.due_year = '0' AND due_year is not Null)  AS no_due,
+        COUNT(DISTINCT b.bin) filter (where btps.due_year = '1' AND due_year is not Null)  AS due_one,
+		COUNT(DISTINCT b.bin) filter (where btps.due_year = '2' AND due_year is not Null)  AS due_two,
+		COUNT(DISTINCT b.bin) filter (where btps.due_year = '3' AND due_year is not Null)  AS due_three,
+		COUNT(DISTINCT b.bin) filter (where btps.due_year = '4' AND due_year is not Null)  AS due_four,
+		COUNT(DISTINCT b.bin) filter (where btps.due_year >= '5' AND due_year is not Null)  AS due_five,
+        COUNT(DISTINCT b.bin) filter (where due_year is Null)  AS no_data
+        FROM wardpl w LEFT JOIN bldg b ON b.ward = w.ward
+        LEFT JOIN bldg_tax_payment_status btps
+        ON b.bin= btps.bin
+        GROUP BY w.ward
+        ORDER BY w.ward ASC";
+        $results_two = DB::select($detailed_query);
+           
+            return PDF::loadView('tax-payment-dashboard.buildings_tax_report', compact("results_one", "results_two"))->inline('Buildings Tax Report.pdf');
+    
+              
+        }
     }
 
-}
+   
+
+
