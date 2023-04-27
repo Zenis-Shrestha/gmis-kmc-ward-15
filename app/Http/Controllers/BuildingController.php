@@ -46,8 +46,16 @@ class BuildingController extends Controller
         $wards = Ward::orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
         $taxStatuses = TaxStsCode::pluck('name', 'value');
         $yesNo = YesNo::pluck('name', 'value');
+        $currentYear = "2080";
+        $yearOfConstruction = DB::table('bldg')
+                            ->select('yoc')
+                            ->distinct()
+                            ->whereBetween('yoc', [2060, $currentYear])
+                            ->orderBy('yoc', 'desc')
+                            ->pluck('yoc');
+        
 
-        return view('buildings.index', compact('pageTitle', 'wards', 'taxStatuses', 'yesNo'));
+        return view('buildings.index', compact('pageTitle', 'wards', 'taxStatuses', 'yesNo','yearOfConstruction'));
     }
 
     public function getData(Request $request)
@@ -55,20 +63,30 @@ class BuildingController extends Controller
         //$buildingData = Building::select('gid', 'bin', 'bldgcd', 'ward', 'tole', 'toilyn', 'btxsts', 'sngwoman', 'gt60yr', 'dsblppl')
         //                                ->with('toilynYesNo')
         //                                ->with('taxStsCode');
+
+        
         $buildingData = DB::table('bldg')
-            ->LeftJoin('yes_no', 'bldg.toilyn', '=', 'yes_no.value')
-            ->leftJoin('tax_status_code', 'bldg.btxsts', '=', 'tax_status_code.value')
-            ->select('bldg.*', 'tax_status_code.name AS taxName', 'tax_status_code.value AS taxVal', 'yes_no.name AS ynName', 'yes_no.value AS ynVal');
-            
+        ->leftJoin('yes_no', 'bldg.toilyn', '=', 'yes_no.value')
+        ->leftJoin('tax_status_code', 'bldg.btxsts', '=', 'tax_status_code.value')
+        ->select('bldg.*', 'tax_status_code.name AS taxName', 'tax_status_code.value AS taxVal', 'yes_no.name AS ynName', 'yes_no.value AS ynVal');
+
+
 
         return Datatables::of($buildingData)
             ->filter(function ($query) use ($request) {
+               
                 if ($request->bin) {
                     $query->where('bin', $request->bin);
                 }
 
                 if ($request->ward) {
                     $query->where('ward', $request->ward);
+                }
+                
+                if ($request->yoc) {
+                   
+                    $query->where('bldg.yoc', $request->yoc);
+                  
                 }
 
                 if ($request->toilyn) {
@@ -77,6 +95,7 @@ class BuildingController extends Controller
 
                 if ($request->btxsts || $request->btxsts == '0') {
                     $query->where('btxsts', $request->btxsts);
+                    
                 }
 
                 if ($request->sngwoman) {
@@ -90,6 +109,7 @@ class BuildingController extends Controller
                 if ($request->dsblppl) {
                     $query->where('dsblppl', '>', '0');
                 }
+                
             })
             ->addColumn('action', function ($model) {
                 $content = \Form::open(['method' => 'DELETE', 'route' => ['buildings.destroy', $model->bin]]);
@@ -414,9 +434,9 @@ class BuildingController extends Controller
         $ward = isset($_GET['ward']) ? $_GET['ward'] : null;
         
         
-        $columns = ['bin','bldgcd','ward','tole','oldhno','haddr','haddrplt','strtcd','imgfl','addrzn','zonecode','bldgasc','bldguse','offcnm','hownr','prclkey','yoc','flrcount','flrar','consttyp','elecyn','bprmtyn','bprmtno','buildvflag','drnkwtr','wtrcons','toilyn','wwdischg','swsegyn','sngwoman','hhcount','hhpop','gt60yr','dsblppl','datsrc','txpyrname','txpyrid','btxyr','btxsts','businessno','rentno'];
+        $columns = ['bin','bldgcd','ward','tole','oldhno','haddr','haddrplt','strtcd','imgfl','addrzn','zonecode','bldgasc','bldguse','offcnm','hownr','prclkey','yoc','flrcount','flrar','consttyp','elecyn','bprmtyn','bprmtno','buildvflag','drnkwtr','wtrcons','toilyn','wwdischg','swsegyn','sngwoman','hhcount','hhpop','gt60yr','dsblppl','datsrc','txpyrname','txpyrid','btxyr','btxsts'];
 
-        $query = Building::select('bin','bldgcd','ward','tole','oldhno','haddr','haddrplt','strtcd','imgfl','addrzn','zonecode','bldgasc','bldguse','offcnm','hownr','prclkey','yoc','flrcount','flrar','consttyp','elecyn','bprmtyn','bprmtno','buildvflag','drnkwtr','wtrcons','toilyn','wwdischg','swsegyn','sngwoman','hhcount','hhpop','gt60yr','dsblppl','datsrc','txpyrname','txpyrid','btxyr','btxsts','businessno','rentno');
+        $query = Building::select('bin','bldgcd','ward','tole','oldhno','haddr','haddrplt','strtcd','imgfl','addrzn','zonecode','bldgasc','bldguse','offcnm','hownr','prclkey','yoc','flrcount','flrar','consttyp','elecyn','bprmtyn','bprmtno','buildvflag','drnkwtr','wtrcons','toilyn','wwdischg','swsegyn','sngwoman','hhcount','hhpop','gt60yr','dsblppl','datsrc','txpyrname','txpyrid','btxyr','btxsts');
         //var_dump($query);die;
         if (!empty($searchData)) {
             foreach ($columns as $column) {
@@ -506,8 +526,6 @@ class BuildingController extends Controller
                 $values[] = $building->txpyrid;
                 $values[] = $building->btxyr;
                 $values[] = $building->btxsts;
-                $values[] = $building->businessno;
-                $values[] = $building->rentno;
                 $writer->addRow($values);
             }
             

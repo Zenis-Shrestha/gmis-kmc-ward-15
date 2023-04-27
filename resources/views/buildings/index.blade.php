@@ -43,39 +43,41 @@
                         </div>
                     </div>
                      <div class="form-group">
-                        <label class="control-label col-md-2" for="btxsts_select">Tax Paid Status</label>
-                        <div class="col-md-2"> <select class="form-control" id="btxsts_select">
-                            <option value="">All</option>
-                            @foreach($taxStatuses as $key=>$value)
-                            <option value="{{$key}}">{{$value}}</option>
-                            @endforeach
-                            </select></div>
-                        <div class="col-md-2"></div>
-                        <div class="col-md-2">
-                        
-                            <label class="control-label full-width">
-                                <input type="checkbox" id="sngwoman_checkbox" name="sngwoman_checkbox" value="1" />
-                                Single Women
-                            </label>
-                        
-                        </div>
-                        <div class="col-md-2">
-                        
-                            <label class="control-label full-width">
-                                <input type="checkbox" id="gt60yr_checkbox" name="gt60yr_checkbox" value="1" />
-                                Old Age People
-                            </label>
-                        
-                     </div>
-                     
-                    <div class="col-md-2">
-                       
-                            <label class="control-label full-width">
-                                <input type="checkbox" id="dsblppl_checkbox" name="dsblppl_checkbox" value="1" />
-                                Disabled People
-                            </label>
+                            <label class="control-label col-md-2" for="btxsts_select">Tax Paid Status</label>
+                                <div class="col-md-2"> <select class="form-control" id="btxsts_select">
+                                    <option value="">All</option>
+                                    @foreach($taxStatuses as $key=>$value)
+                                    <option value="{{$key}}">{{$value}}</option>
+                                    @endforeach
+                                    </select>
+                                </div>
+                                
+                                <label class="control-label col-md-2" for="yoc_select">Year of Construction</label>
+                                <div class="col-md-2"> <select class="form-control" id="yoc_select">
+                                    <option value="">All</option>
+                                    @foreach($yearOfConstruction as $key=>$value)
+                                    <option value="{{$value}}">{{$value}}</option>
+                                    @endforeach
+                                    </select>
+                                </div>
+                            
+                               
+                                <div class="col-md-4">
+                                
+                                    <label class="control-label full-width">
+                                        <input type="checkbox" id="sngwoman_checkbox" name="sngwoman_checkbox" value="1" />
+                                        Single Women
+                                    </label>
+                                    <label class="control-label full-width">
+                                        <input type="checkbox" id="gt60yr_checkbox" name="gt60yr_checkbox" value="1" />
+                                        Old Age People
+                                    </label>
+                                    <label class="control-label full-width">
+                                        <input type="checkbox" id="dsblppl_checkbox" name="dsblppl_checkbox" value="1" />
+                                        Disabled People
+                                    </label>
+                                </div>
                       
-                    </div>
                      </div>
                     <div class="text-right">
                         <button type="submit" class="btn btn-info">Filter</button>
@@ -91,6 +93,7 @@
                             <th>{{ __('Place/Location') }}</th>
                             <th>{{ __('Toilet') }}</th>
                             <th>{{ __('Tax Paid Status') }}</th>
+                            <th>{{ __('Year of Contruction') }}</th>
                             <th>{{ __('No. of Single Women') }}</th>
                             <th>{{ __('No. of Old Age People') }}</th>
                             <th>{{ __('No. of Disabled People') }}</th>
@@ -112,11 +115,13 @@ $(function() {
         serverSide: true,
         ajax: {
             url: '{!! url("buildings/data") !!}',
+           
             data: function(d) {
                 d.bin = $('#bin_text').val();
                 d.ward = $('#ward_select').val();
                 d.toilyn = $('#toilyn_select').val();
                 d.btxsts = $('#btxsts_select').val();
+                d.yoc = $('#yoc_select').val();
                 d.sngwoman = $('#sngwoman_checkbox').is(':checked') ? '1' : '';
                 d.gt60yr = $('#gt60yr_checkbox').is(':checked') ? '1' : '';
                 d.dsblppl = $('#dsblppl_checkbox').is(':checked') ? '1' : '';
@@ -129,6 +134,7 @@ $(function() {
             {data: 'tole', name: 'tole'},
             {data: 'ynName', name: 'ynVal'},
             {data: 'taxName', name: 'taxVal'},
+            {data: 'yoc', name: 'yoc'},
             {data: 'sngwoman', name: 'sngwoman'},
             {data: 'gt60yr', name: 'gt60yr'},
             {data: 'dsblppl', name: 'dsblppl'},
@@ -137,7 +143,7 @@ $(function() {
         "order": [[ 0, 'DESC' ]]
     });
 
-    var bin = '',  ward = '', toilyn = '', btxsts = '', sngwoman = '', dsblppl = '', gt60yr ='';
+    var bin = '',  ward = '', toilyn = '', btxsts = '', sngwoman = '', dsblppl = '', gt60yr ='', yoc ='';
 
     $('#filter-form').on('submit', function(e){
       e.preventDefault();
@@ -146,9 +152,11 @@ $(function() {
       ward = $('#ward_select').val();
       toilyn = $('#toilyn_select').val();
       btxsts = $('#btxsts_select').val();
+      yoc = $('#yoc_select').val();
       sngwoman = $('#sngwoman_checkbox').is(':checked') ? '1' : '';
       gt60yr = $('#gt60yr_checkbox').is(':checked') ? '1' : '';
       dsblppl = $('#dsblppl_checkbox').is(':checked') ? '1' : '';
+      
     });
     
     $('#data-table_filter input[type=search]').attr('readonly', 'readonly');
@@ -158,6 +166,7 @@ $(function() {
                 $('#ward_select option:selected').removeAttr('selected');
                 $('#toilyn_select option:selected').removeAttr('selected');
                 $('#btxsts_select option:selected').removeAttr('selected');
+                $('#yoc_select option:selected').removeAttr('selected');
                 $('#sngwoman_checkbox').prop('checked', false); // Unchecks it
                 $('#gt60yr_checkbox').prop('checked', false); // Unchecks it
                 $('#dsblppl_checkbox').prop('checked', false); // Unchecks it
@@ -172,10 +181,11 @@ $(function() {
         var ward = $('#ward_select').val();
         var toilyn = $('#toilyn_select').val();
         var btxsts = $('#btxsts_select').val();
+        var yoc = $('#yoc_select').val();
         var sngwoman = $('#sngwoman_checkbox').is(':checked') ? '1' : '';
         var gt60yr = $('#gt60yr_checkbox').is(':checked') ? '1' : '';
         var dsblppl = $('#dsblppl_checkbox').is(':checked') ? '1' : '';
-        window.location.href="{!! url('buildings/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&toilyn="+toilyn+"&btxsts="+btxsts+"&sngwoman="+sngwoman+"&gt60yr="+gt60yr+"&dsblppl="+dsblppl;
+        window.location.href="{!! url('buildings/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&toilyn="+toilyn+"&btxsts="+btxsts+"&yoc="+yoc+"&sngwoman="+sngwoman+"&gt60yr="+gt60yr+"&dsblppl="+dsblppl;
     });
 
 
