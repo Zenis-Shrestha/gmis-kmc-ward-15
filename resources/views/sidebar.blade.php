@@ -19,6 +19,36 @@
                 <a href="{{ action('BuildingRentController@index') }}"><i class="fa fa-sticky-note" aria-hidden="true"></i><span>Buildings Rent</span></a>
             </li>
             @endability
+
+            @ability('super-admin', 'list-roads')
+            <li class="treeview">
+                <a href="#"><i class="fa fa-upload" aria-hidden="true"></i><span>Revenue</span> <i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="treeview-menu">
+                     @ability('super-admin', 'list-building-tax')
+                   <li><a href="{{ action('TaxPaymentDashboardController@index') }}"><i class="fa fa-circle-o"></i><span>Dashboard </span></a></li>
+                    @endability
+               
+                     @ability('super-admin', 'list-building-tax')
+                    <li><a href=""><i class="fa fa-circle-o"></i><span> Data Import </span> <i class="fa fa-angle-left pull-right"></i></a>
+                    <ul class="treeview-menu">
+                            @ability('super-admin', 'list-building-tax')
+                        <li><a href="{{ action('TaxPaymentController@index') }}"><i class="fa fa-circle-o"></i>Building Tax</a></li>
+                        @endability
+                         @ability('super-admin', 'list-add-zones')
+                          <li><a href="{{ action('AddZoneController@index') }}"><i class="fa fa-circle-o"></i>Business Tax</a></li>
+                        @endability
+                           @ability('super-admin', 'list-add-zones')
+                          <li><a href="{{ action('AddZoneController@index') }}"><i class="fa fa-circle-o"></i>Rents Tax</a></li>
+                            @endability
+                            </ul>
+
+                    
+                    </li>   
+                    @endability
+                </ul>
+            </li>
+            @endability
+            
             @ability('super-admin', 'list-streets')
             <li class="treeview">
                 <a href="{{ action('StreetController@index') }}"><i class="fa fa-road" aria-hidden="true"></i><span>Streets</span></a>
@@ -29,26 +59,7 @@
                 <a href="{{ action('RoadController@index') }}"><i class="fa fa-road" aria-hidden="true"></i><span>Roads</span></a>
             </li>
             @endability
-            @ability('super-admin', 'list-roads')
-            <li class="treeview">
-                <a href="#"><i class="fa fa-upload" aria-hidden="true"></i><span>Data Import</span></a>
-                <ul class="treeview-menu">
-                     @ability('super-admin', 'list-building-tax')
-                    <li><a href="{{ action('TaxPaymentDashboardController@index') }}"><i class="fa fa-circle-o"></i>Dashboard</a></li>
-                    @endability
-                    @ability('super-admin', 'list-building-tax')
-                    <li><a href="{{ action('TaxPaymentController@index') }}"><i class="fa fa-circle-o"></i>Building Tax</a></li>
-                    @endability
-                    @ability('super-admin', 'list-add-zones')
-                    <li><a href="{{ action('AddZoneController@index') }}"><i class="fa fa-circle-o"></i>Business Tax</a></li>
-                    @endability
-                    @ability('super-admin', 'list-add-zones')
-                    <li><a href="{{ action('AddZoneController@index') }}"><i class="fa fa-circle-o"></i>Rents Tax</a></li>
-                    @endability
-                    
-                </ul>
-            </li>
-            @endability
+
             @ability('super-admin', 'list-add-zones,list-building-constructions,list-building-uses,list-water-srcs,list-tax-sts-codes,list-drainages,list-verf-yes-nos,list-yes-nos,list-road-hierarchies,list-road-surfaces')
             <li class="treeview">
                 <a href="#"><i class="fa fa-bullseye" aria-hidden="true"></i><span>System Constants</span><i class="fa fa-angle-left pull-right"></i></a>
