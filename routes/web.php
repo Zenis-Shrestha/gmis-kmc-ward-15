@@ -114,7 +114,7 @@ Route::get('roads/add', 'RoadController@add')->name('roads.add');
 Route::resource('roads', 'RoadController', ['except' => ['create']]);
 
 // Tax Payment routes
-Route::get('tax-payment-dashboard/report', 'TaxPaymentDashboardController@buildingsTaxReportPdf');
+Route::get('report', 'TaxPaymentDashboardController@buildingsTaxReportPdf');
 Route::resource('tax-payment-dashboard','TaxPaymentDashboardController');
 
 Route::get('tax-payment/data', 'TaxPaymentController@getData')->name('tax-payment.getData');
@@ -770,143 +770,11 @@ Route::get('searchStreetsByKeywords/{keywords}', function($keywords){
 
 
 Route::get('getExportCSV', 'MapsController@getBuildingsReportCSV')->name('export-buildings');
-
-
 Route::get('getAreaExportCSV', 'MapsController@getBuildingsAreaReportCSV')->name('export-buildings');
 
 
 
-Route::get('get', function()  {
-    \Maatwebsite\Excel\Facades\Excel::create('Building Information', function($excel) {
 
-        
-        $lat = request()->lat;
-        $long = request()->long;
-      
-      
-        $buildings_query = "SELECT b.gid, b.bin, b.ward, b.tole, b.haddr, b.hownr, b.yoc, b.flrcount, bu.name AS building_use, bc.name AS construction_type, t.name AS tax_status, s.strtnm AS street, ST_AsText(b.geom) AS geom"
-            . " FROM bldg b"
-            . " LEFT JOIN building_use bu"
-            . " ON b.bldguse = bu.value"
-            . " LEFT JOIN building_construction bc"
-            . " ON b.consttyp = bc.value"
-            . " LEFT JOIN tax_status_code t"
-            . " ON b.btxsts = t.value"
-            . " LEFT JOIN street s"
-            . " ON b.strtcd = s.strtcd"
-            . " WHERE ST_Contains(b.geom, ST_GeomFromText('POINT(" . $long . " " . $lat . ")', 4326))";
-
-        $results_buildings = DB::select($buildings_query);
-
-        $excel->sheet('Building Information Sheet', function($sheet) use ($results_buildings) {
-            $rows = array();
-            foreach($results_buildings as $building) {
-                $rows[] = array(
-                    'gid' => $building->gid,
-                    'bin' => $building->bin,
-                    'ward' => $building->ward,
-                    'tole' => $building->tole,
-                    'haddr' => $building->haddr,
-                    'hownr' => $building->hownr,
-                    'yoc' => $building->yoc,
-                    'flrcount' => $building->flrcount,
-                    'building_use' => $building->building_use,
-                    'construction_type' => $building->construction_type,
-                    'tax_status' => $building->tax_status,
-                    'street' => $building->street,
-                    'geom' => $building->geom
-                );
-
-            }
-           
-              
-                    $sheet->fromArray($rows);
-                    $sheet->setOrientation('landscape');
-         
-       
-        });
-     
-        $buildingbusiness= "SELECT bin,ward,roadname,houseno,houseownername,ownerphone,houseownermail,businesowner,businessname,businesstype,category,businessoprdate,registration,oldinternalnumber,taxlastdate,businessownermobile,email,remarks,
-            ST_AsText(geom) AS geom"
-            . " FROM bldg_business_tax"
-            . " WHERE bin = " . (int)$results_buildings[0]->bin;
-            $buildingResults = DB::select($buildingbusiness);
-            
-            $excel->sheet('Buildings Business Details', function ($sheet) use ($buildingResults) {
-            $rows = array();
-            foreach ($buildingResults1 as $building) {
-            $rows[] = array(
-            'Bin' => $building->bin,
-            'Ward' => $building->ward,
-            'Road Name' => $building->roadname,
-            'House No' => $building->houseno,
-            'House Owner Name' => $building->houseownername,
-            'Owner Phone' => $building->ownerphone,
-            'Owner Email' => $building->houseownermail,
-            'Business Owner' => $building->businesowner,
-            'Business Name' => $building->businessname,
-            'Business Type' => $building->businesstype,
-            'Category' => $building->category,
-            'Business Operating Date' => $building->businessoprdate,
-            'Registration' => $building->registration,
-            'Old Internal Number' => $building->oldinternalnumber,
-            'Tax Last Date' => $building->taxlastdate,
-            'Business Owner Mobile' => $building->businessownermobile,
-            'Email' => $building->email,
-            'Remarks' => $building->remarks,
-            'Geom' => $building->geom
-            );
-            }
-
-            
-              
-                    $sheet->fromArray($rows);
-                    $sheet->setOrientation('landscape');
-           
-            });
-
-
-            $buildingrent = "SELECT bin,ward,roadname,houseno,taxpayercode,hownername,hownernumber,howneremail,
-            housetype,length,width,area,rentername,rentpurpose,rentstart,monthlyrent,rentaxresponsible,rentmobilenumber,rentincreseperyear,remarks,
-             ST_AsText(geom) AS geom"
-            . " FROM bldg_rent_tax"
-            . " WHERE bin = " . (int)$results_buildings[0]->bin;
-            $buildingResults2 = DB::select($buildingrent);
-            
-            $excel->sheet('Buildings Rent Details', function ($sheet) use ($buildingResults2) {
-            $rows = array();
-            foreach ($buildingResults2 as $building) {
-            $rows[] = array(
-                'Bin' => $building->bin,
-                'Ward' => $building->ward,
-                'Tax Payer Code' => $building->taxpayercode,
-                'Road Name' => $building->roadname,
-                'House Numnber' => $building->houseno,
-                'House Owner Name' => $building->hownername,
-                'House Owner Number' => $building->hownernumber,
-                'House Owner Email' => $building->howneremail,
-                'House Type' => $building->housetype,
-                'Length' => $building->length,
-                'Width' => $building->width,
-                'Area' => $building->area,
-                'Renter Name' => $building->rentername,
-                'Rent Purpose' => $building->rentpurpose,
-                'Rent Start' => $building->rentstart,
-                'Monthly Rent' => $building->monthlyrent,
-                'Rent Tax Responsible' => $building->rentaxresponsible,
-                'Rent Increase per Year' => $building->rentincreseperyear,
-                'Rent Mobile Number' => $building->rentmobilenumber,
-                'Remarks' => $building->remarks,
-                'Geom' => $building->geom
-            );
-            }
-            $sheet->fromArray($rows);
-            $sheet->setOrientation('landscape');
-            });
-
-        
-    })->export('xls');
-});
 
 
 
