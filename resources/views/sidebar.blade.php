@@ -25,13 +25,7 @@
                 <a href="#"><i class="fa fa-upload" aria-hidden="true"></i><span>Revenue</span> <i class="fa fa-angle-left pull-right"></i></a>
                 <ul class="treeview-menu">
                      @ability('super-admin', 'list-building-tax')
-                   <li><a href=""><i class="fa fa-circle-o"></i><span>Dashboard </span> <i class="fa fa-angle-left pull-right"></i></a>
-                        <ul  class="treeview-menu">
-                            <li><a href="{{ action('TaxPaymentDashboardController@index') }}"><i class="fa fa-circle-o"></i>Building Tax Dashboard</a>
-                            <li><a href="{{ action('TaxPaymentDashboardController@index') }}"><i class="fa fa-circle-o"></i>Business Tax Dashboard</a>
-                            <li><a href="{{ action('TaxPaymentDashboardController@index') }}"><i class="fa fa-circle-o"></i>Rent Tax Dashboard</a>
-                        </ul>
-                    </li>
+                   <li><a href="{{ action('TaxPaymentDashboardController@index') }}"><i class="fa fa-circle-o"></i><span>Dashboard </span></a></li>
                     @endability
                
                      @ability('super-admin', 'list-building-tax')
