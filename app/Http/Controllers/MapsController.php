@@ -63,6 +63,7 @@ class MapsController extends Controller
 
     public function getBuildingsAreaReportCSV()
     {
+        ini_set('memory_limit', '8000M');
         ob_end_clean();
         return Excel::download(new BuildingsAreaMultisheet(request()->geom), 'Building Infromation.xlsx');
         
