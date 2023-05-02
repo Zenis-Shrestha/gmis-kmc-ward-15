@@ -88,6 +88,7 @@ $(function() {
     var dataTable = $('#data-table').DataTable({
         processing: true,
         serverSide: true,
+        
         ajax: {
             url: '{!! url("buildings-business/data") !!}',
             data: function(d) {
@@ -118,12 +119,13 @@ $(function() {
         "order": [[ 0, 'DESC' ]]
     });
 
-    var businessname = '', bin = '',  ward = '', taxcode = '', houseno = '', houseownername = '', businesowner = '', btxsts_select = '';
+    var businessname = '', bin = '',  ward = '', road = '', taxcode = '', houseno = '', houseownername = '', businesowner = '', btxsts_select = '';
 
     $('#filter-form').on('submit', function(e){
       e.preventDefault();
       dataTable.draw();
       businessname = $('#businessname').val();
+      road = $('#roadname').val();
       bin = $('#bin').val();
       ward = $('#ward').val();
       houseno = $('#houseno').val();

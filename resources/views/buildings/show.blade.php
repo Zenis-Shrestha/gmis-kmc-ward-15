@@ -189,18 +189,7 @@
                     {!! Form::label(null, $building->taxStsCode ? $building->taxStsCode->name : '', ['class' => 'form-control']) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('businessno', __('No of Business'), ['class' => 'col-sm-3 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::label(null, $building->businessno, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('rentno', __('No of Rents'), ['class' => 'col-sm-3 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::label(null, $building->rentno, ['class' => 'form-control']) !!}
-                </div>
-            </div>
+           
         </div>
     </div>
 </div>

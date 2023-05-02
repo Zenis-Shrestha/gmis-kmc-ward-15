@@ -2,15 +2,14 @@
     <div class="form-group col-md-6">
         {!! Form::label('ward', __('Ward'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
-            {!! Form::select('ward', $wards, null, ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
-        </div>
+        {!! Form::select('ward', $wards, old('ward', request('ward')), ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
+    </div>
     </div>
     <div class="form-group col-md-6 required ">
         {!! Form::label('bin', __('Building Identification Number'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
-            {!! Form::select('bin',[],null,['class' => 'form-control', 'placeholder' => 'Building Identification Number']) !!}
-            <!--{!! Form::text('bin', null, ['class' => 'form-control', 'placeholder' => __('Building Identification Number')]) !!}-->
-        </div>
+        {!! Form::select('bin', [], old('bin', request('bin')), ['class' => 'form-control', 'placeholder' => 'Building Identification Number']) !!}
+    </div>
     </div> 
    
     <div class="form-group col-md-6">
@@ -134,60 +133,152 @@
     </div>
 </div>
 
-<div class="box-footer">
+<div class="box-footer" style="float:right;">
     <a href="{{ action('BuildingBusinessController@index') }}" class="btn btn-info">{{ __('Back to List') }}</a>
     {!! Form::submit(__('Save'), ['class' => 'btn btn-info']) !!}
 </div>
 
+
+<div class="box-body">
+<table id="data-table" class="table table-bordered table-striped" width="100%" style="display: none;" >
+<thead id="table-heading" >
+                        <tr>
+                            <th>{{ __('ID') }}</th>
+                            <th>{{ __('Business Name') }}</th>
+                            <th>{{ __('BIN') }}</th>
+                            <th>{{ __('House No') }}</th>
+                            <th>{{ __('Ward') }}</th>
+                            <th>{{ __('Road Name') }}</th>
+                            <th>{{ __('Business Owner Name') }}</th>
+                            <th>{{ __('House Owner Name') }}</th>
+                            <th>{{ __('Owner Phone No') }}</th>
+                            <th>{{ __('Tax last Date') }}</th>
+                        </tr>
+                    </thead>
+                </table>
+</div>
 @push('scripts')
     <script>
- $(document).ready(function() { 
-$('#businessmaintype').change(function(){
+$(document).ready(function() {
+
+    // Function to initialize DataTable
+    function initDataTable() {
+        
+        $('#data-table').DataTable({
+            processing: true,
+            serverSide: true,
+            "bFilter" : false,
+            ajax: {
+                url: '{!! url("buildings-business/data") !!}',
+                data: {
+                    "bin": ($('#bin').val() !== '') ? $('#bin').val() : (new URLSearchParams(window.location.search)).get('bin'),
+                },
+            },
+            columns: [
+                    {data: 'id', name: 'id'},
+                    {data: 'businessname', name: 'businessname'},
+                    {data: 'bin', name: 'bin'},
+                    {data: 'houseno', name: 'houseno'},
+                    {data: 'ward', name: 'ward'},
+                    {data: 'roadname', name: 'roadname'},
+                    {data: 'businesowner', name: 'businesowner'},
+                    {data: 'houseownername', name: 'houseownername'},
+                    {data: 'ownerphone', name: 'ownerphone'},
+                    {data: 'taxlastdate', name: 'taxlastdate'},
+                
+                ],
+                "order": [[ 0, 'DESC' ]]
+        });
+    }   
+        // Function to prefill form fields
+     function prefillForm() {
+        $.ajax({
+            url: '{{ url("building-business/business-details") }}',
+            data: {
+            "bin": ($('#bin').val() !== '') ? $('#bin').val() : (new URLSearchParams(window.location.search)).get('bin'),
+            },
+            success: function (res) {
+            $('#houseownername').val(res.hownr);
+            $('#houseno').val(res.oldhno);
+            $('#roadname').val(res.strtcd);
+            }
+        });
+    
+    }
+        // Run the DataTable function before prefill if bin is present in the URL
+   if ((new URLSearchParams(window.location.search)).get('bin')) {
+        if (bin !== '') {
+        prefillForm();
+        initDataTable();
+        $('#data-table').show();
+        } else {
+        $('#data-table').hide();
+        }
+   }
+
+
+   $('#bin').on('change', function(e){
+            var dataTable = $('#data-table').DataTable();
+        if ($.fn.DataTable.isDataTable('#data-table')) {
+            dataTable.destroy();
+        }
+        if (bin !== '') {
+            prefillForm();
+            initDataTable();
+        $('#data-table').show();
+            } else {
+                $('#data-table').hide();
+            }
+        });
+
+        $('#businessmaintype').change(function(){
                 
                    
-                   var businessmaintype = $(this).val();
-              
-                $('#businesstype').html('<option value="">--- Choose Business Sub Type ---</option>');
+                var businessmaintype = $(this).val();
+           
+             $('#businesstype').html('<option value="">--- Choose Business Sub Type ---</option>');
+             
+             if(businessmaintype) {
+                 loadSubTypes(businessmaintype, null);
+             }
+         });
+
+
+        function loadSubTypes(businessmaintype, callback) {
+                    
+            $('#businesstype').html('<option value="">Loading...</option>');
+            //$('#businesstype').attr('disabled', 'disabled');
+            $.ajax({
                 
-                if(businessmaintype) {
-                    loadSubTypes(businessmaintype, null);
-                }
-            });
-            function loadSubTypes(businessmaintype, callback) {
-               console.log((businessmaintype));
-                $('#businesstype').html('<option value="">Loading...</option>');
-                //$('#businesstype').attr('disabled', 'disabled');
-                $.ajax({
-                   
-                    method: 'GET',
-                    url: '{{ url("building-business/business-sub-types") }}',
-                     data:{
-                       businesstype : encodeURIComponent(businessmaintype),
-                 },
-                    success: function(data) {
-                        data = $.parseJSON(data);
-                        var html = '<option value="">--- Choose Business Sub Type ---</option>';
-                        $.each(data, function(key, value){
-                            html += '<option value="' + value + '">' + value + '</option>';
+                method: 'GET',
+                url: '{{ url("building-business/business-sub-types") }}',
+                data:{
+                    businesstype : encodeURIComponent(businessmaintype),
+                },
+                success: function(data) {
+                    data = $.parseJSON(data);
+                    var html = '<option value="">--- Choose Business Sub Type ---</option>';
+                    $.each(data, function(key, value){
+                html += '<option value="' + value + '">' + value + '</option>';
                         });
                         $('#businesstype').html(html);
                         $('#businesstype').removeAttr('disabled');
-                         @if(isset($buildingBusiness)) 
-                      
+                        @if(isset($buildingBusiness)) 
+                        
                     $("#businesstype option[value='<?php echo $buildingBusiness->businesstype;?>']").attr('selected', 'selected'); 
                     @endif
                         if(callback) {
-                            callback(null);
+                callback(null);
                         }
-                    },
-                    error: function() {
-                        $('#businesstype').html('<option value="">--- Choose Business Sub Type ---</option>');
-                        $('#businesstype').removeAttr('disabled');
-                        // Display error message
-                        callback('error occurred');
-                    }
-                });
-            }
+                },
+                error: function() {
+                    $('#businesstype').html('<option value="">--- Choose Business Sub Type ---</option>');
+                    $('#businesstype').removeAttr('disabled');
+                    // Display error message
+                    callback('error occurred');
+                }
+            });
+        }
             
                     <?php if(isset($buildingBusiness->businessmaintype) && $buildingBusiness->businessmaintype): ?>
             
@@ -197,23 +288,27 @@ $('#businessmaintype').change(function(){
                         }
                         });
                     <?php endif; ?>
-//               $('.datepicker').datepicker({
-//                        dateFormat: 'mm/dd/yyyy',
-//                        todayHighlight: true,
-//                        defaultViewDate: {year: '2079'}
-//                });
-/* Select your element */
-var currentDate = NepaliFunctions.ConvertDateFormat(NepaliFunctions.GetCurrentBsDate(), "YYYY-MM-DD");
-    $('#nepali-datepicker-1').val(currentDate);
+                    //               $('.datepicker').datepicker({
+                    //                        dateFormat: 'mm/dd/yyyy',
+                    //                        todayHighlight: true,
+                    //                        defaultViewDate: {year: '2079'}
+                    //                });
+                    /* Select your element */
+                    var currentDate = NepaliFunctions.ConvertDateFormat(NepaliFunctions.GetCurrentBsDate(), "YYYY-MM-DD");
+                        $('#nepali-datepicker-1').val(currentDate);
 
-    $('.nepali-datepicker').nepaliDatePicker({
-        ndpYear: true,
-        ndpMonth: true,
-        dateFormat: "YYYY/MM/DD"
-    });
-//                 $('.datepicker').focus(function(){
-//                    $(this).blur();
-//                });
+                        $('.nepali-datepicker').nepaliDatePicker({
+                            ndpYear: true,
+                            ndpMonth: true,
+                            dateFormat: "YYYY/MM/DD"
+                        });
+                    //                 $('.datepicker').focus(function(){
+                    //                    $(this).blur();
+                    //                });
             });
+
+            
+  
+
                 </script>
 @endpush
