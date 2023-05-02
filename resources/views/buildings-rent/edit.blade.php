@@ -16,7 +16,7 @@
             
                     $('#bin').prepend('<option selected="{{$buildingRent->bin}}">{{$buildingRent->bin}}</option>').select2({
                         ajax: {
-                            url:"{{ route('buildings-business.get-bin-numbers') }}",
+                            url:"{{ route('buildings.get-bin-numbers') }}",
                             data: function (params) {
                                 return {
                                     search: params.term,
