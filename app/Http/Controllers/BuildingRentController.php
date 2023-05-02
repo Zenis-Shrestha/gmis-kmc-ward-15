@@ -162,7 +162,7 @@ class BuildingRentController extends Controller
         $buildingRent->save();
 
         Flash::success('Rent added successfully');
-        return redirect()->action('BuildingRentController@index');
+        return redirect()->action('BuildingRentController@add', ['bin' =>  $buildingRent->bin, 'ward' =>  $buildingRent->ward]);
     }
 
     /**
@@ -383,4 +383,95 @@ class BuildingRentController extends Controller
             abort(404);
         }
     }
+
+    public function getRentDetails(Request $request) 
+
+    {
+        $building_rent = Building::where('bin','=',$request->bin)->firstOrFail();
+    
+       
+        return response()->json($building_rent);
+  }
+
+
+  public function getBinNumbers(){
+       
+    $query = Building::select('bin');
+    
+    if (request()->search){
+        $query->where('bin', 'ILIKE', '%'.request()->search.'%');
+     
+    }
+    if (request()->ward){
+        $query->where('ward','=',request()->ward);
+    }
+  
+    $total = $query->count();
+    $limit = 10;
+    if (request()->page) {
+        $page  = request()->page;
+    }
+    else{
+        $page=1;
+    };
+    $start_from = ($page-1) * $limit;
+
+    $total_pages = ceil($total / $limit);
+    if($page < $total_pages){
+        $more = true;
+    }
+    else
+    {
+        $more = false;
+    }
+    $house_numbers = $query->offset($start_from)
+        ->limit($limit)
+        ->get();
+           
+    $json = [];
+    foreach($house_numbers as $house_number)
+    {
+        $json[] = ['id'=>$house_number['bin'], 'text'=>$house_number['bin']];
+    }
+
+    return response()->json(['results' =>$json, 'pagination' => ['more' => $more] ]);
+
+}
+
+public function getWards()
+{
+    
+        $query = Building::select('ward')->distinct()->orderBy('ward', 'ASC')->where('ward', '<>', 0);
+    
+
+    if (request()->search) {
+        $query->where('ward', 'ILIKE', '%' . request()->search . '%');
+    }
+
+    $total = $query->count();
+    $limit = 10;
+    if (request()->page) {
+        $page = request()->page;
+    } else {
+        $page = 1;
+    };
+    $start_from = ($page - 1) * $limit;
+
+    $total_pages = ceil($total / $limit);
+    if ($page < $total_pages) {
+        $more = true;
+    } else {
+        $more = false;
+    }
+    $ward_numbers = $query->offset($start_from)
+        ->limit($limit)
+        ->get();
+
+    $json = [];
+    foreach ($ward_numbers as $ward_number) {
+        $json[] = ['id' => $ward_number['ward'], 'text' => $ward_number['ward']];
+    }
+
+    return response()->json(['results' => $json, 'pagination' => ['more' => $more]]);
+}
 }
