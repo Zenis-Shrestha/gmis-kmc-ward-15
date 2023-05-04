@@ -121,6 +121,7 @@ Route::resource('roads', 'RoadController', ['except' => ['create']]);
 
 // Tax Payment routes
 Route::get('report', 'TaxPaymentDashboardController@buildingsTaxReportPdf');
+
 Route::resource('tax-payment-dashboard','TaxPaymentDashboardController');
 
 Route::get('tax-payment/data', 'TaxPaymentController@getData')->name('tax-payment.getData');

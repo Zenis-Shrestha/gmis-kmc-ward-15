@@ -43,6 +43,7 @@ class TaxPaymentDashboardController extends Controller
         $chartGroups['rvnsts']['charts'][] = $this->getBldgTxStsByWard();
         $chartGroups['rvnsts']['charts'][] = $this->getConcreteBeamBldgTxStsByWard();
         $chartGroups['rvnsts']['charts'][] = $this->getBldgTxStsByYocWard();
+        // $chartGroups['rvnsts']['charts'][] = $this->getNoOfBusinessByWard();
         return view('tax-payment-dashboard.index', compact('pageTitle', 'chartGroups'));
     }
     
@@ -136,7 +137,7 @@ class TaxPaymentDashboardController extends Controller
 	GROUP BY dy.value,  bdy.ward';
 
         $results = DB::select($query);
-        
+       
         $data = array();
         foreach($results as $row) {
             $data[$row->due_year][$row->ward] = $row->count;
@@ -171,7 +172,7 @@ class TaxPaymentDashboardController extends Controller
 
         $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
         $dueYears = array('No Due' => 'No Due', 'Due' => 'Due', 'Data To be Collected' => 'Data To be Collected');
-
+     
         $query = "
         SELECT 
            COUNT(b.bin) AS count, 
@@ -187,7 +188,7 @@ class TaxPaymentDashboardController extends Controller
         bldg b
         LEFT JOIN bldg_tax_payment_status btps ON btps.bin = b.bin
 		WHERE b.consttyp = 1
-	GROUP BY btps.due_year, b.ward";
+	    GROUP BY btps.due_year, b.ward";
 
         $results = DB::select($query);
         
@@ -240,7 +241,7 @@ class TaxPaymentDashboardController extends Controller
         bldg b
         LEFT JOIN bldg_tax_payment_status btps ON btps.bin = b.bin
 		WHERE b.yoc < 20
-	GROUP BY btps.due_year, b.ward";
+	    GROUP BY btps.due_year, b.ward";
 	
         $results = DB::select($query);
         
@@ -308,6 +309,7 @@ class TaxPaymentDashboardController extends Controller
               
         }
 
+       
     }
 
    

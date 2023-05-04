@@ -556,9 +556,12 @@ class BuildingBusinessController extends Controller
     public function getBusinessDetails(Request $request) 
 
     {
-        $building_business = Building::where('bin','=',$request->bin)->firstOrFail();
-    
-       
-        return response()->json($building_business);
+        if(BuildingBusiness::where('bin', $request->bin)->exists()){
+            $building_business = BuildingBusiness::where('bin', $request->bin)->first();
+            return response()->json($building_business);
+        } else {
+            $building_business = Building::where('bin', $request->bin)->first();
+            return response()->json($building_business);
+        }
   }
 } 
