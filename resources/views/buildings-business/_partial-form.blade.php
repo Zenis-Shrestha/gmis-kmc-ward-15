@@ -198,9 +198,22 @@ $(document).ready(function() {
             "bin": ($('#bin').val() !== '') ? $('#bin').val() : (new URLSearchParams(window.location.search)).get('bin'),
             },
             success: function (res) {
-            $('#houseownername').val(res.hownr);
+               if(res.hownr){
+                $('#houseownername').val(res.hownr);
+               }
+               else {
+                $('#houseownername').val(res.houseownername);
+               }
+           if(res.oldhno){
             $('#houseno').val(res.oldhno);
-            $('#roadname').val(res.strtcd);
+           }else{
+            $('#houseno').val(res.houseno);
+           }
+           $('#roadname').val(res.roadname);
+           $('#ownerphone').val(res.ownerphone);
+           $('#email').val(res.email); 
+
+          
             }
         });
     
