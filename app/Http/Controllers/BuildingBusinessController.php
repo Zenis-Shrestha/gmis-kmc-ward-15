@@ -56,11 +56,7 @@ class BuildingBusinessController extends Controller
         $buildingData = BuildingBusiness::select(
 
                             "*"
-                            
-                            
-                            
                         );
-        
         return Datatables::of($buildingData)
             ->filter(function ($query) use ($request) {
                 if ($request->bin) {
@@ -77,6 +73,9 @@ class BuildingBusinessController extends Controller
 
                  if ($request->taxcode) {
                     $query->where('taxcode', trim($request->taxcode));
+                } 
+                if ($request->roadname) {
+                    $query->where('roadname', trim($request->roadname));
                 } 
                 if ($request->businessname) {
                     $query->where('businessname', 'ilike', '%'.trim($request->businessname.'%'));
@@ -129,6 +128,7 @@ class BuildingBusinessController extends Controller
      */
     public function add()
     {
+        
         $pageTitle = "Add Building Business";
         $wards = Ward::orderBy('ward')->pluck('ward', 'ward');
         $streets = Street::orderBy('strtcd')->pluck('strtcd', 'strtcd');
@@ -154,10 +154,13 @@ class BuildingBusinessController extends Controller
         ]);
         $building = Building::where('bin', $request->bin)->first();
         $centroid = DB::select(DB::raw("SELECT (ST_AsText(st_centroid(st_union(geom)))) AS central_point FROM bldg WHERE bin = '$request->bin'"));
-        
+       
         $building_business = new BuildingBusiness();
+       
         $building_business->bin = $request->bin ? $request->bin : null;
+       
         $building_business->ward = $request->ward ? $request->ward : null;
+        
         $building_business->roadname = $request->roadname ? $request->roadname : null;
         $building_business->houseno = $request->houseno ? $request->houseno : null;
         $building_business->houseownername = $request->houseownername ? $request->houseownername : null;
@@ -183,10 +186,10 @@ class BuildingBusinessController extends Controller
         $building_business->geom = DB::raw("ST_GeomFromText('".$centroid[0]->central_point."', 4326)");      
         $building_business->businessmaintype = $request->businessmaintype ? $request->businessmaintype : null;
         $building_business->save();
-        
+      
       
         Flash::success('Business added successfully');
-        return redirect()->action('BuildingBusinessController@index');
+        return redirect()->action('BuildingBusinessController@add', ['bin' =>  $building_business->bin, 'ward' =>  $building_business->ward]);
     }
 
     /**
@@ -417,19 +420,17 @@ class BuildingBusinessController extends Controller
     
     public function getBinNumbers(){
        
-        $query = Building::select('*');
+        $query = Building::select('bin');
+        
         if (request()->search){
-            $query->where('bin', '=', request()->search);
+            $query->where('bin', 'ILIKE', '%'.request()->search.'%');
+         
         }
         if (request()->ward){
             $query->where('ward','=',request()->ward);
         }
-        else{
-            
-            $query->where('ward','=',0);
-        }
+      
         $total = $query->count();
-         
         $limit = 10;
         if (request()->page) {
             $page  = request()->page;
@@ -460,6 +461,45 @@ class BuildingBusinessController extends Controller
         return response()->json(['results' =>$json, 'pagination' => ['more' => $more] ]);
 
     }
+
+    public function getWards()
+    {
+        
+            $query = Building::select('ward')->distinct()->orderBy('ward', 'ASC')->where('ward', '<>', 0);
+        
+  
+        if (request()->search) {
+            $query->where('ward', 'ILIKE', '%' . request()->search . '%');
+        }
+    
+        $total = $query->count();
+        $limit = 10;
+        if (request()->page) {
+            $page = request()->page;
+        } else {
+            $page = 1;
+        };
+        $start_from = ($page - 1) * $limit;
+    
+        $total_pages = ceil($total / $limit);
+        if ($page < $total_pages) {
+            $more = true;
+        } else {
+            $more = false;
+        }
+        $ward_numbers = $query->offset($start_from)
+            ->limit($limit)
+            ->get();
+    
+        $json = [];
+        foreach ($ward_numbers as $ward_number) {
+            $json[] = ['id' => $ward_number['ward'], 'text' => $ward_number['ward']];
+        }
+    
+        return response()->json(['results' => $json, 'pagination' => ['more' => $more]]);
+    }
+    
+
     
     public function getRoad(){
 
@@ -503,7 +543,7 @@ class BuildingBusinessController extends Controller
     } 
     
     public function getBusinessSubTypes(Request $request) {
-        //echo urldecode(Request()->businesstype);die;
+       
         $businessSubTypes = BusinessTaxRate::where('businessmaintype','ilike',urldecode(Request()->businesstype))->get();
         $type = [];
         foreach ($businessSubTypes as $row) {
@@ -512,4 +552,16 @@ class BuildingBusinessController extends Controller
         echo json_encode($type);
         
     }
+
+    public function getBusinessDetails(Request $request) 
+
+    {
+        if(BuildingBusiness::where('bin', $request->bin)->exists()){
+            $building_business = BuildingBusiness::where('bin', $request->bin)->first();
+            return response()->json($building_business);
+        } else {
+            $building_business = Building::where('bin', $request->bin)->first();
+            return response()->json($building_business);
+        }
+  }
 } 

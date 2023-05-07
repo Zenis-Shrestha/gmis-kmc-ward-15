@@ -26,8 +26,11 @@ Route::get('/buildings/building_infoexport', 'BuildingController@building_infoex
 
 Route::get('buildings/new-photos/{building_id}', 'BuildingController@downloadNewPhoto');
 
-Route::get('buildings-business/get-bin-numbers','BuildingBusinessController@getBinNumbers')->name('buildings-business.get-bin-numbers');
+
+
 Route::get('building-business/business-sub-types','BuildingBusinessController@getBusinessSubTypes')->name('buildings-business.get-business-sub-types');
+Route::get('building-business/business-details','BuildingBusinessController@getBusinessDetails')->name('buildings-business.get-business-details');
+
 Route::get('buildings-business/data', 'BuildingBusinessController@getData');
 Route::get('buildings-business/export', 'BuildingBusinessController@export');
 // Replace "create" with "add"
@@ -35,10 +38,13 @@ Route::get('buildings-business/add', 'BuildingBusinessController@add')->name('bu
 Route::resource('buildings-business', 'BuildingBusinessController', ['except' => ['create']]);
 
 Route::get('buildings-rent/data', 'BuildingRentController@getData');
+Route::get('building-rent/rent-details','BuildingRentController@getRentDetails')->name('buildings-rent.get-rent-details');
 Route::get('buildings-rent/export', 'BuildingRentController@export');
 Route::get('buildings-rent/add', 'BuildingRentController@add')->name('buildings.add');
 Route::resource('buildings-rent', 'BuildingRentController', ['except' => ['create']]);
 
+Route::get('get-bin-numbers','BuildingController@getBinNumbers')->name('buildings.get-bin-numbers');
+Route::get('get-wards', 'BuildingController@getWards')->name('buildings.get-wards');
 
 
 Route::get('streets/data', 'StreetController@getData');
@@ -115,12 +121,16 @@ Route::resource('roads', 'RoadController', ['except' => ['create']]);
 
 // Tax Payment routes
 Route::get('report', 'TaxPaymentDashboardController@buildingsTaxReportPdf');
+
 Route::resource('tax-payment-dashboard','TaxPaymentDashboardController');
 
 Route::get('tax-payment/data', 'TaxPaymentController@getData')->name('tax-payment.getData');
 Route::get('tax-payment/export', 'TaxPaymentController@export')->name('tax-payment.export');
 Route::resource('tax-payment','TaxPaymentController');
 
+Route::get('business-tax-payment/data', 'BusinessTaxPaymentController@getData')->name('business-tax-payment.getData');
+Route::get('business-tax-payment/export', 'BusinessTaxPaymentController@export')->name('business-tax-payment.export');
+Route::resource('business-tax-payment','BusinessTaxPaymentController');
 
 Route::get('getExtent/{val1}/{val2}/{val3}', function ($val1, $val2, $val3) {
     if (in_array($val1, array("bldg_business_tax", "bldg_rent_tax"))) {
@@ -599,17 +609,16 @@ Route::get('getBuildingInformation/{long}/{lat}', function ($long, $lat) {
         $building['street'] = $row->street ? $row->street : '';
         $building['geom'] = $row->geom ? $row->geom : '';
          if(File::exists(storage_path('app/new-photos/' . $row->bin . '.jpg'))) {
-             
              $photo_path =  url('buildings/new-photos/' . $row->bin);
            
          }
          else if(File::exists(storage_path('app/photos/' . $row->bin . '.JPG'))) {
-
              $photo_path =  url('buildings/photos/' . $row->bin);
          }
          else{
              $photo_path = '';
          }
+       
         $building['photo_path'] = $photo_path;
         $data1[] = $building;
     }
