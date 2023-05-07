@@ -20,26 +20,24 @@
             </li>
             @endability
 
-            @ability('super-admin', 'list-roads')
+<!--            @ability('super-admin', 'list-buildings')
             <li class="treeview">
                 <a href="#"><i class="fa fa-upload" aria-hidden="true"></i><span>Revenue</span> <i class="fa fa-angle-left pull-right"></i></a>
                 <ul class="treeview-menu">
-                     @ability('super-admin', 'list-building-tax')
+                     @ability('super-admin', 'list-buildings')
                    <li><a href="{{ action('TaxPaymentDashboardController@index') }}"><i class="fa fa-circle-o"></i><span>Dashboard </span></a></li>
                     @endability
                
-                     @ability('super-admin', 'list-building-tax')
+                     @ability('super-admin', 'list-buildings')
                     <li><a href=""><i class="fa fa-circle-o"></i><span> Data Import </span> <i class="fa fa-angle-left pull-right"></i></a>
                     <ul class="treeview-menu">
-                            @ability('super-admin', 'list-building-tax')
+                            @ability('super-admin', 'list-buildings')
                         <li><a href="{{ action('TaxPaymentController@index') }}"><i class="fa fa-circle-o"></i>Building Tax</a></li>
                         @endability
-                         @ability('super-admin', 'list-add-zones')
-                          <li><a href="{{ action('AddZoneController@index') }}"><i class="fa fa-circle-o"></i>Business Tax</a></li>
+                         @ability('super-admin', 'list-buildings-business')
+                          <li><a href="{{ action('BusinessTaxPaymentController@index') }}"><i class="fa fa-circle-o"></i>Business Tax</a></li>
                         @endability
-                           @ability('super-admin', 'list-add-zones')
-                          <li><a href="{{ action('AddZoneController@index') }}"><i class="fa fa-circle-o"></i>Rents Tax</a></li>
-                            @endability
+                          
                             </ul>
 
                     
@@ -47,7 +45,7 @@
                     @endability
                 </ul>
             </li>
-            @endability
+            @endability-->
             
             @ability('super-admin', 'list-streets')
             <li class="treeview">

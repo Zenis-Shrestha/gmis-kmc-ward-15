@@ -553,7 +553,7 @@ class BuildingController extends Controller
     public function downloadNewPhoto($building_id) {
         $building = Building::find($building_id);
         if($building) {
-            $filepath = storage_path('app/new-photos/' . $building->bin . '.JPG');
+            $filepath = storage_path('app/new-photos/' . $building->bin . '.jpg');
             if(File::exists($filepath)) {
                 return response()->file($filepath);
             }

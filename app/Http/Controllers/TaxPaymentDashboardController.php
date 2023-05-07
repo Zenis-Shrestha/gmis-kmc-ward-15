@@ -14,6 +14,8 @@ use App\DueYear;
 
 use DB;
 use PDF;
+use App\BuildingBusiness;
+
 class TaxPaymentDashboardController extends Controller
 {
     /**
@@ -37,13 +39,20 @@ class TaxPaymentDashboardController extends Controller
         $pageTitle = __("Tax Status Dashboard");
         $chartGroups = array();
 
-        $chartGroups['rvnsts']['title'] = 'Revenue Status';
+        $chartGroups['rvnsts']['title'] = 'Building Revenue Status';
         $chartGroups['rvnsts']['charts'] = array();
         $chartGroups['rvnsts']['charts'][] = $this->getBldgTxSts();
         $chartGroups['rvnsts']['charts'][] = $this->getBldgTxStsByWard();
         $chartGroups['rvnsts']['charts'][] = $this->getConcreteBeamBldgTxStsByWard();
         $chartGroups['rvnsts']['charts'][] = $this->getBldgTxStsByYocWard();
-        // $chartGroups['rvnsts']['charts'][] = $this->getNoOfBusinessByWard();
+        
+        
+        $chartGroups['businessrvnsts']['title'] = 'Business Revenue Status';
+        $chartGroups['businessrvnsts']['charts'] = array();
+        $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessWard();
+        $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessMainCategoryByWard();
+        $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessTxStsByWard();
+        
         return view('tax-payment-dashboard.index', compact('pageTitle', 'chartGroups'));
     }
     
@@ -308,7 +317,150 @@ class TaxPaymentDashboardController extends Controller
     
               
         }
+        
+        private function getBusinessWard() {
+            
+        $chart = array();
 
+        $query = 'SELECT w.ward, COUNT(b.id) AS count'
+                    . ' FROM wardpl w'
+                    . ' LEFT JOIN bldg_business_tax b'
+                    . ' ON b.ward = w.ward'
+                    . ' GROUP BY w.ward'
+                    . ' ORDER BY w.ward';
+
+            $results = DB::select($query);
+
+            $labels = array();
+            $values = array();
+            foreach($results as $row) {
+                $labels[] = '"' . $row->ward . '"';
+                $values[] = $row->count;
+            }
+
+            $chart = array(
+                'title' => 'Business by Ward',
+                'type' => 'bar',
+                'labels' => $labels,
+                'values' => $values,
+                'datasetLabel' => '"No. of business"'
+            );
+
+            return $chart;
+        }
+        
+        private function getBusinessMainCategoryByWard() {
+            
+        $chart = array();
+
+        $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
+        $businessmaintype = BuildingBusiness::whereNotNull(['businessmaintype', 'ward'])->orderBy('businessmaintype')->pluck('businessmaintype', 'businessmaintype')->toArray();
+
+        $query = 'SELECT count(businessmaintype) as count, ward, businessmaintype from bldg_business_tax WHERE ward is NOT NULL AND businessmaintype is NOT NULL group by ward, businessmaintype';
+        
+        $results = DB::select($query);
+       
+        $data = array();
+        foreach($results as $row) {
+            $data[$row->businessmaintype][$row->ward] = $row->count;
+        }
+        //print_r($data);die;
+        $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
+        $colors = ['"rgba(175, 175, 175, 0.5)"', '"rgba(66, 134, 244, 0.5)"', '"rgba(0, 255, 255, 0.5)"', '"rgba(61, 229, 45, 0.5)"', '"rgba(158, 38, 244, 0.5)"', '"rgba(30, 0, 132, 0.5)"', '"rgba(255, 0, 0, 0.5)"'];
+        $datasets = array();
+        $count = 0;
+        foreach($businessmaintype as $key1=>$value1) {
+            $dataset = array();
+            $dataset['label'] = '"' . $value1 . '"';
+            $dataset['color'] = $colors[$count++];
+            $dataset['data'] = array();
+            foreach($wards as $key2=>$value2) {
+                $dataset['data'][] = isset($data[$key1][$key2]) ? $data[$key1][$key2] : '0';
+            }
+            $datasets[] = $dataset;
+        }
+
+        $chart = array(
+            'title' => 'Business Main Category by Ward',
+            'type' => 'bar_stacked',
+            'labels' => $labels,
+            'datasets' => $datasets
+        );
+
+        return $chart;
+      
+    }
+        
+        private function getBusinessTxStsByWard() {
+            
+        $chart = array();
+
+        $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
+        $dueYears = DueYear::orderBy('id')->pluck('name', 'value')->toArray();
+
+        $query = 'WITH business_tax_payment_status_due_years AS (
+        SELECT 
+        b.bin, 
+	(CASE 
+            WHEN btps.due_year is NULL THEN 99
+            
+            ELSE btps.due_year
+        END) due_year_raw, b.ward
+	
+            
+        FROM
+            bldg_business_tax b
+                    left join business_tax_payment_status btps ON btps.registration = b.registration
+        )
+        SELECT
+           count(bdy.bin) AS count,
+             dy.value AS due_year, bdy.ward
+
+        FROM 
+	due_years dy
+	LEFT JOIN
+        business_tax_payment_status_due_years bdy
+	ON bdy.due_year_raw = dy.value
+	
+
+	GROUP BY dy.value,  bdy.ward';
+        
+        $results = DB::select($query);
+       
+        $data = array();
+        foreach($results as $row) {
+            $data[$row->due_year][$row->ward] = $row->count;
+        }
+        
+        $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
+        $colors = ['"rgba(175, 175, 175, 0.5)"', '"rgba(66, 134, 244, 0.5)"', '"rgba(0, 255, 255, 0.5)"', '"rgba(61, 229, 45, 0.5)"', '"rgba(158, 38, 244, 0.5)"', '"rgba(30, 0, 132, 0.5)"', '"rgba(255, 0, 0, 0.5)"'];
+        $datasets = array();
+        $count = 0;
+        foreach($dueYears as $key1=>$value1) {
+            $dataset = array();
+            $dataset['label'] = '"' . $value1 . '"';
+            $dataset['color'] = $colors[$count++];
+            $dataset['data'] = array();
+            foreach($wards as $key2=>$value2) {
+                $dataset['data'][] = isset($data[$key1][$key2]) ? $data[$key1][$key2] : '0';
+            }
+            $datasets[] = $dataset;
+        }
+
+        $chart = array(
+            'title' => 'Tax Payment Status by Ward',
+            'type' => 'bar_stacked',
+            'labels' => $labels,
+            'datasets' => $datasets
+        );
+
+        return $chart;
+      
+    }
+    
+    
+    
+    
        
     }
 

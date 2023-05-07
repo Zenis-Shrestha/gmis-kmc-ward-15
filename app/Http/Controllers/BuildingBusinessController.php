@@ -543,7 +543,7 @@ class BuildingBusinessController extends Controller
     } 
     
     public function getBusinessSubTypes(Request $request) {
-        //echo urldecode(Request()->businesstype);die;
+       
         $businessSubTypes = BusinessTaxRate::where('businessmaintype','ilike',urldecode(Request()->businesstype))->get();
         $type = [];
         foreach ($businessSubTypes as $row) {
