@@ -1137,6 +1137,14 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
             filters: [],
             group: 'business',
         },
+        business_tax_status_layer: {
+            name: 'Tax Payment Status',
+            styles: {},
+            clipLegend: true,
+            showCount: true,
+            filters: [],
+            group: 'business',
+        },
         bldg_rent_tax: {
             name: 'Building Rent Tax',
             styles: {},

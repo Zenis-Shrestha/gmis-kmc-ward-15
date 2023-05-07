@@ -39,7 +39,8 @@
     <div class="form-group col-md-6">
         {!! Form::label('hownernumber', __('House Owner Contact Number'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
-            {!! Form::text('hownernumber', null, ['class' => 'form-control', 'placeholder' => __('House Owner Contact Number')]) !!}        </div>
+            {!! Form::text('hownernumber', null, ['class' => 'form-control', 'placeholder' => __('House Owner Contact Number')]) !!}       
+         </div>
         </div>
     
     <div class="form-group col-md-6">
@@ -139,9 +140,114 @@
     {!! Form::submit(__('Save'), ['class' => 'btn btn-info']) !!}
 </div>
 
+<div class="box-body">
+<table id="data-table" class="table table-bordered table-striped" width="100%" style="display: none;" >
+<thead id="table-heading" >
+                        <tr>
+                        <th>{{ __('ID') }}</th>
+                            <th>{{ __('Renter Name') }}</th>
+                            <th>{{ __('BIN') }}</th>
+                            <th>{{ __('House No') }}</th>
+                            <th>{{ __('Ward') }}</th>
+                            <th>{{ __('Road Name') }}</th>
+                            <th>{{ __('Tax Payer Code') }}</th>
+                            <th>{{ __('House Owner Name') }}</th>
+                            <th>{{ __('Owner Phone No') }}</th>
+                        </tr>
+                    </thead>
+                </table>
+</div>
 @push('scripts')
 <script type="text/javascript">
 $(document).ready(function() {
+   // Function to initialize DataTable
+   function initDataTable() {
+
+        $('#data-table').DataTable({
+            
+            processing: true,
+            serverSide: true,
+            "bFilter" : false,
+            ajax: {
+                url: '{!! url("buildings-rent/data") !!}',
+                data: {
+                    "bin": ($('#bin').val() !== '') ? $('#bin').val() : (new URLSearchParams(window.location.search)).get('bin'),
+                },
+            },
+            columns: [
+                    {data: 'id', name: 'id'},
+                    {data: 'rentername', name: 'rentername'},
+                    {data: 'bin', name: 'bin'},
+                    {data: 'houseno', name: 'houseno'},
+                    {data: 'ward', name: 'ward'},
+                    {data: 'roadname', name: 'roadname'},
+                    {data: 'taxpayercode', name: 'taxpayercode'},
+                    {data: 'hownername', name: 'hownername'},
+                    {data: 'hownernumber', name: 'hownernumber'},
+                ],
+                "order": [[ 0, 'DESC' ]]
+        });
+    }   
+        // Function to prefill form fields
+     function prefillForm() {
+        $.ajax({
+            url: '{{ url("building-rent/rent-details") }}',
+            data: {
+            "bin": ($('#bin').val() !== '') ? $('#bin').val() : (new URLSearchParams(window.location.search)).get('bin'),
+            },
+            success: function (res) {
+            
+           if(res.oldhno){
+            $('#houseno').val(res.oldhno);
+           }else {
+            $('#houseno').val(res.houseno);
+           }
+           
+           if( res.hownr){
+            $('#hownername').val(res.hownr);
+           }else{
+            $('#hownername').val(res.hownername);
+           }
+            
+            $('#roadname').val(res.roadname);
+            $('#hownernumber').val(res.hownernumber);
+            $('#howneremail').val(res.howneremail);
+            $('#housetype').val(res.housetype);
+            $('#length').val(res.length);
+            $('#area').val(res.area);
+            $('#width').val(res.width);
+           
+            }
+        });
+    
+    }
+        // Run the DataTable function before prefill if bin is present in the URL
+   if ((new URLSearchParams(window.location.search)).get('bin')) {
+        if (bin !== '') {
+        prefillForm();
+        initDataTable();
+        $('#data-table').show();
+        } else {
+        $('#data-table').hide();
+        }
+   }
+
+
+   $('#bin').on('change', function(e){
+            var dataTable = $('#data-table').DataTable();
+        if ($.fn.DataTable.isDataTable('#data-table')) {
+            dataTable.destroy();
+        }
+        if (bin !== '') {
+            prefillForm();
+            initDataTable();
+        $('#data-table').show();
+            } else {
+                $('#data-table').hide();
+            }
+        });
+
+   
    
 });
 </script>

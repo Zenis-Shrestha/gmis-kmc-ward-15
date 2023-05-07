@@ -162,7 +162,7 @@ class BuildingRentController extends Controller
         $buildingRent->save();
 
         Flash::success('Rent added successfully');
-        return redirect()->action('BuildingRentController@index');
+        return redirect()->action('BuildingRentController@add', ['bin' =>  $buildingRent->bin, 'ward' =>  $buildingRent->ward]);
     }
 
     /**
@@ -383,4 +383,19 @@ class BuildingRentController extends Controller
             abort(404);
         }
     }
+
+    public function getRentDetails(Request $request) 
+
+    {
+        if(BuildingRent::where('bin', $request->bin)->exists()){
+            $building_rent = BuildingRent::where('bin', $request->bin)->first();
+            return response()->json($building_rent);
+        } else {
+            $building_rent = Building::where('bin', $request->bin)->first();
+            return response()->json($building_rent);
+        }
+    }
+
+
+  
 }
