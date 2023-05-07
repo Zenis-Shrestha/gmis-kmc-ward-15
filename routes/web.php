@@ -128,6 +128,9 @@ Route::get('tax-payment/data', 'TaxPaymentController@getData')->name('tax-paymen
 Route::get('tax-payment/export', 'TaxPaymentController@export')->name('tax-payment.export');
 Route::resource('tax-payment','TaxPaymentController');
 
+Route::get('business-tax-payment/data', 'BusinessTaxPaymentController@getData')->name('business-tax-payment.getData');
+Route::get('business-tax-payment/export', 'BusinessTaxPaymentController@export')->name('business-tax-payment.export');
+Route::resource('business-tax-payment','BusinessTaxPaymentController');
 
 Route::get('getExtent/{val1}/{val2}/{val3}', function ($val1, $val2, $val3) {
     if (in_array($val1, array("bldg_business_tax", "bldg_rent_tax"))) {
@@ -606,17 +609,16 @@ Route::get('getBuildingInformation/{long}/{lat}', function ($long, $lat) {
         $building['street'] = $row->street ? $row->street : '';
         $building['geom'] = $row->geom ? $row->geom : '';
          if(File::exists(storage_path('app/new-photos/' . $row->bin . '.jpg'))) {
-             
              $photo_path =  url('buildings/new-photos/' . $row->bin);
            
          }
          else if(File::exists(storage_path('app/photos/' . $row->bin . '.JPG'))) {
-
              $photo_path =  url('buildings/photos/' . $row->bin);
          }
          else{
              $photo_path = '';
          }
+       
         $building['photo_path'] = $photo_path;
         $data1[] = $building;
     }

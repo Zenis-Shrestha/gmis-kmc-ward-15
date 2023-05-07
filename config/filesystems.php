@@ -67,9 +67,9 @@ return [
             //'root'   => '/home/laravel/imis/imis-base-docker/src/taxpayment',
         ],
 
-        'importwatersupply' => [
+        'importbusinesstax' => [
             'driver' => 'local',
-            'root' => 'D:\watersupply'
+            'root' => 'D:\businesstaxpayment'
             //'root'   => '/home/laravel/imis/imis-base-docker/src/taxpayment',
         ],
 

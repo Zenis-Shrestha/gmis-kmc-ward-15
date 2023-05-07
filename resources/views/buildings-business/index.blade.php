@@ -53,6 +53,9 @@
                             <option value="{{$key}}">{{$value}}</option>
                             @endforeach
                             </select></div>
+                    <label class="control-label col-md-2" for="registration">Registration</label>
+                        <div class="col-md-2"> 
+                            <input type="text" class="form-control" id="registration" /></div>
                     </div>
                     <div class="text-right">
                         <button type="submit" class="btn btn-info">Filter</button>
@@ -72,6 +75,7 @@
                             <th>{{ __('House Owner Name') }}</th>
                             <th>{{ __('Owner Phone No') }}</th>
                             <th>{{ __('Tax last Date') }}</th>
+                            <th>{{ __('Registration') }}</th>
                             <th>{{ __('Actions') }}</th>
                         </tr>
                     </thead>
@@ -101,6 +105,7 @@ $(function() {
                 d.houseownername = $('#houseownername').val();
                 d.ownerphone = $('#ownerphone').val();
                 d.btxsts_select = $('#btxsts_select').val();
+                d.registration = $('#registration').val();
             }
         },
         columns: [
@@ -114,12 +119,13 @@ $(function() {
             {data: 'houseownername', name: 'houseownername'},
             {data: 'ownerphone', name: 'ownerphone'},
             {data: 'taxlastdate', name: 'taxlastdate'},
+            {data: 'registration', name: 'registration'},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ],
         "order": [[ 0, 'DESC' ]]
     });
 
-    var businessname = '', bin = '',  ward = '', road = '', taxcode = '', houseno = '', houseownername = '', businesowner = '', btxsts_select = '';
+    var businessname = '', bin = '',  ward = '', road = '', taxcode = '', houseno = '', houseownername = '', businesowner = '', btxsts_select = '', registration = '';
 
     $('#filter-form').on('submit', function(e){
       e.preventDefault();
@@ -132,6 +138,7 @@ $(function() {
       businesowner = $('#businesowner').val();
       houseownername = $('#houseownername');
       btxsts_select = $('#btxsts_select');
+      registration = $('#registration');
     });
     $(".reset").on("click", function (e) {
 
@@ -142,6 +149,7 @@ $(function() {
         $('#businesowner').val('');
         $('#houseownername').val('');
         $('#btxsts_select').val('');
+        $('#registration').val('');
         $('#data-table').dataTable().fnDraw();
 
     })
@@ -157,7 +165,8 @@ $(function() {
         var businesowner = $('#businesowner').val();
         var houseownername = $('#houseownername').val();
         var btxsts_select = $('#btxsts_select').val();
-        window.location.href="{!! url('buildings-business/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&houseno="+houseno+"&businessname="+businessname+"&businesowner="+businesowner+"&houseownername="+houseownername+"&btxsts_select="+btxsts_select;
+        var registration = $('#registration').val();
+        window.location.href="{!! url('buildings-business/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&houseno="+houseno+"&businessname="+businessname+"&businesowner="+businesowner+"&houseownername="+houseownername+"&btxsts_select="+btxsts_select+"&registration="+registration;
     });
     $("#export-shp").on("click", function(e) {
         e.preventDefault();
@@ -183,8 +192,8 @@ $(function() {
             var businesowner = $('#businesowner').val();
             var houseownername = $('#houseownername').val();
             var btxsts_select = $('#btxsts_select').val();
+            var registration = $('#registration').val();
        
-
         var cql_param = "1=1";
         if (bin) {
             cql_param += " AND bin ='" + bin + "'";
@@ -211,7 +220,9 @@ $(function() {
         if (btxsts_select) {
             cql_param += " AND btxsts  = '" + btxsts_select + "'";
         }
-
+        if (registration) {
+            cql_param += " AND registration  = '" + registration + "'";
+        }
         return encodeURI(cql_param);
     }
 });
