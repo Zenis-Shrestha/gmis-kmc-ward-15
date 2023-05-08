@@ -78,20 +78,25 @@ class BuildingBusinessController extends Controller
                     $query->where('roadname', trim($request->roadname));
                 } 
                 if ($request->businessname) {
-                    $query->where('businessname', 'ilike', '%'.trim($request->businessname.'%'));
+                    $query->where('businessname', 'ilike', '%'.trim($request->businessname).'%');
                 }
                 if ($request->taxpayername) {
-                    $query->where('taxpayername','ilike', '%'. trim($request->taxpayername.'%'));
+                    $query->where('taxpayername','ilike', '%'. trim($request->taxpayername).'%');
                 } 
                 
                 if ($request->houseownername) {
-                    $query->where('houseownername', 'ilike', '%'.trim($request->houseownername.'%'));
+                    $query->where('houseownername', 'ilike', '%'.trim($request->houseownername).'%');
                 } 
                 
                 if ($request->btxsts_select) {
                    $btxsts_select = $request->btxsts_select;
                    
                     $query->whereRaw(DB::raw("(2079 - (RIGHT(taxlastdate,4))::integer)=$btxsts_select"));
+                }
+                if ($request->registration) {
+                   
+                   
+                    $query->where('registration', 'ilike', '%'.trim($request->registration).'%');
                 }
             })
             ->addColumn('action', function ($model) {
@@ -321,7 +326,7 @@ class BuildingBusinessController extends Controller
         $houseownername = isset($_GET['houseownername']) ? $_GET['houseownername'] : null;
         $houseno = isset($_GET['houseno']) ? $_GET['houseno'] : null;
         $btxsts_select = isset($_GET['btxsts_select']) ? $_GET['btxsts_select'] : null;
-
+        $registration = isset($_GET['registration']) ? $_GET['registration'] : null;
         $columns = ['ward','roadname','houseno','bin','houseownername','ownerphone','houseownermail','businesowner','businessname','businesstype','category','businessoprdate','registration','oldinternalnumber','taxlastdate','rent','rentresponsible','businessownermobile','email','remarks'];
 
         $query = BuildingBusiness::select('ward','roadname','houseno','bin','houseownername','ownerphone','houseownermail','businesowner','businessname','businesstype','category','businessoprdate','registration','oldinternalnumber','taxlastdate','rent','rentresponsible','businessownermobile','email','remarks');
@@ -358,7 +363,10 @@ class BuildingBusinessController extends Controller
         if (!empty($btxsts_select)) {
             $query->whereRaw(DB::raw("(2079 - (RIGHT(taxlastdate,4))::integer)=$btxsts_select"));
         } 
-        
+        if (!empty($registration)) {
+
+            $query->where('registration', 'ilike', '%'.trim($registration).'%');
+        }
   
         $style = (new StyleBuilder())
             ->setFontBold()

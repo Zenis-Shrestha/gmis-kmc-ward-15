@@ -51,7 +51,10 @@ class TaxPaymentDashboardController extends Controller
         $chartGroups['businessrvnsts']['charts'] = array();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessWard();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessMainCategoryByWard();
+        $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessTxSts();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessTxStsByWard();
+        //$chartGroups['businessrvnsts']['charts'][] = $this->getBusinessSubCategoryByWard();
+        
         
         return view('tax-payment-dashboard.index', compact('pageTitle', 'chartGroups'));
     }
@@ -147,11 +150,12 @@ class TaxPaymentDashboardController extends Controller
 
         $results = DB::select($query);
        
+     
         $data = array();
         foreach($results as $row) {
             $data[$row->due_year][$row->ward] = $row->count;
         }
-        
+
         $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
         $colors = ['"rgba(175, 175, 175, 0.5)"', '"rgba(66, 134, 244, 0.5)"', '"rgba(0, 255, 255, 0.5)"', '"rgba(61, 229, 45, 0.5)"', '"rgba(158, 38, 244, 0.5)"', '"rgba(30, 0, 132, 0.5)"', '"rgba(255, 0, 0, 0.5)"'];
         $datasets = array();
@@ -349,64 +353,77 @@ class TaxPaymentDashboardController extends Controller
             return $chart;
         }
         
-        private function getBusinessMainCategoryByWard() {
-            
-        $chart = array();
-
-        $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
-        $businessmaintype = BuildingBusiness::whereNotNull(['businessmaintype', 'ward'])->orderBy('businessmaintype')->pluck('businessmaintype', 'businessmaintype')->toArray();
-
-        $query = 'SELECT count(businessmaintype) as count, ward, businessmaintype from bldg_business_tax WHERE ward is NOT NULL AND businessmaintype is NOT NULL group by ward, businessmaintype';
-        
-        $results = DB::select($query);
        
-        $data = array();
-        foreach($results as $row) {
-            $data[$row->businessmaintype][$row->ward] = $row->count;
-        }
-        //print_r($data);die;
-        $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
-        $colors = ['"rgba(175, 175, 175, 0.5)"', '"rgba(66, 134, 244, 0.5)"', '"rgba(0, 255, 255, 0.5)"', '"rgba(61, 229, 45, 0.5)"', '"rgba(158, 38, 244, 0.5)"', '"rgba(30, 0, 132, 0.5)"', '"rgba(255, 0, 0, 0.5)"'];
-        $datasets = array();
-        $count = 0;
-        foreach($businessmaintype as $key1=>$value1) {
-            $dataset = array();
-            $dataset['label'] = '"' . $value1 . '"';
-            $dataset['color'] = $colors[$count++];
-            $dataset['data'] = array();
-            foreach($wards as $key2=>$value2) {
-                $dataset['data'][] = isset($data[$key1][$key2]) ? $data[$key1][$key2] : '0';
-            }
-            $datasets[] = $dataset;
+    private function getBusinessTxSts() {
+        
+        
+        
+        $query = "WITH business_tax_payment_status_due_years AS (
+        SELECT 
+            b.id, 
+            (CASE 
+                WHEN btps.due_year is NULL THEN 99
+
+                ELSE btps.due_year
+            END) due_year_raw
+
+
+        FROM
+            bldg_business_tax b
+                    left join business_tax_payment_status btps ON btps.registration = b.registration
+        )
+        SELECT
+           count(bdy.id) AS c,
+             dy.name, dy.value
+
+        FROM 
+                due_years dy
+                LEFT JOIN
+            business_tax_payment_status_due_years bdy
+                ON bdy.due_year_raw = dy.value
+
+
+                GROUP BY dy.value, dy.name
+        ORDER BY 
+        dy.value";
+        $results = DB::select($query);
+        $labels = array();
+        $values = array();
+
+        foreach ($results as $row) {
+            $labels[] = '"' . $row->name . '"';
+            $values[] = $row->c;
         }
 
-        $chart = array(
-            'title' => 'Business Main Category by Ward',
-            'type' => 'bar_stacked',
+        $background_colors = ['"rgba(175, 175, 175, 0.25)"', '"rgba(66, 134, 244, 0.25)"', '"rgba(0, 255, 255, 0.25)"', '"rgba(61, 229, 45, 0.25)"', '"rgba(158, 38, 244, 0.25)"', '"rgba(30, 0, 132, 0.25)"', '"rgba(255, 0, 0, 0.25)"'];
+        $colors = ['"rgba(175, 175, 175, 0.5)"', '"rgba(66, 134, 244, 0.5)"', '"rgba(0, 255, 255, 0.5)"', '"rgba(61, 229, 45, 0.5)"', '"rgba(158, 38, 244, 0.5)"', '"rgba(30, 0, 132, 0.5)"', '"rgba(255, 0, 0, 0.5)"'];
+
+        $chart = [
+            'title' => 'Tax Payment Status',
+            'type' => 'pie',
             'labels' => $labels,
-            'datasets' => $datasets
-        );
+            'values' => $values,
+            'colors' => $colors,
+            'background_colors' => $background_colors
+        ];
 
         return $chart;
-      
     }
-        
-        private function getBusinessTxStsByWard() {
+    private function getBusinessTxStsByWard() {
             
         $chart = array();
 
         $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
-        $dueYears = DueYear::orderBy('id')->pluck('name', 'value')->toArray();
+        $dueYears = array('No Due' => 'No Due', 'Due' => 'Due', 'Data To be Collected' => 'Data To be Collected');
 
-        $query = 'WITH business_tax_payment_status_due_years AS (
-        SELECT 
+        $query = "WITH business_tax_payment_status_due_years AS (SELECT 
         b.bin, 
 	(CASE 
-            WHEN btps.due_year is NULL THEN 99
-            
-            ELSE btps.due_year
-        END) due_year_raw, b.ward
-	
+                WHEN btps.due_year is NOT NULL OR btps.due_year = 0 THEN 'No Due'
+                            WHEN btps.due_year is NOT NULL OR (btps.due_year > 0 AND btps.due_year < 99) THEN 'Due'
+                            WHEN btps.due_year is NULL OR btps.due_year = 99 THEN 'Data To be Collected'
+                    END
+        ) due_year_raw, b.ward
             
         FROM
             bldg_business_tax b
@@ -414,16 +431,10 @@ class TaxPaymentDashboardController extends Controller
         )
         SELECT
            count(bdy.bin) AS count,
-             dy.value AS due_year, bdy.ward
-
+             bdy.due_year_raw AS due_year, bdy.ward
         FROM 
-	due_years dy
-	LEFT JOIN
         business_tax_payment_status_due_years bdy
-	ON bdy.due_year_raw = dy.value
-	
-
-	GROUP BY dy.value,  bdy.ward';
+	GROUP BY bdy.due_year_raw,  bdy.ward";
         
         $results = DB::select($query);
        
@@ -448,7 +459,76 @@ class TaxPaymentDashboardController extends Controller
         }
 
         $chart = array(
-            'title' => 'Tax Payment Status by Ward',
+            'title' => 'Tax Payment Tax Paid Status by Ward',
+            'type' => 'bar_stacked',
+            'labels' => $labels,
+            'datasets' => $datasets
+        );
+
+        return $chart;
+      
+    }
+     private function getBusinessMainCategoryByWard() {
+            
+        $chart = array();
+
+        $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
+        $businessmaintype = BuildingBusiness::whereNotNull(['businessmaintype', 'ward'])->orderBy('businessmaintype')->groupBy('businessmaintype', 'ward')->pluck('businessmaintype', 'businessmaintype')->toArray();;
+
+        $query = 'SELECT count(businessmaintype) as count, ward, businessmaintype from bldg_business_tax WHERE ward is NOT NULL AND businessmaintype is NOT NULL group by businessmaintype, ward';
+        
+        $results = DB::select($query);
+       
+        $data = array();
+        foreach($results as $row) {
+            $data[$row->businessmaintype][$row->ward] = $row->count;
+        }
+        
+        $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
+
+
+            $colors = [
+                '"#EF22B3"',
+                '"#31BA69"',
+                '"#449953"',
+                '"#878FD2"',
+                '"#D09CB8"',
+                '"#071FE0"',
+                '"#269957"',
+                '"#A537C3"',
+                '"#907469"',
+                '"#89464A"',
+                '"#231D94"',
+                '"#2C3C97"',
+                '"#B312A3"',
+                '"#DFA3C2"',
+                '"#94F38E"',
+                '"#FE8E96"',
+                '"#791B5A"',
+                '"#D0A2F3"',
+                '"#CB2F74"',
+                '"#00CE3D"',
+                '"#64FD91"',
+                '"#1236C3"',
+                '"#375EFE"',
+                '"#6C38C2"',
+                '"#76AD7A"'];
+            $datasets = array();
+            $count = 0;
+        
+           foreach($businessmaintype as $key1=>$value1) {
+            $dataset = array();
+            $dataset['label'] = '"' . $value1 . '"';
+            $dataset['color'] = $colors[$count++];
+            $dataset['data'] = array();
+            foreach($wards as $key2=>$value2) {
+
+                $dataset['data'][] = isset($data[$key1][$key2]) ? $data[$key1][$key2] : '0';
+            }
+            $datasets[] = $dataset;
+        }
+        $chart = array(
+            'title' => 'Business Main Category by Ward',
             'type' => 'bar_stacked',
             'labels' => $labels,
             'datasets' => $datasets
@@ -459,8 +539,48 @@ class TaxPaymentDashboardController extends Controller
     }
     
     
-    
-    
+    private function getBusinessSubCategoryByWard() {
+            
+        $chart = array();
+
+        $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
+        $businesssubtype = BuildingBusiness::whereNotNull(['businesstype', 'ward'])->orderBy('businesstype')->pluck('businesstype', 'businesstype')->toArray();
+
+        $query = 'SELECT count(businesstype) as count, ward, businesstype from bldg_business_tax WHERE ward is NOT NULL AND businesstype is NOT NULL group by ward, businesstype';
+        
+        $results = DB::select($query);
+       
+        $data = array();
+        foreach($results as $row) {
+            $data[$row->$businesssubtype][$row->ward] = $row->count;
+        }
+        
+        $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
+       
+        $colors = ['"rgba(175, 175, 175, 0.5)"', '"rgba(66, 134, 244, 0.5)"', '"rgba(0, 255, 255, 0.5)"', '"rgba(61, 229, 45, 0.5)"', '"rgba(158, 38, 244, 0.5)"', '"rgba(30, 0, 132, 0.5)"', '"rgba(255, 0, 0, 0.5)"'];
+        $datasets = array();
+        $count = 0;
+        foreach($businesssubtype as $key1=>$value1) {
+            $dataset = array();
+            $dataset['label'] = '"' . $value1 . '"';
+            $dataset['color'] = $colors[$count++];
+            $dataset['data'] = array();
+            foreach($wards as $key2=>$value2) {
+               
+                $dataset['data'][] = isset($data[$key1][$key2]) ? $data[$key1][$key2] : '0';
+            }
+            $datasets[] = $dataset;
+        }
+        $chart = array(
+            'title' => 'Business Sub Category by Ward',
+            'type' => 'bar_stacked',
+            'labels' => $labels,
+            'datasets' => $datasets
+        );
+
+        return $chart;
+      
+    }
        
     }
 
