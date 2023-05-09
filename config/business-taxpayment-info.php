@@ -9,7 +9,7 @@ return [
             DROP TABLE IF EXISTS business_tax_payment_status CASCADE;
                 
             CREATE TABLE business_tax_payment_status AS
-            SELECT btp.id as business_tax_payment_id, b.registration as registration, b.ward,  
+            SELECT btp.id as business_tax_payment_id, btp.registration as registration, b.ward,  
                 CASE 
                     WHEN btp.tax_paid_end_at is NULL THEN 99    
                     WHEN btp.tax_paid_end_at is not NULL THEN 
@@ -24,7 +24,7 @@ return [
                 End as match,
                 b.geom, Now() as created_at, Now() as updated_at
             FROM business_tax_payments btp LEFT join bldg_business_tax b on btp.registration=b.registration
-            CROSS JOIN nepali_date_today ndt;
+            CROSS JOIN nepali_date_today ndt WHERE ndt.id = 2;
             Return True
         ;
         END

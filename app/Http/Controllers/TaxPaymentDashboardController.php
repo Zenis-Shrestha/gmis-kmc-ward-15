@@ -53,6 +53,8 @@ class TaxPaymentDashboardController extends Controller
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessMainCategoryByWard();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessTxSts();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessTxStsByWard();
+        $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessByAnnualRenewalMarkerAreas();
+        $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessByAnnualRenewalOtherAreas();
         //$chartGroups['businessrvnsts']['charts'][] = $this->getBusinessSubCategoryByWard();
         
         
@@ -580,6 +582,150 @@ class TaxPaymentDashboardController extends Controller
 
         return $chart;
       
+    }
+    
+    private function getBusinessByAnnualRenewalMarkerAreas() {
+        $chart = array();
+            
+        $query = "SELECT COUNT(businesstype) AS count, value_range
+                                    
+        FROM 
+             (select bbt.businesstype, btr.annual_renewmarketarea, 
+                                case 
+                                        WHEN btr.annual_renewmarketarea is not null AND btr.annual_renewmarketarea between 0 AND 1000 THEN 0
+                                        WHEN btr.annual_renewmarketarea between 1000 AND 3000 THEN 1
+                                        WHEN btr.annual_renewmarketarea between 3000 AND 5000 THEN 2
+                                        WHEN btr.annual_renewmarketarea between 5000 AND 10000 THEN 3
+                                        WHEN btr.annual_renewmarketarea > 10000 THEN 4
+                                        
+                    END AS value_range
+
+                  FROM bldg_business_tax bbt 
+        LEFT JOIN business_tax_rates btr ON bbt.businesstype = btr.businesssubtype 
+        WHERE bbt.businesstype is NOT NULL AND btr.annual_renewmarketarea is not null
+        GROUP BY bbt.businesstype, btr.annual_renewmarketarea)a
+        GROUP BY value_range ORDER BY value_range ASC";
+
+        $results = DB::select($query);
+
+        $labels = array( 0 => '"0-1000"', 1 => '"1000-3000"', 2 => '"3000-5000"', 3 => '"5000-10000"', 4 => '"10000+"' );
+        $values = array();
+        foreach($results as $row) {
+            
+            switch ($row->value_range) {
+              case 1:
+                $label = '0-1000';
+                break;
+              case 2:
+                $label = '1000-3000';
+                break;
+              case 3:
+                $label = '3000-5000';
+                break;
+             case 4:
+                $label = '5000-10000';
+                break;
+              default:
+                $label = '10000 Above';
+            }
+            
+            $values[$row->value_range] = $row->count;
+        }
+   
+        end($values);
+        $max = key($values); //Get the final key as max!
+        for($i = 0; $i < 5; $i++)
+        {
+            if(!isset($values[$i]))
+            {
+                $values[$i] = '0';
+            }
+        }
+       
+       ksort($values);
+        
+
+        $chart = array(
+            'title' => 'Annual Renewal Rate by Price Range(Market Area)',
+            'type' => 'bar',
+            'labels' => $labels,
+            'values' => $values,
+            'datasetLabel' => '"No. of business"'
+        );
+
+        return $chart;
+    }
+    
+    private function getBusinessByAnnualRenewalOtherAreas() {
+        $chart = array();
+            
+        $query = "SELECT COUNT(businesstype) AS count, value_range
+                                    
+        FROM 
+             (select bbt.businesstype, btr.annual_renewotherarea, 
+                                case 
+                                        WHEN btr.annual_renewotherarea is not null AND btr.annual_renewotherarea between 0 AND 1000 THEN 0
+                                        WHEN btr.annual_renewotherarea between 1000 AND 3000 THEN 1
+                                        WHEN btr.annual_renewotherarea between 3000 AND 5000 THEN 2
+                                        WHEN btr.annual_renewotherarea between 5000 AND 10000 THEN 3
+                                        WHEN btr.annual_renewotherarea > 10000 THEN 4
+                                        
+                    END AS value_range
+
+                  FROM bldg_business_tax bbt 
+        LEFT JOIN business_tax_rates btr ON bbt.businesstype = btr.businesssubtype 
+        WHERE bbt.businesstype is NOT NULL AND btr.annual_renewotherarea is not null
+        GROUP BY bbt.businesstype, btr.annual_renewotherarea)a
+        GROUP BY value_range ORDER BY value_range ASC";
+
+        $results = DB::select($query);
+
+        $labels = array( 0 => '"0-1000"', 1 => '"1000-3000"', 2 => '"3000-5000"', 3 => '"5000-10000"', 4 => '"10000+"' );
+        $values = array();
+        foreach($results as $row) {
+            
+            switch ($row->value_range) {
+              case 1:
+                $label = '0-1000';
+                break;
+              case 2:
+                $label = '1000-3000';
+                break;
+              case 3:
+                $label = '3000-5000';
+                break;
+             case 4:
+                $label = '5000-10000';
+                break;
+              default:
+                $label = '10000 Above';
+            }
+            
+            $values[$row->value_range] = $row->count;
+        }
+   
+        end($values);
+        $max = key($values); //Get the final key as max!
+        for($i = 0; $i < 5; $i++)
+        {
+            if(!isset($values[$i]))
+            {
+                $values[$i] = '0';
+            }
+        }
+       
+       ksort($values);
+        
+
+        $chart = array(
+            'title' => 'Annual Renewal Rate by Price Range(Other Area)',
+            'type' => 'bar',
+            'labels' => $labels,
+            'values' => $values,
+            'datasetLabel' => '"No. of business"'
+        );
+
+        return $chart;
     }
        
     }
