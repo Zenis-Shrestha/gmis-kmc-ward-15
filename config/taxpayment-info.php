@@ -25,7 +25,7 @@ return [
                 End as match,
                 b.geom, Now() as created_at, Now() as updated_at
             FROM bldg_tax_payments btp LEFT join bldg b on btp.bin=b.bin
-            CROSS JOIN nepali_date_today ndt;
+            CROSS JOIN nepali_date_today ndt ON dt.id = 1;
            
             
             Return True
