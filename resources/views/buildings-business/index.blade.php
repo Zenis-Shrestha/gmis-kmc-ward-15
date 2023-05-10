@@ -17,6 +17,9 @@
                 @ability('super-admin', 'export-buildings-business-kml')
                 <a href="#" id="export-kml" class="btn btn-info">Export to KML</a>
                 @endability
+                
+                <a href="#" id="export-pdf" class="btn btn-info">Export to PDF</a>
+               
             </div><!-- /.box-header -->
             <div class="box-body">
                 <form class="form-horizontal" id="filter-form">
@@ -56,7 +59,20 @@
                     <label class="control-label col-md-2" for="registration">Registration No.</label>
                         <div class="col-md-2"> 
                             <input type="text" class="form-control" id="registration" /></div>
+                            
+                           
+                            <label class="control-label col-md-2" for="registration_status">Registration Status</label>
+                            <div class="col-md-2"> 
+                                                        
+                            @foreach($registration_status as $key => $value)
+                                <div class="radio">
+                                    <label><input type="radio"  id="registration_status "value="{{ $key }}">{{ $value }}</label>
+                                </div>
+                            @endforeach
+                                </div>
+                    
                     </div>
+                   
                     <div class="text-right">
                         <button type="submit" class="btn btn-info">Filter</button>
                         <button type="reset" class="btn btn-info reset">Reset</button>
@@ -76,6 +92,7 @@
                             <th>{{ __('Owner Phone No') }}</th>
                             <th>{{ __('Tax last Date') }}</th>
                             <th>{{ __('Registration No.') }}</th>
+                            <th>{{ __('Registration Status') }}</th>
                             <th>{{ __('Actions') }}</th>
                         </tr>
                     </thead>
@@ -106,6 +123,7 @@ $(function() {
                 d.ownerphone = $('#ownerphone').val();
                 d.btxsts_select = $('#btxsts_select').val();
                 d.registration = $('#registration').val();
+                d.registration_status = $('#registration_status').val();
             }
         },
         columns: [
@@ -120,6 +138,7 @@ $(function() {
             {data: 'ownerphone', name: 'ownerphone'},
             {data: 'taxlastdate', name: 'taxlastdate'},
             {data: 'registration', name: 'registration'},
+            {data: 'registration_status', name: 'registration_status'},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ],
         "order": [[ 0, 'DESC' ]]
@@ -139,6 +158,7 @@ $(function() {
       houseownername = $('#houseownername');
       btxsts_select = $('#btxsts_select');
       registration = $('#registration');
+      registration_status = $('#registration_status');
     });
     $(".reset").on("click", function (e) {
 
@@ -150,6 +170,7 @@ $(function() {
         $('#houseownername').val('');
         $('#btxsts_select').val('');
         $('#registration').val('');
+        $('#registration_status').val('');
         $('#data-table').dataTable().fnDraw();
 
     })
@@ -184,6 +205,13 @@ $(function() {
             "&outputFormat=KML";
 
     });
+
+    $("#export-pdf").click(function(e) {
+        e.preventDefault();
+        const url = `business-report`;
+        window.open(url, "Monthly Report");
+    })
+
     function getCQLParams() {
             var bin = $('#bin').val();
             var ward = $('#ward').val();

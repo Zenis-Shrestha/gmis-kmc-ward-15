@@ -1,17 +1,17 @@
 <div class="box-body">
+    
+<div class="form-group col-md-6 required ">
+    {!! Form::label('bin', __('Building Identification Number'), ['class' => 'col-sm-4 control-label']) !!}
+    <div class="col-sm-8">
+        {!! Form::select('bin', [], old('bin', request('bin')), ['class' => 'form-control', 'placeholder' => 'Building Identification Number', 'id' => 'bin']) !!}
+    </div>
+</div> 
     <div class="form-group col-md-6">
         {!! Form::label('ward', __('Ward'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
         {!! Form::select('ward', $wards, old('ward', request('ward')), ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
     </div>
     </div>
-    <div class="form-group col-md-6 required ">
-        {!! Form::label('bin', __('Building Identification Number'), ['class' => 'col-sm-4 control-label']) !!}
-        <div class="col-sm-8">
-        {!! Form::select('bin', [], old('bin', request('bin')), ['class' => 'form-control', 'placeholder' => 'Building Identification Number']) !!}
-    </div>
-    </div> 
-   
     <div class="form-group col-md-6">
         {!! Form::label('roadname', __('Road Name'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
@@ -131,6 +131,21 @@
             {!! Form::text('remarks', null, ['class' => 'form-control', 'placeholder' => __('Remarks')]) !!}
         </div>
     </div>
+    <div class="form-group col-md-6">
+    {!! Form::label('registration_status', __('Registration Status'), ['class' => 'col-sm-4 control-label']) !!}
+    <div class="col-sm-8">
+        <label>
+            {!! Form::radio('registration_status', 'Yes', true) !!}
+            {{ __('Yes') }}
+        </label>
+        <label>
+            {!! Form::radio('registration_status', 'No') !!}
+            {{ __('No') }}
+        </label>
+    </div>
+</div>
+
+    
 </div>
 
 <div class="box-footer" style="float:right;">
@@ -153,6 +168,7 @@
                             <th>{{ __('House Owner Name') }}</th>
                             <th>{{ __('Owner Phone No') }}</th>
                             <th>{{ __('Tax last Date') }}</th>
+                            <th>{{ __('Registration Status') }}</th>
                         </tr>
                     </thead>
                 </table>
@@ -185,6 +201,7 @@ $(document).ready(function() {
                     {data: 'houseownername', name: 'houseownername'},
                     {data: 'ownerphone', name: 'ownerphone'},
                     {data: 'taxlastdate', name: 'taxlastdate'},
+                    {data: 'registration_status', name: 'registration_status'},
                 
                 ],
                 "order": [[ 0, 'DESC' ]]
@@ -198,6 +215,11 @@ $(document).ready(function() {
             "bin": ($('#bin').val() !== '') ? $('#bin').val() : (new URLSearchParams(window.location.search)).get('bin'),
             },
             success: function (res) {
+               
+                if(res.bin){
+                   
+                $('#bin').val(res.bin);
+                }    
                if(res.hownr){
                 $('#houseownername').val(res.hownr);
                }
@@ -220,7 +242,9 @@ $(document).ready(function() {
     }
         // Run the DataTable function before prefill if bin is present in the URL
    if ((new URLSearchParams(window.location.search)).get('bin')) {
-        if (bin !== '') {
+    
+    var bin = (new URLSearchParams(window.location.search)).get('bin');
+        if (bin !== '') {     
         prefillForm();
         initDataTable();
         $('#data-table').show();
@@ -229,6 +253,18 @@ $(document).ready(function() {
         }
    }
 
+   var selectedBin = '{{ request("bin") }}';
+                if(selectedBin) {
+                    $('#bin').prepend('<option selected value="'+selectedBin+'">'+selectedBin+'</option>').select2({
+                        ajax: {
+                            url:"{{ route('buildings.get-bin-numbers') }}",
+                            
+                        },
+                        placeholder: 'BIN',
+                        allowClear: true,
+                        closeOnSelect: true,
+                    });
+                }  
 
    $('#bin').on('change', function(e){
             var dataTable = $('#data-table').DataTable();

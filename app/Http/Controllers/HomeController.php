@@ -150,7 +150,7 @@ class HomeController extends Controller
             $values[] = $row->count;
         }
         
-        $colors = array('"#4f772d"', '"#053c5e"', '"#fee440"', '"#49d0ea"', '"#f77f00"', '"#a01a7d"', '"#d62828"');
+        $colors = array('"#4f772d"', '"#053c5e"');
 
         $chart = array(
             'title' => 'Construction Type',
@@ -163,6 +163,7 @@ class HomeController extends Controller
         return $chart;
     }
 
+ 
     private function getBldgFlrAr() {
         $chart = array();
             

@@ -21,6 +21,7 @@ use Datatables;
 use File;
 use App\BusinessTaxRate;
 use DB;
+use PDF;
 
 class BuildingBusinessController extends Controller
 {
@@ -45,8 +46,14 @@ class BuildingBusinessController extends Controller
         $wards = Ward::orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
         $taxStatuses = TaxStsCode::pluck('name', 'value');
         $yesNo = YesNo::pluck('name', 'value');
+        $registration_status = BuildingBusiness::selectRaw("CASE WHEN registration_status THEN 'true' ELSE 'false' END AS registration_status_label, registration_status")
+                ->whereNotNull('registration_status')
+                ->groupBy('registration_status')
+                ->orderBy('registration_status', 'asc')
+                ->pluck('registration_status_label', 'registration_status');
 
-        return view('buildings-business.index', compact('pageTitle', 'wards', 'taxStatuses', 'yesNo'));
+
+        return view('buildings-business.index', compact('pageTitle', 'wards', 'taxStatuses', 'yesNo', 'registration_status'));
     }
 
     public function getData(Request $request)
@@ -98,6 +105,9 @@ class BuildingBusinessController extends Controller
                    
                     $query->where('registration', 'ilike', '%'.trim($request->registration).'%');
                 }
+                if ($request->registration_status) {
+                    $query->where('registration_status', $request->registration_status);
+                }
             })
             ->addColumn('action', function ($model) {
                 $content = \Form::open(['method' => 'DELETE', 'route' => ['buildings-business.destroy', $model->id]]);
@@ -143,6 +153,7 @@ class BuildingBusinessController extends Controller
         $yesNo = YesNo::pluck('name', 'value');
         //$bin = Building::distinct('bin')->pluck('bin','bin');
         $businessMainTypes = BusinessTaxRate::pluck('businessmaintype','businessmaintype')->toArray();
+
         return view('buildings-business.add', compact('pageTitle', 'wards', 'streets', 'buildingUses', 'constructionTypes', 'taxStatuses', 'yesNo', 'businessMainTypes'));
     }
 
@@ -154,6 +165,7 @@ class BuildingBusinessController extends Controller
      */
     public function store(Request $request)
     {
+        
         $this->validate($request, [
             'bin' => 'required',
         ]);
@@ -184,6 +196,9 @@ class BuildingBusinessController extends Controller
         $building_business->businessownermobile = $request->businessownermobile ? $request->businessownermobile : null;
         $building_business->email = $request->email ? $request->email : null;
         $building_business->remarks = $request->remarks ? $request->remarks : null;
+      
+        $building_business->registration_status = ($request->registration_status === "Yes") ? 'yes' : 'no';
+
         if($request->businesstype){
         $business_tax_rate = BusinessTaxRate::where('businesssubtype', $request->businesstype)->first();
         $building_business->business_tax_rates_id = $business_tax_rate->id ? $business_tax_rate->id : null;
@@ -191,8 +206,6 @@ class BuildingBusinessController extends Controller
         $building_business->geom = DB::raw("ST_GeomFromText('".$centroid[0]->central_point."', 4326)");      
         $building_business->businessmaintype = $request->businessmaintype ? $request->businessmaintype : null;
         $building_business->save();
-      
-      
         Flash::success('Business added successfully');
         return redirect()->action('BuildingBusinessController@add', ['bin' =>  $building_business->bin, 'ward' =>  $building_business->ward]);
     }
@@ -206,6 +219,7 @@ class BuildingBusinessController extends Controller
     public function show($id)
     {
         $building_business = BuildingBusiness::find($id);
+        
 
         if ($building_business) {
             $pageTitle = "Business Details";
@@ -224,6 +238,7 @@ class BuildingBusinessController extends Controller
      */
     public function edit($id)
     {
+     
         $wards = Ward::orderBy('ward')->pluck('ward', 'ward');
         $streets = Street::orderBy('strtcd')->pluck('strtcd', 'strtcd');
         $buildingUses = BuildingUse::pluck('name', 'value');
@@ -281,6 +296,8 @@ class BuildingBusinessController extends Controller
             $building_business->businessownermobile = $request->businessownermobile ? $request->businessownermobile : null;
             $building_business->email = $request->email ? $request->email : null;
             $building_business->remarks = $request->remarks ? $request->remarks : null;
+            $building_business->registration_status = $request->registration_status ? $request->registration_status : null;
+         
             $building_business->business_tax_rates_id = $request->business_tax_rates_id ? $request->business_tax_rates_id : null;
             $building_business->geom = DB::raw("ST_GeomFromText('".$centroid[0]->central_point."', 4326)");         
             $building_business->businessmaintype = $request->businessmaintype ? $request->businessmaintype : null;
@@ -426,89 +443,7 @@ class BuildingBusinessController extends Controller
         }
     } 
     
-    public function getBinNumbers(){
-       
-        $query = Building::select('bin');
-        
-        if (request()->search){
-            $query->where('bin', 'ILIKE', '%'.request()->search.'%');
-         
-        }
-        if (request()->ward){
-            $query->where('ward','=',request()->ward);
-        }
-      
-        $total = $query->count();
-        $limit = 10;
-        if (request()->page) {
-            $page  = request()->page;
-        }
-        else{
-            $page=1;
-        };
-        $start_from = ($page-1) * $limit;
-
-        $total_pages = ceil($total / $limit);
-        if($page < $total_pages){
-            $more = true;
-        }
-        else
-        {
-            $more = false;
-        }
-        $house_numbers = $query->offset($start_from)
-            ->limit($limit)
-            ->get();
-               
-        $json = [];
-        foreach($house_numbers as $house_number)
-        {
-            $json[] = ['id'=>$house_number['bin'], 'text'=>$house_number['bin']];
-        }
-
-        return response()->json(['results' =>$json, 'pagination' => ['more' => $more] ]);
-
-    }
-
-    public function getWards()
-    {
-        
-            $query = Building::select('ward')->distinct()->orderBy('ward', 'ASC')->where('ward', '<>', 0);
-        
-  
-        if (request()->search) {
-            $query->where('ward', 'ILIKE', '%' . request()->search . '%');
-        }
-    
-        $total = $query->count();
-        $limit = 10;
-        if (request()->page) {
-            $page = request()->page;
-        } else {
-            $page = 1;
-        };
-        $start_from = ($page - 1) * $limit;
-    
-        $total_pages = ceil($total / $limit);
-        if ($page < $total_pages) {
-            $more = true;
-        } else {
-            $more = false;
-        }
-        $ward_numbers = $query->offset($start_from)
-            ->limit($limit)
-            ->get();
-    
-        $json = [];
-        foreach ($ward_numbers as $ward_number) {
-            $json[] = ['id' => $ward_number['ward'], 'text' => $ward_number['ward']];
-        }
-    
-        return response()->json(['results' => $json, 'pagination' => ['more' => $more]]);
-    }
-    
-
-    
+   
     public function getRoad(){
 
         $query = Building::select('*');
@@ -572,4 +507,39 @@ class BuildingBusinessController extends Controller
             return response()->json($building_business);
         }
   }
+
+  public function businessTaxReportPdf(){
+
+    $query = "SELECT w.ward, count(b.registration),
+    COUNT(DISTINCT b.registration) filter (where btps.due_year = '0' AND due_year is not Null)  AS no_due,
+    COUNT(DISTINCT b.registration) filter (where btps.due_year > '0'AND due_year is not Null)  AS due,
+    COUNT(DISTINCT b.registration) filter (where due_year is Null)  AS no_data
+    FROM wardpl w LEFT JOIN bldg_business_tax b ON b.ward = w.ward
+    LEFT JOIN business_tax_payment_status btps
+    ON b.registration= btps.registration
+    GROUP BY w.ward
+    ORDER BY w.ward ASC";
+    $results_one = DB::select($query);
+   
+
+    $detailed_query = "SELECT w.ward, count(b.id),
+    COUNT(DISTINCT b.id) filter (where btps.due_year = '0' AND due_year is not Null)  AS no_due,
+    COUNT(DISTINCT b.id) filter (where btps.due_year = '1' AND due_year is not Null)  AS due_one,
+    COUNT(DISTINCT b.id) filter (where btps.due_year = '2' AND due_year is not Null)  AS due_two,
+    COUNT(DISTINCT b.id) filter (where btps.due_year = '3' AND due_year is not Null)  AS due_three,
+    COUNT(DISTINCT b.id) filter (where btps.due_year = '4' AND due_year is not Null)  AS due_four,
+    COUNT(DISTINCT b.id) filter (where btps.due_year >= '5' AND due_year is not Null)  AS due_five,
+    COUNT(DISTINCT b.id) filter (where due_year is Null)  AS no_data
+    FROM wardpl w LEFT JOIN bldg_business_tax b ON b.ward = w.ward
+    LEFT JOIN business_tax_payment_status btps
+    ON b.registration= btps.registration
+    GROUP BY w.ward
+    ORDER BY w.ward ASC";
+    $results_two = DB::select($detailed_query);
+       
+     return PDF::loadView('buildings-business.business-report', compact("results_one", "results_two"))->inline('Business Tax Report.pdf');
+
+          
+    }
+  
 } 

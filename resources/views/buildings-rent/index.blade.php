@@ -17,6 +17,7 @@
                 @ability('super-admin', 'export-buildings-rent-kml')
                 <a href="#" id="export-kml" class="btn btn-info">Export to KML</a>
                 @endability
+                <a href="#" id="export-pdf" class="btn btn-info">Export to PDF</a>
             </div><!-- /.box-header -->
             <div class="box-body">
                 <form class="form-horizontal" id="filter-form">
@@ -129,6 +130,13 @@ $(function() {
 
     });
     $('#data-table_filter input[type=search]').attr('readonly', 'readonly');
+
+
+    $("#export-pdf").click(function(e) {
+        e.preventDefault();
+        const url = `rent-report`;
+        window.open(url, "Rent Report");
+    })
 
     $("#export").on("click",function(e){
         e.preventDefault();

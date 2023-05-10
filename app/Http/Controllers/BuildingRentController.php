@@ -20,6 +20,7 @@ use Laracasts\Flash\Flash;
 use Datatables;
 use File;
 use DB;
+use PDF;
 
 class BuildingRentController extends Controller
 {
@@ -396,6 +397,18 @@ class BuildingRentController extends Controller
         }
     }
 
+    public function rentReportPdf(){
+
+        $query = "SELECT w.ward, count(b.number)
+        FROM wardpl w LEFT JOIN bldg_rent_tax b ON b.ward = w.ward
+        GROUP BY w.ward
+        ORDER BY w.ward ASC";
+
+        $results_one = DB::select($query);   
+        return PDF::loadView('buildings-rent.rent-report', compact("results_one"))->inline('Business Tax Report.pdf');
+    
+              
+        }
 
   
 }

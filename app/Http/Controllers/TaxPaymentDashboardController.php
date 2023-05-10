@@ -55,6 +55,7 @@ class TaxPaymentDashboardController extends Controller
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessTxStsByWard();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessByAnnualRenewalMarkerAreas();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessByAnnualRenewalOtherAreas();
+        $chartGroups['businessrvnsts']['charts'][] = $this->getRegstrationStatus();
         
        
         //$chartGroups['businessrvnsts']['charts'][] = $this->getBusinessSubCategoryByWard();
@@ -62,6 +63,10 @@ class TaxPaymentDashboardController extends Controller
         $chartGroups['rentrvnsts']['charts'][] = $this->getRentWard();
         $chartGroups['rentrvnsts']['charts'][] = $this->getRentHouseType();
          
+      
+        // $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessSubCategoryByWard();
+        
+        
         return view('tax-payment-dashboard.index', compact('pageTitle', 'chartGroups'));
     }
     
@@ -328,6 +333,45 @@ class TaxPaymentDashboardController extends Controller
               
         }
         
+        private function getRegstrationStatus() {
+        
+                
+            $query = 'SELECT registration_status, COUNT(*) AS count 
+            FROM bldg_business_tax
+            WHERE registration_status IS NOT NULL 
+            GROUP BY registration_status';
+    
+            $results = DB::select($query);
+           
+            $labels = array();
+            $values = array();
+            foreach($results as $row) {
+                if ($row->registration_status) {
+                    $labels[] = '"Yes"';
+                } else {
+                    $labels[] = '"No"';
+                }
+                $values[] = $row->count;
+            }
+          
+            
+            $background_colors = ['"rgba(175, 175, 175, 0.25)"', '"rgba(66, 134, 244, 0.25)"', '"rgba(0, 255, 255, 0.25)"', '"rgba(61, 229, 45, 0.25)"', '"rgba(158, 38, 244, 0.25)"', '"rgba(30, 0, 132, 0.25)"', '"rgba(255, 0, 0, 0.25)"'];
+        $colors = ['"rgba(175, 175, 175, 0.5)"', '"rgba(66, 134, 244, 0.5)"'];
+
+    
+            $chart =[
+                'title' => 'Registration Status',
+                'type' => 'pie',
+                'labels' => $labels,
+                'values' => $values,
+                'colors' => $colors,
+                'background_colors' => $background_colors
+            ];
+    
+            return $chart;
+        }
+    
+        
         private function getBusinessWard() {
             
         $chart = array();
@@ -393,6 +437,7 @@ class TaxPaymentDashboardController extends Controller
         ORDER BY 
         dy.value";
         $results = DB::select($query);
+     
         $labels = array();
         $values = array();
 
@@ -492,47 +537,30 @@ class TaxPaymentDashboardController extends Controller
         
         $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
 
-
-            $colors = [
-                '"#EF22B3"',
-                '"#31BA69"',
-                '"#449953"',
-                '"#878FD2"',
-                '"#D09CB8"',
-                '"#071FE0"',
-                '"#269957"',
-                '"#A537C3"',
-                '"#907469"',
-                '"#89464A"',
-                '"#231D94"',
-                '"#2C3C97"',
-                '"#B312A3"',
-                '"#DFA3C2"',
-                '"#94F38E"',
-                '"#FE8E96"',
-                '"#791B5A"',
-                '"#D0A2F3"',
-                '"#CB2F74"',
-                '"#00CE3D"',
-                '"#64FD91"',
-                '"#1236C3"',
-                '"#375EFE"',
-                '"#6C38C2"',
-                '"#76AD7A"'];
+        for ($i = 0; $i < 40; $i++) {
+            $red = ($i % 5) * 51;
+            $green = (floor($i / 5) % 5) * 51;
+            $blue = (floor($i / 25) % 5) * 51;
+            $color = sprintf('#%02X%02X%02X', $red, $green, $blue);
+            $colors[] = '"' . $color . '"';
+        }
             $datasets = array();
             $count = 0;
+          
         
            foreach($businessmaintype as $key1=>$value1) {
             $dataset = array();
             $dataset['label'] = '"' . $value1 . '"';
             $dataset['color'] = $colors[$count++];
             $dataset['data'] = array();
+            
             foreach($wards as $key2=>$value2) {
 
                 $dataset['data'][] = isset($data[$key1][$key2]) ? $data[$key1][$key2] : '0';
             }
             $datasets[] = $dataset;
         }
+      
         $chart = array(
             'title' => 'Business Main Category by Ward',
             'type' => 'bar_stacked',
@@ -540,53 +568,70 @@ class TaxPaymentDashboardController extends Controller
             'datasets' => $datasets
         );
 
+      
         return $chart;
       
     }
-    
-    
-    private function getBusinessSubCategoryByWard() {
+
+    // private function getBusinessSubCategoryByWard() {
             
-        $chart = array();
+    //     $chart = array();
 
-        $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
-        $businesssubtype = BuildingBusiness::whereNotNull(['businesstype', 'ward'])->orderBy('businesstype')->pluck('businesstype', 'businesstype')->toArray();
+    //     $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
+    //     $businesstype = BuildingBusiness::whereNotNull(['businesstype', 'ward'])->orderBy('businesstype')->groupBy('businesstype', 'ward')->pluck('businesstype', 'businesstype')->toArray();;
 
-        $query = 'SELECT count(businesstype) as count, ward, businesstype from bldg_business_tax WHERE ward is NOT NULL AND businesstype is NOT NULL group by ward, businesstype';
+    //     $query = 'SELECT count(businesstype) as count, ward, businesstype from bldg_business_tax WHERE ward is NOT NULL AND businesstype is NOT NULL group by businesstype, ward';
         
-        $results = DB::select($query);
+    //     $results = DB::select($query);
        
-        $data = array();
-        foreach($results as $row) {
-            $data[$row->$businesssubtype][$row->ward] = $row->count;
-        }
-        
-        $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
+    //     $data = array();
+    //     foreach($results as $row) {
+    //         $data[$row->businesstype][$row->ward] = $row->count;
+    //     }
        
-        $colors = ['"rgba(175, 175, 175, 0.5)"', '"rgba(66, 134, 244, 0.5)"', '"rgba(0, 255, 255, 0.5)"', '"rgba(61, 229, 45, 0.5)"', '"rgba(158, 38, 244, 0.5)"', '"rgba(30, 0, 132, 0.5)"', '"rgba(255, 0, 0, 0.5)"'];
-        $datasets = array();
-        $count = 0;
-        foreach($businesssubtype as $key1=>$value1) {
-            $dataset = array();
-            $dataset['label'] = '"' . $value1 . '"';
-            $dataset['color'] = $colors[$count++];
-            $dataset['data'] = array();
-            foreach($wards as $key2=>$value2) {
-               
-                $dataset['data'][] = isset($data[$key1][$key2]) ? $data[$key1][$key2] : '0';
-            }
-            $datasets[] = $dataset;
-        }
-        $chart = array(
-            'title' => 'Business Sub Category by Ward',
-            'type' => 'bar_stacked',
-            'labels' => $labels,
-            'datasets' => $datasets
-        );
+    //     $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
 
-        return $chart;
       
-    }
+    //     $colors = array();
+
+
+    //     for ($i = 0; $i < 196; $i++) {
+    //         $red = ($i % 5) * 51;
+    //         $green = (floor($i / 5) % 5) * 51;
+    //         $blue = (floor($i / 25) % 5) * 51;
+    //         $color = sprintf('#%02X%02X%02X', $red, $green, $blue);
+    //         $colors[] = '"' . $color . '"';
+    //     }
+
+    //         $datasets = array();
+    //         $count = 0;
+       
+    //         foreach($businesstype as $key1=>$value1) {
+    //             $dataset = array();
+    //             $dataset['label'] = '"' . $value1 . '"';
+    //             $dataset['color'] = $colors[$count++];
+    //             $dataset['data'] = array();
+                
+    //             foreach($wards as $key2=>$value2) {
+    
+    //                 $dataset['data'][] = isset($data[$key1][$key2]) ? $data[$key1][$key2] : '0';
+    //             }
+    //             $datasets[] = $dataset;
+    //         }
+            
+    //     $chart = array(
+    //         'title' => 'Business Category by Ward',
+    //         'type' => 'bar_stacked',
+    //         'labels' => $labels,
+    //         'datasets' => $datasets
+    //     );
+
+    //     return $chart;
+      
+    // }
+    
+    
+   
     
     private function getBusinessByAnnualRenewalMarkerAreas() {
         $chart = array();
