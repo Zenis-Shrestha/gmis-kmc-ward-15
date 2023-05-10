@@ -610,40 +610,40 @@ class BuildingController extends Controller
     
     }
     
-    public function getWards()
-    {
+    public function getWards(Request $request)
+{
+    $query = Building::select('ward')->distinct()->orderBy('ward', 'ASC')->where('ward', '<>', 0);
         
-            $query = Building::select('ward')->distinct()->orderBy('ward', 'ASC')->where('ward', '<>', 0);
-        
-    
-        if (request()->search) {
-            $query->where('ward', 'ILIKE', '%' . request()->search . '%');
-        }
-    
-        $total = $query->count();
-        $limit = 10;
-        if (request()->page) {
-            $page = request()->page;
-        } else {
-            $page = 1;
-        };
-        $start_from = ($page - 1) * $limit;
-    
-        $total_pages = ceil($total / $limit);
-        if ($page < $total_pages) {
-            $more = true;
-        } else {
-            $more = false;
-        }
-        $ward_numbers = $query->offset($start_from)
-            ->limit($limit)
-            ->get();
-    
-        $json = [];
-        foreach ($ward_numbers as $ward_number) {
-            $json[] = ['id' => $ward_number['ward'], 'text' => $ward_number['ward']];
-        }
-    
-        return response()->json(['results' => $json, 'pagination' => ['more' => $more]]);
+  
+    if (request()->search) {
+        $query->where('ward', 'ILIKE', '%' . request()->search . '%');
     }
+
+    $total = $query->count();
+    $limit = 10;
+    if (request()->page) {
+        $page = request()->page;
+    } else {
+        $page = 1;
+    };
+    $start_from = ($page - 1) * $limit;
+
+    $total_pages = ceil($total / $limit);
+    if ($page < $total_pages) {
+        $more = true;
+    } else {
+        $more = false;
+    }
+    $ward_numbers = $query->offset($start_from)
+        ->limit($limit)
+        ->get();
+
+    $json = [];
+    foreach ($ward_numbers as $ward_number) {
+        $json[] = ['id' => $ward_number['ward'], 'text' => $ward_number['ward']];
+    }
+
+    return response()->json(['results' => $json, 'pagination' => ['more' => $more]]);
+}
+
 }

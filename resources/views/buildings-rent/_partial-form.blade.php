@@ -1,17 +1,18 @@
 <div class="box-body">
-    <div class="form-group col-md-6">
-        {!! Form::label('ward', __('Ward'), ['class' => 'col-sm-3 control-label']) !!}
-        <div class="col-sm-9">
-            {!! Form::select('ward', $wards, null, ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
-        </div>
-    </div>
-    <div class="form-group col-md-6 required">
+     <div class="form-group col-md-6 required">
         {!! Form::label('bin', __('Building Identification Number'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
             {!! Form::select('bin',[],null,['class' => 'form-control', 'placeholder' => 'Building Identification Number']) !!}
             <!--{!! Form::text('bin', null, ['class' => 'form-control', 'placeholder' => __('Building Identification Number')]) !!}-->
         </div>
     </div> 
+    <div class="form-group col-md-6">
+        {!! Form::label('ward', __('Ward'), ['class' => 'col-sm-3 control-label']) !!}
+        <div class="col-sm-9">
+            {!! Form::select('ward', $wards, null, ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
+        </div>
+    </div>
+   
     <div class="form-group col-md-6">
         {!! Form::label('roadname', __('Road Name'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -231,6 +232,20 @@ $(document).ready(function() {
         $('#data-table').hide();
         }
    }
+
+   
+   var selectedBin = '{{ request("bin") }}';
+                if(selectedBin) {
+                    $('#bin').prepend('<option selected value="'+selectedBin+'">'+selectedBin+'</option>').select2({
+                        ajax: {
+                            url:"{{ route('buildings.get-bin-numbers') }}",
+                            
+                        },
+                        placeholder: 'BIN',
+                        allowClear: true,
+                        closeOnSelect: true,
+                    });
+                }  
 
 
    $('#bin').on('change', function(e){

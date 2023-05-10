@@ -306,7 +306,7 @@
 
       .popup-tab{
         display: inline-block;
-        position: absolute;
+        
     background-color: white;
     -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
     filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
@@ -347,7 +347,8 @@
         bottom: 12px;
         min-width: 280px;
       }
-      .ol-popup:after, .ol-popup:before {
+
+  .ol-popup:after, .ol-popup:before {
         top: 100%;
         border: solid transparent;
         content: " ";
