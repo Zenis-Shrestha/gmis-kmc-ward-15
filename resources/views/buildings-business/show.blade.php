@@ -131,6 +131,27 @@
                     {!! Form::label(null, $building_business->remarks, ['class' => 'form-control']) !!}
                 </div>
             </div>
+            <div class="form-group row">
+                {!! Form::label('registration_status',__('Registration Status'),['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    @if($building_business->registration_status)
+                        <label class="radio-inline">
+                            {{ Form::radio('registration_status',true,true,['disabled']) }}  Yes
+                        </label>
+                        <label class="radio-inline">
+                            {{ Form::radio('registration_status',false,false,['disabled']) }}  No
+                        </label>
+                    @else
+                        <label class="radio-inline">
+                            {{ Form::radio('registration_status',true,false,['disabled']) }}  Yes
+                        </label>
+                        <label class="radio-inline">
+                            {{ Form::radio('registration_status',false,true,['disabled']) }}  No
+                        </label>
+                    @endif
+                    
+                </div>
+           
            
         </div>
     </div>
