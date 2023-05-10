@@ -5,7 +5,11 @@
 <h3>{{ $chartGroup['title'] }}</h3>
 <div class="row">
     @foreach($chartGroup['charts'] as $index=>$chart)
-    <div class="col-md-6">
+    @if($chart['title'] == 'Business Main Category by Ward')      
+    <div class="col-md-12">
+        @else 
+        <div class="col-md-6">
+        @endif
         <div class="box box-success">
             <div class="box-header with-border">
               <h3 class="box-title">{{ $chart['title'] }}</h3>

@@ -50,12 +50,13 @@ class TaxPaymentDashboardController extends Controller
         $chartGroups['businessrvnsts']['title'] = 'Business Revenue Status';
         $chartGroups['businessrvnsts']['charts'] = array();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessWard();
+        $chartGroups['businessrvnsts']['charts'][] = $this->getRegstrationStatus();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessMainCategoryByWard();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessTxSts();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessTxStsByWard();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessByAnnualRenewalMarkerAreas();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessByAnnualRenewalOtherAreas();
-        $chartGroups['businessrvnsts']['charts'][] = $this->getRegstrationStatus();
+        
         
        
         //$chartGroups['businessrvnsts']['charts'][] = $this->getBusinessSubCategoryByWard();
@@ -565,7 +566,8 @@ class TaxPaymentDashboardController extends Controller
             'title' => 'Business Main Category by Ward',
             'type' => 'bar_stacked',
             'labels' => $labels,
-            'datasets' => $datasets
+            'datasets' => $datasets,
+           
         );
 
       
