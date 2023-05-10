@@ -10,6 +10,6 @@ class BusinessTaxPaymentStatus extends Model
     protected $primaryKey = 'business_tax_payment_id';
 
     public static function selectAll(){
-        return BusinessTaxPaymentStatus::select('registration', 'ward', 'due_year', 'match');
+        return BusinessTaxPaymentStatus::select('registration', 'ward', 'due_year');
     }
 }

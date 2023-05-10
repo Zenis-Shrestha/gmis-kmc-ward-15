@@ -2,7 +2,8 @@
 /node_modules
 Homestead.yaml
 .env
-nbproject/private/private.properties
-nbproject/project.properties
-nbproject/project.xml
-
+/nbproject
+/nbproject/private/private.properties
+/nbproject/project.properties
+/nbproject/project.xml
+config/filesystems.php
