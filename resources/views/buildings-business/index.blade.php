@@ -61,7 +61,7 @@
                             <input type="text" class="form-control" id="registration" /></div>
                             
                            
-                            <label class="control-label col-md-2" for="registration_status">Registration Status</label>
+<!--                            <label class="control-label col-md-2" for="registration_status">Registration Status</label>
                             <div class="col-md-2"> 
                                                         
                             @foreach($registration_status as $key => $value)
@@ -69,7 +69,7 @@
                                     <label><input type="radio"  id="registration_status "value="{{ $key }}">{{ $value }}</label>
                                 </div>
                             @endforeach
-                                </div>
+                                </div>-->
                     
                     </div>
                    

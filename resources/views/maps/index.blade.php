@@ -803,8 +803,8 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
 //    console.log(mapbounds);
 //    console.log(mapbounds.transform('EPSG:4326', 'EPSG:3857'));
     // URL of GeoServer
-    // var gurl = "<?php echo Config::get("constants.GURL_URL"); ?>/";
-    var gurl = "http://localhost:8080/geoserver/dharan_gmis/";
+    var gurl = "<?php echo Config::get("constants.GURL_URL"); ?>/";
+    //var gurl = "http://localhost:8080/geoserver/dharan_gmis/";
     var gurl_wms = gurl + 'wms';
     var gurl_wfs = gurl + 'wfs';
     // URL of GeoServer Legends
@@ -1138,19 +1138,30 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         },
         @endcan
         @endif
-        bldg_business_tax: {
-            name: 'Business Tax',
-            styles: {},
-            clipLegend: false,
-            showCount: false,
-            filters: [],
-            group: 'business',
-        },
+//        bldg_business_tax: {
+//            name: 'Business Tax',
+//            styles: {},
+//            clipLegend: false,
+//            showCount: false,
+//            filters: [],
+//            group: 'business',
+//        },
         business_tax_status_layer: {
-            name: 'Tax Payment Status',
-            styles: {},
+            name: 'Business',
+            styles: {
+                business_tax_none: {
+                    name: 'None',
+                    clipLegend: false,
+                    showCount: true
+                },
+                business_tax_status: {
+                    name: 'Tax Payment Status',
+                    clipLegend: true,
+                    showCount: true
+                },
+            },
             clipLegend: true,
-            showCount: true,
+          
             filters: [],
             group: 'business',
         },
@@ -1768,7 +1779,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
     // Add handler to building info button click
     $('#buildinginfo_control').click(function(e){
         showLayer('bldg');
-        showLayer('bldg_business_tax');
+        showLayer('business_tax_status_layer');
         showLayer('bldg_rent_tax');
         e.preventDefault();
         disableAllControls();
