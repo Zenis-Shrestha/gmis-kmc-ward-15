@@ -53,7 +53,7 @@
                             <option value="{{$key}}">{{$value}}</option>
                             @endforeach
                             </select></div>
-                    <label class="control-label col-md-2" for="registration">Registration</label>
+                    <label class="control-label col-md-2" for="registration">Registration No.</label>
                         <div class="col-md-2"> 
                             <input type="text" class="form-control" id="registration" /></div>
                     </div>
@@ -75,7 +75,7 @@
                             <th>{{ __('House Owner Name') }}</th>
                             <th>{{ __('Owner Phone No') }}</th>
                             <th>{{ __('Tax last Date') }}</th>
-                            <th>{{ __('Registration') }}</th>
+                            <th>{{ __('Registration No.') }}</th>
                             <th>{{ __('Actions') }}</th>
                         </tr>
                     </thead>

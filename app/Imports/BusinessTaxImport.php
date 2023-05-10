@@ -18,7 +18,6 @@ class BusinessTaxImport implements ToModel, WithHeadingRow, WithChunkReading,Wit
     
     public function model(array $row)
     {
-        
        
         $fiscal_year = explode("/",$row['fiscal_year']);
         $tax_paid_end_year = $fiscal_year[1] + 1;
