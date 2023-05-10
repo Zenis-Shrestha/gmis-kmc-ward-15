@@ -51,8 +51,17 @@ class TaxPaymentDashboardController extends Controller
         $chartGroups['businessrvnsts']['charts'] = array();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessWard();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessMainCategoryByWard();
+        $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessTxSts();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessTxStsByWard();
+        $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessByAnnualRenewalMarkerAreas();
+        $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessByAnnualRenewalOtherAreas();
         
+       
+        //$chartGroups['businessrvnsts']['charts'][] = $this->getBusinessSubCategoryByWard();
+        $chartGroups['rentrvnsts']['title'] = 'Rent Revenue Status';
+        $chartGroups['rentrvnsts']['charts'][] = $this->getRentWard();
+        $chartGroups['rentrvnsts']['charts'][] = $this->getRentHouseType();
+         
         return view('tax-payment-dashboard.index', compact('pageTitle', 'chartGroups'));
     }
     
@@ -147,11 +156,12 @@ class TaxPaymentDashboardController extends Controller
 
         $results = DB::select($query);
        
+     
         $data = array();
         foreach($results as $row) {
             $data[$row->due_year][$row->ward] = $row->count;
         }
-        
+
         $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
         $colors = ['"rgba(175, 175, 175, 0.5)"', '"rgba(66, 134, 244, 0.5)"', '"rgba(0, 255, 255, 0.5)"', '"rgba(61, 229, 45, 0.5)"', '"rgba(158, 38, 244, 0.5)"', '"rgba(30, 0, 132, 0.5)"', '"rgba(255, 0, 0, 0.5)"'];
         $datasets = array();
@@ -349,64 +359,77 @@ class TaxPaymentDashboardController extends Controller
             return $chart;
         }
         
-        private function getBusinessMainCategoryByWard() {
-            
-        $chart = array();
-
-        $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
-        $businessmaintype = BuildingBusiness::whereNotNull(['businessmaintype', 'ward'])->orderBy('businessmaintype')->pluck('businessmaintype', 'businessmaintype')->toArray();
-
-        $query = 'SELECT count(businessmaintype) as count, ward, businessmaintype from bldg_business_tax WHERE ward is NOT NULL AND businessmaintype is NOT NULL group by ward, businessmaintype';
-        
-        $results = DB::select($query);
        
-        $data = array();
-        foreach($results as $row) {
-            $data[$row->businessmaintype][$row->ward] = $row->count;
-        }
-        //print_r($data);die;
-        $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
-        $colors = ['"rgba(175, 175, 175, 0.5)"', '"rgba(66, 134, 244, 0.5)"', '"rgba(0, 255, 255, 0.5)"', '"rgba(61, 229, 45, 0.5)"', '"rgba(158, 38, 244, 0.5)"', '"rgba(30, 0, 132, 0.5)"', '"rgba(255, 0, 0, 0.5)"'];
-        $datasets = array();
-        $count = 0;
-        foreach($businessmaintype as $key1=>$value1) {
-            $dataset = array();
-            $dataset['label'] = '"' . $value1 . '"';
-            $dataset['color'] = $colors[$count++];
-            $dataset['data'] = array();
-            foreach($wards as $key2=>$value2) {
-                $dataset['data'][] = isset($data[$key1][$key2]) ? $data[$key1][$key2] : '0';
-            }
-            $datasets[] = $dataset;
+    private function getBusinessTxSts() {
+        
+        
+        
+        $query = "WITH business_tax_payment_status_due_years AS (
+        SELECT 
+            b.id, 
+            (CASE 
+                WHEN btps.due_year is NULL THEN 99
+
+                ELSE btps.due_year
+            END) due_year_raw
+
+
+        FROM
+            bldg_business_tax b
+                    left join business_tax_payment_status btps ON btps.registration = b.registration
+        )
+        SELECT
+           count(bdy.id) AS c,
+             dy.name, dy.value
+
+        FROM 
+                due_years dy
+                LEFT JOIN
+            business_tax_payment_status_due_years bdy
+                ON bdy.due_year_raw = dy.value
+
+
+                GROUP BY dy.value, dy.name
+        ORDER BY 
+        dy.value";
+        $results = DB::select($query);
+        $labels = array();
+        $values = array();
+
+        foreach ($results as $row) {
+            $labels[] = '"' . $row->name . '"';
+            $values[] = $row->c;
         }
 
-        $chart = array(
-            'title' => 'Business Main Category by Ward',
-            'type' => 'bar_stacked',
+        $background_colors = ['"rgba(175, 175, 175, 0.25)"', '"rgba(66, 134, 244, 0.25)"', '"rgba(0, 255, 255, 0.25)"', '"rgba(61, 229, 45, 0.25)"', '"rgba(158, 38, 244, 0.25)"', '"rgba(30, 0, 132, 0.25)"', '"rgba(255, 0, 0, 0.25)"'];
+        $colors = ['"rgba(175, 175, 175, 0.5)"', '"rgba(66, 134, 244, 0.5)"', '"rgba(0, 255, 255, 0.5)"', '"rgba(61, 229, 45, 0.5)"', '"rgba(158, 38, 244, 0.5)"', '"rgba(30, 0, 132, 0.5)"', '"rgba(255, 0, 0, 0.5)"'];
+
+        $chart = [
+            'title' => 'Tax Payment Status',
+            'type' => 'pie',
             'labels' => $labels,
-            'datasets' => $datasets
-        );
+            'values' => $values,
+            'colors' => $colors,
+            'background_colors' => $background_colors
+        ];
 
         return $chart;
-      
     }
-        
-        private function getBusinessTxStsByWard() {
+    private function getBusinessTxStsByWard() {
             
         $chart = array();
 
         $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
-        $dueYears = DueYear::orderBy('id')->pluck('name', 'value')->toArray();
+        $dueYears = array('No Due' => 'No Due', 'Due' => 'Due', 'Data To be Collected' => 'Data To be Collected');
 
-        $query = 'WITH business_tax_payment_status_due_years AS (
-        SELECT 
+        $query = "WITH business_tax_payment_status_due_years AS (SELECT 
         b.bin, 
 	(CASE 
-            WHEN btps.due_year is NULL THEN 99
-            
-            ELSE btps.due_year
-        END) due_year_raw, b.ward
-	
+                WHEN btps.due_year is NOT NULL OR btps.due_year = 0 THEN 'No Due'
+                            WHEN btps.due_year is NOT NULL OR (btps.due_year > 0 AND btps.due_year < 99) THEN 'Due'
+                            WHEN btps.due_year is NULL OR btps.due_year = 99 THEN 'Data To be Collected'
+                    END
+        ) due_year_raw, b.ward
             
         FROM
             bldg_business_tax b
@@ -414,16 +437,10 @@ class TaxPaymentDashboardController extends Controller
         )
         SELECT
            count(bdy.bin) AS count,
-             dy.value AS due_year, bdy.ward
-
+             bdy.due_year_raw AS due_year, bdy.ward
         FROM 
-	due_years dy
-	LEFT JOIN
         business_tax_payment_status_due_years bdy
-	ON bdy.due_year_raw = dy.value
-	
-
-	GROUP BY dy.value,  bdy.ward';
+	GROUP BY bdy.due_year_raw,  bdy.ward";
         
         $results = DB::select($query);
        
@@ -448,7 +465,76 @@ class TaxPaymentDashboardController extends Controller
         }
 
         $chart = array(
-            'title' => 'Tax Payment Status by Ward',
+            'title' => 'Tax Payment Tax Paid Status by Ward',
+            'type' => 'bar_stacked',
+            'labels' => $labels,
+            'datasets' => $datasets
+        );
+
+        return $chart;
+      
+    }
+     private function getBusinessMainCategoryByWard() {
+            
+        $chart = array();
+
+        $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
+        $businessmaintype = BuildingBusiness::whereNotNull(['businessmaintype', 'ward'])->orderBy('businessmaintype')->groupBy('businessmaintype', 'ward')->pluck('businessmaintype', 'businessmaintype')->toArray();;
+
+        $query = 'SELECT count(businessmaintype) as count, ward, businessmaintype from bldg_business_tax WHERE ward is NOT NULL AND businessmaintype is NOT NULL group by businessmaintype, ward';
+        
+        $results = DB::select($query);
+       
+        $data = array();
+        foreach($results as $row) {
+            $data[$row->businessmaintype][$row->ward] = $row->count;
+        }
+        
+        $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
+
+
+            $colors = [
+                '"#EF22B3"',
+                '"#31BA69"',
+                '"#449953"',
+                '"#878FD2"',
+                '"#D09CB8"',
+                '"#071FE0"',
+                '"#269957"',
+                '"#A537C3"',
+                '"#907469"',
+                '"#89464A"',
+                '"#231D94"',
+                '"#2C3C97"',
+                '"#B312A3"',
+                '"#DFA3C2"',
+                '"#94F38E"',
+                '"#FE8E96"',
+                '"#791B5A"',
+                '"#D0A2F3"',
+                '"#CB2F74"',
+                '"#00CE3D"',
+                '"#64FD91"',
+                '"#1236C3"',
+                '"#375EFE"',
+                '"#6C38C2"',
+                '"#76AD7A"'];
+            $datasets = array();
+            $count = 0;
+        
+           foreach($businessmaintype as $key1=>$value1) {
+            $dataset = array();
+            $dataset['label'] = '"' . $value1 . '"';
+            $dataset['color'] = $colors[$count++];
+            $dataset['data'] = array();
+            foreach($wards as $key2=>$value2) {
+
+                $dataset['data'][] = isset($data[$key1][$key2]) ? $data[$key1][$key2] : '0';
+            }
+            $datasets[] = $dataset;
+        }
+        $chart = array(
+            'title' => 'Business Main Category by Ward',
             'type' => 'bar_stacked',
             'labels' => $labels,
             'datasets' => $datasets
@@ -459,8 +545,253 @@ class TaxPaymentDashboardController extends Controller
     }
     
     
+    private function getBusinessSubCategoryByWard() {
+            
+        $chart = array();
+
+        $wards = Ward::orderBy('ward')->pluck('ward', 'ward')->toArray();
+        $businesssubtype = BuildingBusiness::whereNotNull(['businesstype', 'ward'])->orderBy('businesstype')->pluck('businesstype', 'businesstype')->toArray();
+
+        $query = 'SELECT count(businesstype) as count, ward, businesstype from bldg_business_tax WHERE ward is NOT NULL AND businesstype is NOT NULL group by ward, businesstype';
+        
+        $results = DB::select($query);
+       
+        $data = array();
+        foreach($results as $row) {
+            $data[$row->$businesssubtype][$row->ward] = $row->count;
+        }
+        
+        $labels = array_map(function($ward) { return '"' . $ward . '"'; }, $wards);
+       
+        $colors = ['"rgba(175, 175, 175, 0.5)"', '"rgba(66, 134, 244, 0.5)"', '"rgba(0, 255, 255, 0.5)"', '"rgba(61, 229, 45, 0.5)"', '"rgba(158, 38, 244, 0.5)"', '"rgba(30, 0, 132, 0.5)"', '"rgba(255, 0, 0, 0.5)"'];
+        $datasets = array();
+        $count = 0;
+        foreach($businesssubtype as $key1=>$value1) {
+            $dataset = array();
+            $dataset['label'] = '"' . $value1 . '"';
+            $dataset['color'] = $colors[$count++];
+            $dataset['data'] = array();
+            foreach($wards as $key2=>$value2) {
+               
+                $dataset['data'][] = isset($data[$key1][$key2]) ? $data[$key1][$key2] : '0';
+            }
+            $datasets[] = $dataset;
+        }
+        $chart = array(
+            'title' => 'Business Sub Category by Ward',
+            'type' => 'bar_stacked',
+            'labels' => $labels,
+            'datasets' => $datasets
+        );
+
+        return $chart;
+      
+    }
     
+    private function getBusinessByAnnualRenewalMarkerAreas() {
+        $chart = array();
+            
+        $query = "SELECT COUNT(businesstype) AS count, value_range
+                                    
+        FROM 
+             (select bbt.businesstype, btr.annual_renewmarketarea, 
+                                case 
+                                        WHEN btr.annual_renewmarketarea is not null AND btr.annual_renewmarketarea between 0 AND 1000 THEN 0
+                                        WHEN btr.annual_renewmarketarea between 1000 AND 3000 THEN 1
+                                        WHEN btr.annual_renewmarketarea between 3000 AND 5000 THEN 2
+                                        WHEN btr.annual_renewmarketarea between 5000 AND 10000 THEN 3
+                                        WHEN btr.annual_renewmarketarea > 10000 THEN 4
+                                        
+                    END AS value_range
+
+                  FROM bldg_business_tax bbt 
+        LEFT JOIN business_tax_rates btr ON bbt.businesstype = btr.businesssubtype 
+        WHERE bbt.businesstype is NOT NULL AND btr.annual_renewmarketarea is not null
+        GROUP BY bbt.businesstype, btr.annual_renewmarketarea)a
+        GROUP BY value_range ORDER BY value_range ASC";
+
+        $results = DB::select($query);
+
+        $labels = array( 0 => '"0-1000"', 1 => '"1000-3000"', 2 => '"3000-5000"', 3 => '"5000-10000"', 4 => '"10000+"' );
+        $values = array();
+        foreach($results as $row) {
+            
+            switch ($row->value_range) {
+              case 1:
+                $label = '0-1000';
+                break;
+              case 2:
+                $label = '1000-3000';
+                break;
+              case 3:
+                $label = '3000-5000';
+                break;
+             case 4:
+                $label = '5000-10000';
+                break;
+              default:
+                $label = '10000 Above';
+            }
+            
+            $values[$row->value_range] = $row->count;
+        }
+   
+        end($values);
+        $max = key($values); //Get the final key as max!
+        for($i = 0; $i < 5; $i++)
+        {
+            if(!isset($values[$i]))
+            {
+                $values[$i] = '0';
+            }
+        }
+       
+       ksort($values);
+        
+
+        $chart = array(
+            'title' => 'Annual Renewal Rate by Price Range(Market Area)',
+            'type' => 'bar',
+            'labels' => $labels,
+            'values' => $values,
+            'datasetLabel' => '"No. of business"'
+        );
+
+        return $chart;
+    }
     
+    private function getBusinessByAnnualRenewalOtherAreas() {
+        $chart = array();
+            
+        $query = "SELECT COUNT(businesstype) AS count, value_range
+                                    
+        FROM 
+             (select bbt.businesstype, btr.annual_renewotherarea, 
+                                case 
+                                        WHEN btr.annual_renewotherarea is not null AND btr.annual_renewotherarea between 0 AND 1000 THEN 0
+                                        WHEN btr.annual_renewotherarea between 1000 AND 3000 THEN 1
+                                        WHEN btr.annual_renewotherarea between 3000 AND 5000 THEN 2
+                                        WHEN btr.annual_renewotherarea between 5000 AND 10000 THEN 3
+                                        WHEN btr.annual_renewotherarea > 10000 THEN 4
+                                        
+                    END AS value_range
+
+                  FROM bldg_business_tax bbt 
+        LEFT JOIN business_tax_rates btr ON bbt.businesstype = btr.businesssubtype 
+        WHERE bbt.businesstype is NOT NULL AND btr.annual_renewotherarea is not null
+        GROUP BY bbt.businesstype, btr.annual_renewotherarea)a
+        GROUP BY value_range ORDER BY value_range ASC";
+
+        $results = DB::select($query);
+
+        $labels = array( 0 => '"0-1000"', 1 => '"1000-3000"', 2 => '"3000-5000"', 3 => '"5000-10000"', 4 => '"10000+"' );
+        $values = array();
+        foreach($results as $row) {
+            
+            switch ($row->value_range) {
+              case 1:
+                $label = '0-1000';
+                break;
+              case 2:
+                $label = '1000-3000';
+                break;
+              case 3:
+                $label = '3000-5000';
+                break;
+             case 4:
+                $label = '5000-10000';
+                break;
+              default:
+                $label = '10000 Above';
+            }
+            
+            $values[$row->value_range] = $row->count;
+        }
+   
+        end($values);
+        $max = key($values); //Get the final key as max!
+        for($i = 0; $i < 5; $i++)
+        {
+            if(!isset($values[$i]))
+            {
+                $values[$i] = '0';
+            }
+        }
+       
+       ksort($values);
+        
+
+        $chart = array(
+            'title' => 'Annual Renewal Rate by Price Range(Other Area)',
+            'type' => 'bar',
+            'labels' => $labels,
+            'values' => $values,
+            'datasetLabel' => '"No. of business"'
+        );
+
+        return $chart;
+    }
+    
+       private function getRentWard() {
+            
+        $chart = array();
+
+        $query = 'SELECT w.ward, COUNT(b.id) AS count'
+                    . ' FROM wardpl w'
+                    . ' LEFT JOIN bldg_rent_tax b'
+                    . ' ON b.ward = w.ward'
+                    . ' GROUP BY w.ward'
+                    . ' ORDER BY w.ward';
+
+            $results = DB::select($query);
+
+            $labels = array();
+            $values = array();
+            foreach($results as $row) {
+                $labels[] = '"' . $row->ward . '"';
+                $values[] = $row->count;
+            }
+
+            $chart = array(
+                'title' => 'Rent by Ward',
+                'type' => 'bar',
+                'labels' => $labels,
+                'values' => $values,
+                'datasetLabel' => '"No. of Rents"'
+            );
+
+            return $chart;
+        }
+        
+        private function getRentHouseType() {
+        $chart = array();
+
+        $query = "SELECT housetype, COUNT(*)"
+             . " FROM bldg_rent_tax "
+             . " WHERE housetype is not NULL"
+             . " GROUP BY housetype";
+        
+        $results = DB::select($query);
+        
+        $labels = array();
+        $values = array();
+
+        foreach($results as $row) {
+            $labels[] = '"' . $row->housetype . '"';
+            $values[] = $row->count;
+        }
+
+        $colors = array('"#d00000"', '"#1e6091"', '"#8ac926"', '"#fde74c"', '"#fb5607"', '"#720e07"', '"#97bab3"', '"#56cfe1"', '"#362ec8"', '"#26532b"', '"#FF97C1"', '"#D07000"', '"#2A0944"', '"#A10035"', '"#61481C"');
+        $chart = array(
+            'title' => 'House Type',
+            'type' => 'pie',
+            'labels' => $labels,
+            'values' => $values,
+            'colors' => $colors
+        );
+
+        return $chart;
+    }
        
     }
 

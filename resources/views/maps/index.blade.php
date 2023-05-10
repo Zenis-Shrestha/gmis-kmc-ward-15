@@ -1109,14 +1109,14 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
             group: 'buildings',
         },
         
-        bldg_tax_payment_status: {
-            name: 'Tax Payment Status',
-            styles: {},
-            clipLegend: true,
-            showCount: true,
-            filters: [],
-            group: 'buildings',
-        },
+//        bldg_tax_payment_status: {
+//            name: 'Tax Payment Status',
+//            styles: {},
+//            clipLegend: true,
+//            showCount: true,
+//            filters: [],
+//            group: 'buildings',
+//        },
         
         @if(auth()->user()->can('Tax Payment Status Buildings Map Layer') || auth()->user()->can('Water Payment Status Map Layer'))
         @can('Tax Payment Status Buildings Map Layer')
@@ -1130,7 +1130,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         @endcan
         @endif
         bldg_business_tax: {
-            name: 'Building Business Tax',
+            name: 'Business Tax',
             styles: {},
             clipLegend: false,
             showCount: false,
