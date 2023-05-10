@@ -54,7 +54,10 @@ return [
     |
     */
 
-    'from' => ['address' => 'nepaltelecomauthorities@gmail.com', 'name' => 'Nepal Telecommunications Authority'],
+    'from' => [
+        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+        'name' => env('MAIL_FROM_NAME', 'Example'),
+    ],
 
     /*
     |--------------------------------------------------------------------------

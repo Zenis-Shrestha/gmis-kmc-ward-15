@@ -55,9 +55,13 @@ class TaxPaymentDashboardController extends Controller
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessTxStsByWard();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessByAnnualRenewalMarkerAreas();
         $chartGroups['businessrvnsts']['charts'][] = $this->getBusinessByAnnualRenewalOtherAreas();
+        
+       
         //$chartGroups['businessrvnsts']['charts'][] = $this->getBusinessSubCategoryByWard();
-        
-        
+        $chartGroups['rentrvnsts']['title'] = 'Rent Revenue Status';
+        $chartGroups['rentrvnsts']['charts'][] = $this->getRentWard();
+        $chartGroups['rentrvnsts']['charts'][] = $this->getRentHouseType();
+         
         return view('tax-payment-dashboard.index', compact('pageTitle', 'chartGroups'));
     }
     
@@ -723,6 +727,67 @@ class TaxPaymentDashboardController extends Controller
             'labels' => $labels,
             'values' => $values,
             'datasetLabel' => '"No. of business"'
+        );
+
+        return $chart;
+    }
+    
+       private function getRentWard() {
+            
+        $chart = array();
+
+        $query = 'SELECT w.ward, COUNT(b.id) AS count'
+                    . ' FROM wardpl w'
+                    . ' LEFT JOIN bldg_rent_tax b'
+                    . ' ON b.ward = w.ward'
+                    . ' GROUP BY w.ward'
+                    . ' ORDER BY w.ward';
+
+            $results = DB::select($query);
+
+            $labels = array();
+            $values = array();
+            foreach($results as $row) {
+                $labels[] = '"' . $row->ward . '"';
+                $values[] = $row->count;
+            }
+
+            $chart = array(
+                'title' => 'Rent by Ward',
+                'type' => 'bar',
+                'labels' => $labels,
+                'values' => $values,
+                'datasetLabel' => '"No. of Rents"'
+            );
+
+            return $chart;
+        }
+        
+        private function getRentHouseType() {
+        $chart = array();
+
+        $query = "SELECT housetype, COUNT(*)"
+             . " FROM bldg_rent_tax "
+             . " WHERE housetype is not NULL"
+             . " GROUP BY housetype";
+        
+        $results = DB::select($query);
+        
+        $labels = array();
+        $values = array();
+
+        foreach($results as $row) {
+            $labels[] = '"' . $row->housetype . '"';
+            $values[] = $row->count;
+        }
+
+        $colors = array('"#d00000"', '"#1e6091"', '"#8ac926"', '"#fde74c"', '"#fb5607"', '"#720e07"', '"#97bab3"', '"#56cfe1"', '"#362ec8"', '"#26532b"', '"#FF97C1"', '"#D07000"', '"#2A0944"', '"#A10035"', '"#61481C"');
+        $chart = array(
+            'title' => 'House Type',
+            'type' => 'pie',
+            'labels' => $labels,
+            'values' => $values,
+            'colors' => $colors
         );
 
         return $chart;
