@@ -84,10 +84,10 @@
                 <div id="popup-content"></div>
             </div>
            
-            <div class="popup-tab" id="popup-tab">
-                <a href="#" id="container-popup-closer" class="ol-popup-closer"></a>
+            <div class="popup-tab draggable"  id="popup-tab">
+             
                 
-                <ul class="nav nav-tabs" role="tablist">
+                <ul class="nav nav-tabs " role="tablist">
                 <li role="presentation"><a href="#building_" aria-controls="analysis" role="tab"  data-toggle="tab">Building Details</a></li>
                         <li role="presentation"><a href="#building-business-tax_" aria-controls="analysis" role="tab" data-toggle="tab">Business Details</a></li>
                         <li role="presentation"><a href="#building-rent-tax_" aria-controls="analysis" role="tab" data-toggle="tab">Rent Details</a></li>
@@ -105,14 +105,17 @@
                  </div>
                
                  <div><strong>Export to:</strong>
+                 <div style="display: flex;">
                  <form method="get" action="/getExportCSV">
                             <input type="hidden" name="lat" value="" id="lat" />
                             <input type="hidden" name="long" value="" id="long" />
                             <input type="hidden" name="bin" value="" id="bin" />
                             
                             <button type="submit" id="buildings-export-btn"  class="btn btn-default">Excel</button>
+                           
                         </form>
-</div>
+                        <button  id="container-popup-closer" style="margin-left:auto;">Close</button>
+</div></div>
             </div>
 
 
@@ -644,11 +647,17 @@ function initMap() {
 @push('scripts')
 <script src="{{ asset ('/js/html2canvas.min.js') }}"></script>
 <script src="{{ asset ('/js/html2canvas.js') }}"></script>
+<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+
 
 
 <script type="text/javascript">
 $(document).ready(function(){
   
+
+    $(".draggable").draggable();
+
+
     function toggleIcon(e) {
     $(e.target)
         .prev('.panel-heading')
@@ -794,8 +803,8 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
 //    console.log(mapbounds);
 //    console.log(mapbounds.transform('EPSG:4326', 'EPSG:3857'));
     // URL of GeoServer
-    var gurl = "<?php echo Config::get("constants.GURL_URL"); ?>/";
-    
+    // var gurl = "<?php echo Config::get("constants.GURL_URL"); ?>/";
+    var gurl = "http://localhost:8080/geoserver/dharan_gmis/";
     var gurl_wms = gurl + 'wms';
     var gurl_wfs = gurl + 'wfs';
     // URL of GeoServer Legends
@@ -3018,7 +3027,6 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                             htmlbusiness += '<th>Tax Last Date</th>';
                             htmlbusiness += '<th>Business Owner Mobile</th>';
                             htmlbusiness += '<th>Email</th>';
-                            htmlbusiness += '<th>Remarks</th>';
                             htmlbusiness += '</tr>';
                             htmlbusiness += '</thead>';
                             htmlbusiness += '<tbody>';
@@ -3039,7 +3047,6 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                             htmlbusiness += '<td>' + data.data2[i].taxlastdate + '</td>';
                             htmlbusiness += '<td>' + data.data2[i].businessownermobile + '</td>';
                             htmlbusiness += '<td>' + data.data2[i].email + '</td>';
-                            htmlbusiness += '<td>' + data.data2[i].remarks + '</td>';
                             htmlbusiness += '</tr>';
                              }
                              
@@ -3079,17 +3086,13 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                             htmlrent += '<th>House Owner Number</th>';
                             htmlrent += '<th>House Owner Email</th>';
                             htmlrent += '<th>House Type</th>';
-                            htmlrent += '<th>Length</th>';
-                            htmlrent += '<th>Width</th>';
-                            htmlrent += '<th>Area</th>';
+                          
                             htmlrent += '<th>Renter Name</th>';
                             htmlrent += '<th>Rent Purpose</th>';
                             htmlrent += '<th>Rent Start</th>';
                             htmlrent += '<th>MOnthly Rent</th>';
                             htmlrent += '<th>Rent Responsible</th>';
-                            htmlrent += '<th>Rent Increase Per Year</th>';
                             htmlrent += '<th>Rent Mobile Number</th>';
-                            htmlrent += '<th>Remarks</th>';
                             htmlrent += '<tr>';
                             htmlrent += '</thead>';
                             htmlrent += '<tbody>';
@@ -3103,17 +3106,12 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                             htmlrent += '<td>' + data.data3[i].hownernumber + '</td>';
                             htmlrent += '<td>' + data.data3[i].howneremail + '</td>';
                             htmlrent += '<td>' + data.data3[i].housetype + '</td>';
-                            htmlrent += '<td>' + data.data3[i].length + '</td>';
-                            htmlrent += '<td>' + data.data3[i].width + '</td>';
-                            htmlrent += '<td>' + data.data3[i].area + '</td>';
                             htmlrent += '<td>' + data.data3[i].rentername + '</td>';
                             htmlrent += '<td>' + data.data3[i].rentpurpose + '</td>';
                             htmlrent += '<td>' + data.data3[i].rentstart + '</td>';
                             htmlrent += '<td>' + data.data3[i].monthlyrent + '</td>';
                             htmlrent += '<td>' + data.data3[i].rentaxresponsible + '</td>';
-                            htmlrent += '<td>' + data.data3[i].rentincreseperyear + '</td>';
                             htmlrent += '<td>' + data.data3[i].rentmobilenumber + '</td>';
-                            htmlrent += '<td>' + data.data3[i].remarks + '</td>';
                             htmlrent += '</tr>';
                         }
                              
