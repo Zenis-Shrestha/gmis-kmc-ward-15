@@ -150,7 +150,7 @@ class HomeController extends Controller
             $values[] = $row->count;
         }
         
-        $colors = array('"#4f772d"', '"#053c5e"');
+        $colors = array('"#fde74c"', '"#2A0944"', '"#720e07"', '"#97bab3"', '"#56cfe1"', '"#362ec8"', '"#26532b"');
 
         $chart = array(
             'title' => 'Construction Type',

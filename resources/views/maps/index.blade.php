@@ -225,8 +225,8 @@
                                                 <div class="form-group">
                                                     <label for="ward">Wards</label>
                                                     {!! Form::select('ward', $wards,null,
-                                        ['id' => 'ward', 'multiple' => true, 'style' => 'width: 100%'])
-                                        !!}
+                                                    ['id' => 'ward', 'multiple' => true, 'style' => 'width: 100%'])
+                                                    !!}
                                                 </div>
                                           
                                             <div class="form-group">
@@ -404,6 +404,45 @@
                                                 Show only buildings with disabled people
                                             </label>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="heading-30">
+                                <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-30" aria-expanded="false" aria-controls="collapse-30">
+                                    <i class=" more-less glyphicon glyphicon-plus" style="float:right;"></i>
+                                    Filter Business
+                                </a>
+                                </h4>     
+                                </div>
+                                <div id="collapse-30" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-30">
+                                    <div class="panel-body">
+                                        <form role="form" name="filter_business" id="filter_business">
+
+                                        <div class="form-group">
+                                            <label for="businessmaintype">Main Type</label>
+                                            {!! Form::select('businessmaintype', $businessmaintype,null,
+                                            ['id' => 'businessmaintype', 'multiple' => true, 'style' => 'width: 100%'])
+                                            !!}
+                                        </div>
+                                        <button type="submit" class="btn btn-default">Filter</button>
+                                        <button type="button" class="btn btn-default" id="businessmaintype_clear_button">Clear</button>
+                                        
+                                        </form>
+                                        
+                                        <form role="form" name="filter_business_subtype" id="filter_business_subtype">
+
+                                        <div class="form-group">
+                                            <label for="businesssubtype">Main Type</label>
+                                            {!! Form::select('businesssubtype', $businesssubtype,null,
+                                            ['id' => 'businesssubtype', 'multiple' => true, 'style' => 'width: 100%'])
+                                            !!}
+                                        </div>
+                                        <button type="submit" class="btn btn-default">Filter</button>
+                                        <button type="button" class="btn btn-default" id="businesssubtype_clear_button">Clear</button>
+                                        
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -980,6 +1019,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         bldg_gt60yr: '',
         bldg_dsblppl: '',
         bylaw: '',
+        businessmaintype: '',
     };
 
     // Overlays Group Object
@@ -4022,6 +4062,88 @@ popupAreaCloser.onclick = function() {
         $('#ward_form').submit();
     });
     
+    
+    // Add handler to business main type filer form submit
+    $('#filter_business').submit(function(){
+        var selectedbusinessmaintype = $('#businessmaintype').val();
+        console.log(selectedbusinessmaintype);
+        if(selectedbusinessmaintype) {
+            
+           var cql_filter = '';
+            $.each(selectedbusinessmaintype, function(index, value){
+                
+               cql_filter += "businessmaintype='" + value + "'";
+               var isLastElement = index == selectedbusinessmaintype.length -1;
+               if (!isLastElement) {
+               cql_filter += " OR ";
+                }
+            });
+
+            console.log(cql_filter);
+            
+            showLayer('business_tax_status_layer');
+             
+            mLayer['business_tax_status_layer'].layer.get('source').updateParams({CQL_FILTER: cql_filter});
+           return false;
+        }
+        else {
+            mFilter.businessmaintype = '';
+            $.each(mLayer, function(key, value){
+                removeFilterFromLayer(key, 'businessmaintype');
+            });
+        }
+
+        return false;
+    }); 
+    
+    // Add handler to business main type filter clear button
+    $('#businessmaintype_clear_button').click(function(){
+        $('#businessmaintype').val('');
+        $('#filter_business').submit();
+        hideLayer('business_tax_status_layer');
+         
+    }); 
+    
+    // Add handler to business main type filer form submit
+    $('#filter_business_subtype').submit(function(){
+        var selectedbusinesssubtype = $('#businesssubtype').val();
+        console.log(selectedbusinesssubtype);
+        if(selectedbusinesssubtype) {
+            
+           var cql_filter = '';
+            $.each(selectedbusinesssubtype, function(index, value){
+                
+               cql_filter += "businesstype='" + value + "'";
+               var isLastElement = index == selectedbusinesssubtype.length -1;
+               if (!isLastElement) {
+               cql_filter += " OR ";
+                }
+            });
+
+            console.log(cql_filter);
+            
+            showLayer('business_tax_status_layer');
+             
+            mLayer['business_tax_status_layer'].layer.get('source').updateParams({CQL_FILTER: cql_filter});
+           return false;
+        }
+        else {
+            mFilter.businesssubtype = '';
+            $.each(mLayer, function(key, value){
+                removeFilterFromLayer(key, 'businesssubtype');
+            });
+        }
+
+        return false;
+    }); 
+    
+    // Add handler to business main type filter clear button
+    $('#businesssubtype_clear_button').click(function(){
+        $('#businesssubtype').val('');
+        $('#filter_business_subtype').submit();
+        hideLayer('business_tax_status_layer');
+         
+    }); 
     // Add handler to export ward filter to json button
     $('#export_ward_filter_json').click(function(e){
         e.preventDefault();
@@ -4376,6 +4498,7 @@ popupAreaCloser.onclick = function() {
             });
 
             var cql_filter = cqlFilters.length > 0 ? cqlFilters.join(" AND ") : null;
+            console.log(cql_filter);
             mLayer[layer].layer.get('source').updateParams({CQL_FILTER: cql_filter});
         }
     }
