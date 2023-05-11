@@ -16,7 +16,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\BuildingsInfoExport;
 use App\Exports\BuildingsMultisheet;
 use App\Exports\BuildingsAreaMultisheet;
-
+use App\BuildingBusiness;
 
 class MapsController extends Controller
 {
@@ -38,9 +38,13 @@ class MapsController extends Controller
         $bands = Band::pluck('band_name', 'id')->all();*/
         $wards = Ward::orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
         $bylaws = ByLaw::orderBy('name', 'asc')->pluck('name', 'name')->all();
+        $businessmaintype = BuildingBusiness::whereNotNull('businessmaintype')->groupBy('businessmaintype')->pluck('businessmaintype', 'businessmaintype')->all();
+        
+        $businesssubtype = BuildingBusiness::whereNotNull('businesstype')->groupBy('businesstype')->pluck('businesstype', 'businesstype')->all();
+
         $pageTitle = "Map";
-        // return view('maps.index', compact('page_title','districts','operators','vdcs','bands'));
-        return view('maps.index', compact('wards', 'bylaws', 'pageTitle'));
+      
+        return view('maps.index', compact('wards', 'bylaws', 'pageTitle', 'businessmaintype', 'businesssubtype'));
     }
 
     public function map1()
