@@ -140,10 +140,14 @@ class PermissionsTableSeeder extends Seeder
 //            
             
             
-            array('name' => 'export-buildings-business-excel', 'display_name' => 'Export Building Business Excel'),
-            array('name' => 'export-buildings-rent-excel', 'display_name' => 'Export Building Rent Excel'),
+            // array('name' => 'export-buildings-business-excel', 'display_name' => 'Export Building Business Excel'),
+            // array('name' => 'export-buildings-rent-excel', 'display_name' => 'Export Building Rent Excel'),
             
-            
+            array('name' => 'list-revenue', 'display_name' => 'List Revenue'),
+            array('name' => 'list-business-revenue', 'display_name' => 'List Business Revenue'),
+            array('name' => 'list-dashboard-revenue', 'display_name' => 'List Dashboard Revenue'),
+            array('name' => 'import-business-revenue', 'display_name' => 'Import Business Revenue'),
+            array('name' => 'export-business-revenue', 'display_name' => 'Export Business Revenue'),
         );
 
         foreach ($permissions as $permission) {
