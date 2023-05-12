@@ -138,7 +138,10 @@ $(function() {
             {data: 'ownerphone', name: 'ownerphone'},
             {data: 'taxlastdate', name: 'taxlastdate'},
             {data: 'registration', name: 'registration'},
-            {data: 'registration_status', name: 'registration_status'},
+            {data : 'registration_status',
+             render : function (data, type, row) {
+                          return (data === true) ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>';}
+            },
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ],
         "order": [[ 0, 'DESC' ]]

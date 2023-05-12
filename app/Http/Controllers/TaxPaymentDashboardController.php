@@ -813,7 +813,7 @@ class TaxPaymentDashboardController extends Controller
         private function getRentHouseType() {
         $chart = array();
 
-        $query = "SELECT housetype, COUNT(*)  FROM bldg_rent_tax WHERE housetype is not NULL AND housetype != 'खाली जग्गा'
+        $query = "SELECT housetype, COUNT(*)  FROM bldg_rent_tax WHERE housetype is not NULL  AND housetype = 'पक्की घर' OR housetype = 'अन्य घर'
         GROUP BY housetype";
         
         $results = DB::select($query);

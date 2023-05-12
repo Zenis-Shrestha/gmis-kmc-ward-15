@@ -47,7 +47,7 @@
     </table>
        
         
-    <h3 style="text-align:center; color:#414141;">Wardwise Number of Rent</h3>
+    <h3 style="text-align:center; color:#414141;">Ward wise Number of Rent</h3>
 
         <table id="data-table" class="table table-bordered table-striped" width="100%" style="margin-top:30px">
             <tr>
