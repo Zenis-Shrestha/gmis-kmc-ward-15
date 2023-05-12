@@ -201,7 +201,10 @@ $(document).ready(function() {
                     {data: 'houseownername', name: 'houseownername'},
                     {data: 'ownerphone', name: 'ownerphone'},
                     {data: 'taxlastdate', name: 'taxlastdate'},
-                    {data: 'registration_status', name: 'registration_status'},
+                    {data : 'registration_status',
+                        render : function (data, type, row) {
+                                     return (data === true) ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>';}
+                       },
                 
                 ],
                 "order": [[ 0, 'DESC' ]]
