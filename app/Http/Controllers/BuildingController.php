@@ -567,15 +567,13 @@ class BuildingController extends Controller
     }
 
     public function getBinNumbers(){
-       
-        $query = Building::select('bin');
+        $query = Building::select('bin')
+        ->orderBy('bin', 'ASC');
+    
         
         if (request()->search){
             $query->where('bin', 'ILIKE', '%'.request()->search.'%');
-         
-        }
-        if (request()->ward){
-            $query->where('ward','=',request()->ward);
+
         }
       
         $total = $query->count();
@@ -642,6 +640,7 @@ class BuildingController extends Controller
     foreach ($ward_numbers as $ward_number) {
         $json[] = ['id' => $ward_number['ward'], 'text' => $ward_number['ward']];
     }
+  
 
     return response()->json(['results' => $json, 'pagination' => ['more' => $more]]);
 }
