@@ -166,6 +166,7 @@ return [
         Laracasts\Flash\FlashServiceProvider::class,
         Zizaco\Entrust\EntrustServiceProvider::class,
         Barryvdh\Snappy\ServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class
 
     ],
 
@@ -229,6 +230,7 @@ return [
         'Pusher' => \Pusher\Pusher::class,
         'PDF' => Barryvdh\Snappy\Facades\SnappyPdf::class,
         'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
+        'Image' => Intervention\Image\Facades\Image::class
 
 
     ],

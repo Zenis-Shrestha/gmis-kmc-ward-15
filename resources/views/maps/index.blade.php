@@ -434,7 +434,7 @@
                                         <form role="form" name="filter_business_subtype" id="filter_business_subtype">
 
                                         <div class="form-group">
-                                            <label for="businesssubtype">Main Type</label>
+                                            <label for="businesssubtype">Sub Type</label>
                                             {!! Form::select('businesssubtype', $businesssubtype,null,
                                             ['id' => 'businesssubtype', 'multiple' => true, 'style' => 'width: 100%'])
                                             !!}

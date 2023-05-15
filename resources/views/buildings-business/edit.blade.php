@@ -19,22 +19,102 @@ $(document).ready(function() {
     <script>
         $(document).ready(function() {
             
-                    $('#bin').prepend('<option selected="{{$buildingBusiness->bin}}">{{$buildingBusiness->bin}}</option>').select2({
+            if({{$buildingBusiness->bin}} && {{$buildingBusiness->ward}}){
+                $('#bin').prepend('<option selected="{{$buildingBusiness->bin}}">{{$buildingBusiness->bin}}</option>').select2({
                         ajax: {
                             url:"{{ route('buildings.get-bin-numbers') }}",
                             data: function (params) {
                                 return {
                                     search: params.term,
-                                    ward: $('#ward').val()?$('#ward').val():'0',
+                                  
                                     page: params.page || 1
                                 };
                             },
                         },
-                        placeholder: 'BIN',
+                        placeholder: 'Bin',
                         allowClear: true,
                         closeOnSelect: true,
                     });
                     
+                    $('#ward').prepend('<option selected="{{$buildingBusiness->ward}}">{{$buildingBusiness->ward}}</option>').select2({
+                        ajax: {
+                            url:"{{ route('buildings.get-wards') }}",
+                            data: function (params) {
+                                return {
+                                    search: params.term,
+                                   
+                                    page: params.page || 1
+                                };
+                            },
+                        },
+                        placeholder: 'Ward',
+                        allowClear: true,
+                        closeOnSelect: true,
+                    });
+            }
+                    
+                
+  
+                 var selectedBin = '{{ request("bin") }}';
+                if(selectedBin) {
+                    $('#bin').val(selectedBin).trigger('change');
+                } else {
+                    $('#bin').select2({
+                        ajax: {
+                            url:"{{ route('buildings.get-bin-numbers') }}",
+                            data: function (params) {
+                                return {
+                                    search: params.term,
+                                    page: params.page || 1
+                                };
+                            },
+                        },
+                        placeholder: 'Bin',
+                        allowClear: true,
+                        closeOnSelect: true,
+                    });
+                }
+
+                var selectedWard = '{{ request("ward") }}';
+                if(selectedWard) {
+                    $('#ward').prepend('<option selected value="'+selectedWard+'">'+selectedWard+'</option>').select2({
+                        ajax: {
+                            url:"{{ route('buildings.get-wards') }}",
+                            data: function (params) {
+                                return {
+                                    search: params.term,
+                                    bin: $('#bin').val(),
+                                    page: params.page || 1
+                                };
+                            },
+                        },
+                        placeholder: 'Ward',
+                        allowClear: true,
+                        closeOnSelect: true,
+                    });
+                } else {
+                    $('#bin').change(function(){
+                        
+                        $('#ward').prepend('<option selected=""></option>').select2({
+                           
+                            ajax: {
+                              
+                                url:"{{ route('buildings.get-wards') }}",
+                                data: function (params) {
+                                    return {
+                                        search: params.term,
+                                    bin: $('#bin').val(),
+                                    page: params.page || 1
+                                    }
+                    },
+                    
+                },
+                placeholder: 'Ward',
+                        allowClear: true,
+                        closeOnSelect: true,
+            });
+        })
+    }
                 
   
                     @if(isset($buildingBusiness)) 
