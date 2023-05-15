@@ -151,7 +151,12 @@
             {!! Form::text('offcnm', null, ['class' => 'form-control', 'placeholder' => __('Office Name')]) !!}
         </div>
     </div>
-    
+    <div class="form-group col-md-6">
+                {!! Form::label('house_new_photo','House Photo',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-8">
+                    {!! Form::file('house_new_photo', ['class' => 'form-control']) !!}
+                </div>
+    </div>
     <div class="form-group col-md-6">
                 {!! Form::label('kml_file','KML File',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-8">

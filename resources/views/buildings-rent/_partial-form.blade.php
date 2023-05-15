@@ -9,7 +9,7 @@
     <div class="form-group col-md-6">
         {!! Form::label('ward', __('Ward'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
-            {!! Form::select('ward', $wards, null, ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
+            {!! Form::select('ward', [], null, ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
         </div>
     </div>
    
@@ -136,7 +136,7 @@
     </div>
 </div>
 
-<div class="box-footer">
+<div class="box-footer " style="float:right;">
     <a href="{{ action('BuildingRentController@index') }}" class="btn btn-info">{{ __('Back to List') }}</a>
     {!! Form::submit(__('Save'), ['class' => 'btn btn-info']) !!}
 </div>
@@ -239,7 +239,24 @@ $(document).ready(function() {
                     $('#bin').prepend('<option selected value="'+selectedBin+'">'+selectedBin+'</option>').select2({
                         ajax: {
                             url:"{{ route('buildings.get-bin-numbers') }}",
-                            
+                            data: {
+            "bin": ($('#bin').val() !== '') ? $('#bin').val() : (new URLSearchParams(window.location.search)).get('bin'),
+            },
+                        },
+                        placeholder: 'BIN',
+                        allowClear: true,
+                        closeOnSelect: true,
+                    });
+                }  
+
+                var selectedWard = '{{ request("ward") }}';
+                if(selectedWard) {
+                    $('#ward').prepend('<option selected value="'+selectedWard+'">'+selectedWard+'</option>').select2({
+                        ajax: {
+                            url:"{{ route('buildings.get-wards') }}",
+                            data: {
+            "ward": ($('#ward').val() !== '') ? $('#ward').val() : (new URLSearchParams(window.location.search)).get('ward'),
+            },
                         },
                         placeholder: 'BIN',
                         allowClear: true,

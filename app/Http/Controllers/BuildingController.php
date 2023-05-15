@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Validator;
 use DOMDocument;
 use DomXpath;
 use DB;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class BuildingController extends Controller
 {
@@ -189,7 +191,8 @@ class BuildingController extends Controller
             'sngwoman'  => 'numeric',
             'gt60yr' => 'numeric',
             'dsblppl' => 'numeric',
-            'kml_file' => 'required|file_extension:kml'
+            'kml_file' => 'required|file_extension:kml',
+            'house_new_photo' => 'required|image|mimes:png,jpg,jpeg'
         ]);
 
         $building = new Building();
@@ -246,6 +249,13 @@ class BuildingController extends Controller
                     $building->save();
                 }
             }
+        }
+        if($request->hasFile('house_new_photo')) {
+        $imageName = $request->bin.'.'.$request->house_new_photo->extension();
+
+        $storeHouseImg = Image::make($request->house_new_photo)->save(Storage::disk('public')->path('/buildings/new-photos/' . $imageName),50);
+        $building->house_new_photo = $imageName ? $imageName : null;
+        $building->save();
         }
         Flash::success('Building added successfully');
         return redirect()->action('BuildingController@index');
@@ -389,6 +399,12 @@ class BuildingController extends Controller
                 }
             }
             }
+        if($request->hasFile('house_new_photo')) {
+        $imageName = $request->bin.'.'.$request->house_new_photo->extension();
+        $storeHouseImg = Image::make($request->house_new_photo)->save(Storage::disk('public')->path('/buildings/new-photos/' . $imageName),50);
+        $building->house_new_photo = $imageName ? $imageName : null;
+        $building->save();
+        }
 
             Flash::success('Building updated successfully');
             return redirect('buildings');
@@ -565,15 +581,56 @@ class BuildingController extends Controller
             abort(404);
         }
     }
-
     public function getBinNumbers(){
-        $query = Building::select('bin')
-        ->orderBy('bin', 'ASC');
+       
+        $query = Building::select('bin')->distinct()->orderBy('bin', 'ASC');
+        
     
+        if (request()->search) {
+            $query->where('bin', 'ILIKE', '%' . request()->search . '%');
+        }
+    
+        $total = $query->count();
+        $limit = 10;
+        if (request()->page) {
+            $page = request()->page;
+        } else {
+            $page = 1;
+        };
+        $start_from = ($page - 1) * $limit;
+    
+        $total_pages = ceil($total / $limit);
+        if ($page < $total_pages) {
+            $more = true;
+        } else {
+            $more = false;
+        }
+        $house_numbers = $query->offset($start_from)
+            ->limit($limit)
+            ->get();
+    
+        $json = [];
+        foreach ($house_numbers as $house_number) {
+            $json[] = ['id' => $house_number['bin'], 'text' => $house_number['bin']];
+        }
+    
+        return response()->json(['results' => $json, 'pagination' => ['more' => $more]]);
+    }
+    
+    
+    
+    public function getWards()
+    {
+        
+        $query = Building::select('ward')->distinct()->orderBy('ward', 'ASC');
         
         if (request()->search){
-            $query->where('bin', 'ILIKE', '%'.request()->search.'%');
-
+          
+            $query->where('ward', 'ILIKE', '%'.request()->search.'%');
+         
+        }
+        if (request()->bin){
+            $query->where('bin','=',request()->bin);
         }
       
         $total = $query->count();
@@ -585,64 +642,31 @@ class BuildingController extends Controller
             $page=1;
         };
         $start_from = ($page-1) * $limit;
-    
+   
         $total_pages = ceil($total / $limit);
+        
         if($page < $total_pages){
             $more = true;
         }
+
         else
         {
             $more = false;
         }
-        $house_numbers = $query->offset($start_from)
+    
+        $ward_numbers = $query->offset($start_from)
             ->limit($limit)
             ->get();
                
         $json = [];
-        foreach($house_numbers as $house_number)
+        foreach($ward_numbers as $ward_number)
         {
-            $json[] = ['id'=>$house_number['bin'], 'text'=>$house_number['bin']];
+            $json[] = ['id'=>$ward_number['ward'], 'text'=>$ward_number['ward']];
         }
     
         return response()->json(['results' =>$json, 'pagination' => ['more' => $more] ]);
-    
-    }
-    
-    public function getWards(Request $request)
-{
-    $query = Building::select('ward')->distinct()->orderBy('ward', 'ASC')->where('ward', '<>', 0);
+          
         
-  
-    if (request()->search) {
-        $query->where('ward', 'ILIKE', '%' . request()->search . '%');
     }
-
-    $total = $query->count();
-    $limit = 10;
-    if (request()->page) {
-        $page = request()->page;
-    } else {
-        $page = 1;
-    };
-    $start_from = ($page - 1) * $limit;
-
-    $total_pages = ceil($total / $limit);
-    if ($page < $total_pages) {
-        $more = true;
-    } else {
-        $more = false;
-    }
-    $ward_numbers = $query->offset($start_from)
-        ->limit($limit)
-        ->get();
-
-    $json = [];
-    foreach ($ward_numbers as $ward_number) {
-        $json[] = ['id' => $ward_number['ward'], 'text' => $ward_number['ward']];
-    }
-  
-
-    return response()->json(['results' => $json, 'pagination' => ['more' => $more]]);
-}
-
-}
+}   
+    
