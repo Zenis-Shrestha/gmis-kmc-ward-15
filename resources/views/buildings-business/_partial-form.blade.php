@@ -1,16 +1,17 @@
 <div class="box-body">
     
-<div class="form-group col-md-6 required ">
-    {!! Form::label('bin', __('Building Identification Number'), ['class' => 'col-sm-4 control-label']) !!}
-    <div class="col-sm-8">
-        {!! Form::select('bin', [], old('bin', request('bin')), ['class' => 'form-control', 'placeholder' => 'Building Identification Number', 'id' => 'bin']) !!}
-    </div>
-</div> 
+<div class="form-group col-md-6 required">
+        {!! Form::label('bin', __('Building Identification Number'), ['class' => 'col-sm-3 control-label']) !!}
+        <div class="col-sm-9">
+            {!! Form::select('bin',[],null,['class' => 'form-control', 'placeholder' => 'Building Identification Number']) !!}
+            <!--{!! Form::text('bin', null, ['class' => 'form-control', 'placeholder' => __('Building Identification Number')]) !!}-->
+        </div>
+    </div> 
     <div class="form-group col-md-6">
-        {!! Form::label('ward', __('Ward'), ['class' => 'col-sm-4 control-label']) !!}
-        <div class="col-sm-8">
-        {!! Form::select('ward', $wards, old('ward', request('ward')), ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
-    </div>
+        {!! Form::label('ward', __('Ward'), ['class' => 'col-sm-3 control-label']) !!}
+        <div class="col-sm-9">
+            {!! Form::select('ward', [], null, ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
+        </div>
     </div>
     <div class="form-group col-md-6">
         {!! Form::label('roadname', __('Road Name'), ['class' => 'col-sm-4 control-label']) !!}
@@ -188,6 +189,7 @@ $(document).ready(function() {
                 url: '{!! url("buildings-business/data") !!}',
                 data: {
                     "bin": ($('#bin').val() !== '') ? $('#bin').val() : (new URLSearchParams(window.location.search)).get('bin'),
+                    "ward": ($('#ward').val() !== '') ? $('#ward').val() : (new URLSearchParams(window.location.search)).get('ward'),
                 },
             },
             columns: [
@@ -211,38 +213,37 @@ $(document).ready(function() {
         });
     }   
         // Function to prefill form fields
-     function prefillForm() {
-        $.ajax({
-            url: '{{ url("building-business/business-details") }}',
-            data: {
+        function prefillForm() {
+    $.ajax({
+        url: '{{ url("building-business/business-details") }}',
+        data: {
             "bin": ($('#bin').val() !== '') ? $('#bin').val() : (new URLSearchParams(window.location.search)).get('bin'),
-            },
-            success: function (res) {
-               
-                if(res.bin){
-                   
+            "ward": ($('#ward').val() !== '') ? $('#ward').val() : (new URLSearchParams(window.location.search)).get('ward'),
+        },
+        success: function (res) {
+            if (res.bin) {
                 $('#bin').val(res.bin);
-                }    
-               if(res.hownr){
-                $('#houseownername').val(res.hownr);
-               }
-               else {
-                $('#houseownername').val(res.houseownername);
-               }
-           if(res.oldhno){
-            $('#houseno').val(res.oldhno);
-           }else{
-            $('#houseno').val(res.houseno);
-           }
-           $('#roadname').val(res.roadname);
-           $('#ownerphone').val(res.ownerphone);
-           $('#email').val(res.email); 
-
-          
             }
-        });
-    
-    }
+            if (res.hownr) {
+                $('#houseownername').val(res.hownr);
+            } else {
+                $('#houseownername').val(res.houseownername);
+            }
+            if (res.oldhno) {
+                $('#houseno').val(res.oldhno);
+            } else {
+                $('#houseno').val(res.houseno);
+            }
+            $('#roadname').val(res.roadname);
+            $('#ownerphone').val(res.ownerphone);
+            $('#email').val(res.email);
+            if (res.ward) {
+                $('#ward').val(res.ward);
+            }
+        }
+    });
+}
+
         // Run the DataTable function before prefill if bin is present in the URL
    if ((new URLSearchParams(window.location.search)).get('bin')) {
     
@@ -261,13 +262,31 @@ $(document).ready(function() {
                     $('#bin').prepend('<option selected value="'+selectedBin+'">'+selectedBin+'</option>').select2({
                         ajax: {
                             url:"{{ route('buildings.get-bin-numbers') }}",
-                            
+                            data: {
+            "bin": ($('#bin').val() !== '') ? $('#bin').val() : (new URLSearchParams(window.location.search)).get('bin'),
+            },
                         },
                         placeholder: 'BIN',
                         allowClear: true,
                         closeOnSelect: true,
                     });
                 }  
+
+                var selectedWard = '{{ request("ward") }}';
+                if(selectedWard) {
+                    $('#ward').prepend('<option selected value="'+selectedWard+'">'+selectedWard+'</option>').select2({
+                        ajax: {
+                            url:"{{ route('buildings.get-wards') }}",
+                            data: {
+            "ward": ($('#ward').val() !== '') ? $('#ward').val() : (new URLSearchParams(window.location.search)).get('ward'),
+            },
+                        },
+                        placeholder: 'BIN',
+                        allowClear: true,
+                        closeOnSelect: true,
+                    });
+                }  
+
 
    $('#bin').on('change', function(e){
             var dataTable = $('#data-table').DataTable();
@@ -282,6 +301,7 @@ $(document).ready(function() {
                 $('#data-table').hide();
             }
         });
+
 
         $('#businessmaintype').change(function(){
                 
