@@ -270,11 +270,21 @@ class BuildingController extends Controller
     public function show($id)
     {
         $building = Building::find($id);
-
+        if ($building->house_new_photo != null && Storage::disk('public')->exists('buildings/new-photos/'.$building->house_new_photo)) {
+             $photo_path = asset('storage/buildings/new-photos/' . $building->house_new_photo);
+         }
+        else if ($building->house_photo != null && Storage::disk('public')->exists('buildings/photos/'.$building->house_photo)) {
+             $photo_path = asset('storage/buildings/photos/' . $building->house_photo);
+         }
+         else{
+             $photo_path = '';
+         }
+       
+        $building['photo_path'] = $photo_path;
         if ($building) {
             $pageTitle = "Building Details";
 
-            return view('buildings.show', compact('pageTitle', 'building'));
+            return view('buildings.show', compact('pageTitle', 'building', 'photo_path'));
         } else {
             abort(404);
         }

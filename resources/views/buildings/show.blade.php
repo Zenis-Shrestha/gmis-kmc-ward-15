@@ -189,7 +189,12 @@
                     {!! Form::label(null, $building->taxStsCode ? $building->taxStsCode->name : '', ['class' => 'form-control']) !!}
                 </div>
             </div>
-           
+           <div class="form-group">
+                {!! Form::label('btxsts', __('Building Photo'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-3">
+                    <img src="{{ $photo_path }}" style="height: 250px;"/>
+                </div>
+            </div>
         </div>
     </div>
 </div>
