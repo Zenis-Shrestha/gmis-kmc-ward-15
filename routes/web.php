@@ -579,7 +579,7 @@ Route::get('getBuildingInformation/{long}/{lat}', function ($long, $lat) {
 
     //Building Information
    
-    $buildings_query = "SELECT b.gid, b.bin, b.ward, b.tole, b.haddr, b.hownr, b.yoc, b.flrcount, bu.name AS building_use, bc.name AS construction_type, t.name AS tax_status, s.strtnm AS street, ST_AsText(b.geom) AS geom"
+    $buildings_query = "SELECT b.gid, b.bin, b.ward, b.tole, b.haddr, b.hownr, b.yoc, b.flrcount, bu.name AS building_use, bc.name AS construction_type, t.name AS tax_status, s.strtnm AS street, ST_AsText(b.geom) AS geom, b.house_photo AS house_photo, b.house_new_photo AS house_new_photo"
         . " FROM bldg b"
         . " LEFT JOIN building_use bu"
         . " ON b.bldguse = bu.value"
@@ -610,12 +610,11 @@ Route::get('getBuildingInformation/{long}/{lat}', function ($long, $lat) {
         $building['tax_status'] = $row->tax_status ? $row->tax_status : '';
         $building['street'] = $row->street ? $row->street : '';
         $building['geom'] = $row->geom ? $row->geom : '';
-         if(File::exists(storage_path('app/new-photos/' . $row->bin . '.jpg'))) {
-             $photo_path =  url('buildings/new-photos/' . $row->bin);
-           
+        if ($row->house_new_photo != null && Storage::disk('public')->exists('buildings/new-photos/'.$row->house_new_photo)) {
+             $photo_path = asset('storage/buildings/new-photos/' . $row->house_new_photo);
          }
-         else if(File::exists(storage_path('app/photos/' . $row->bin . '.JPG'))) {
-             $photo_path =  url('buildings/photos/' . $row->bin);
+        else if ($row->house_photo != null && Storage::disk('public')->exists('buildings/photos/'.$row->house_photo)) {
+             $photo_path = asset('storage/buildings/photos/' . $row->house_photo);
          }
          else{
              $photo_path = '';
@@ -702,7 +701,6 @@ return ([
     'data1' => $data1,
     'data2' => $data2,
     'data3' =>  $data3 ]);
-
 }); 
 
 

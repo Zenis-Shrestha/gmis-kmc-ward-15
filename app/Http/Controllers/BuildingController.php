@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Validator;
 use DOMDocument;
 use DomXpath;
 use DB;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class BuildingController extends Controller
 {
@@ -189,7 +191,8 @@ class BuildingController extends Controller
             'sngwoman'  => 'numeric',
             'gt60yr' => 'numeric',
             'dsblppl' => 'numeric',
-            'kml_file' => 'required|file_extension:kml'
+            'kml_file' => 'required|file_extension:kml',
+            'house_new_photo' => 'required|image|mimes:png,jpg,jpeg'
         ]);
 
         $building = new Building();
@@ -246,6 +249,13 @@ class BuildingController extends Controller
                     $building->save();
                 }
             }
+        }
+        if($request->hasFile('house_new_photo')) {
+        $imageName = $request->bin.'.'.$request->house_new_photo->extension();
+
+        $storeHouseImg = Image::make($request->house_new_photo)->save(Storage::disk('public')->path('/buildings/new-photos/' . $imageName),50);
+        $building->house_new_photo = $imageName ? $imageName : null;
+        $building->save();
         }
         Flash::success('Building added successfully');
         return redirect()->action('BuildingController@index');
@@ -389,6 +399,12 @@ class BuildingController extends Controller
                 }
             }
             }
+        if($request->hasFile('house_new_photo')) {
+        $imageName = $request->bin.'.'.$request->house_new_photo->extension();
+        $storeHouseImg = Image::make($request->house_new_photo)->save(Storage::disk('public')->path('/buildings/new-photos/' . $imageName),50);
+        $building->house_new_photo = $imageName ? $imageName : null;
+        $building->save();
+        }
 
             Flash::success('Building updated successfully');
             return redirect('buildings');
