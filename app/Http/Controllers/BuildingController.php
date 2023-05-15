@@ -553,7 +553,7 @@ class BuildingController extends Controller
     public function downloadPhoto($building_id) {
         $building = Building::find($building_id);
         if($building) {
-            $filepath = storage_path('app/photos/' . $building->bin . '.JPG');
+            $filepath = storage_path('app/photos/' . $building->house_photo);
             if(File::exists($filepath)) {
                 return response()->file($filepath);
             }
@@ -569,7 +569,7 @@ class BuildingController extends Controller
     public function downloadNewPhoto($building_id) {
         $building = Building::find($building_id);
         if($building) {
-            $filepath = storage_path('app/new-photos/' . $building->bin . '.jpg');
+            $filepath = storage_path('app/new-photos/' . $building->house_new_photo);
             if(File::exists($filepath)) {
                 return response()->file($filepath);
             }
