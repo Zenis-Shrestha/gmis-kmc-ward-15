@@ -10,7 +10,7 @@
     <div class="form-group col-md-6">
         {!! Form::label('ward', __('Ward'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
-            {!! Form::select('ward', [], null, ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
+        {!! Form::select('ward', [], $wards, ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
         </div>
     </div>
     <div class="form-group col-md-6">
@@ -180,7 +180,8 @@ $(document).ready(function() {
 
     // Function to initialize DataTable
     function initDataTable() {
-        
+        var binValue = ($('#bin').val() !== '') ? $('#bin').val() : (new URLSearchParams(window.location.search)).get('bin') ;
+    console.log("kljki",binValue); // Log the bin value
         $('#data-table').DataTable({
             processing: true,
             serverSide: true,
@@ -189,7 +190,7 @@ $(document).ready(function() {
                 url: '{!! url("buildings-business/data") !!}',
                 data: {
                     "bin": ($('#bin').val() !== '') ? $('#bin').val() : (new URLSearchParams(window.location.search)).get('bin'),
-                    "ward": ($('#ward').val() !== '') ? $('#ward').val() : (new URLSearchParams(window.location.search)).get('ward'),
+                  
                 },
             },
             columns: [
@@ -214,6 +215,7 @@ $(document).ready(function() {
     }   
         // Function to prefill form fields
         function prefillForm() {
+          
     $.ajax({
         url: '{{ url("building-business/business-details") }}',
         data: {
@@ -221,9 +223,8 @@ $(document).ready(function() {
             "ward": ($('#ward').val() !== '') ? $('#ward').val() : (new URLSearchParams(window.location.search)).get('ward'),
         },
         success: function (res) {
-            if (res.bin) {
-                $('#bin').val(res.bin);
-            }
+           
+            $('#ward').val(res.ward);
             if (res.hownr) {
                 $('#houseownername').val(res.hownr);
             } else {
@@ -237,9 +238,7 @@ $(document).ready(function() {
             $('#roadname').val(res.roadname);
             $('#ownerphone').val(res.ownerphone);
             $('#email').val(res.email);
-            if (res.ward) {
-                $('#ward').val(res.ward);
-            }
+            
         }
     });
 }
@@ -257,6 +256,27 @@ $(document).ready(function() {
         }
    }
 
+
+   $('#bin').on('change', function(e) {
+                var bin = $('#bin').val();
+                var dataTable = $('#data-table').DataTable();
+
+                if ($.fn.DataTable.isDataTable('#data-table')) {
+                    dataTable.destroy();
+                }
+
+                if (bin !== '') {
+                  
+                    prefillForm();
+                    initDataTable();
+                    $('#data-table').show();
+                } else {
+                    $('#data-table').hide();
+                }
+            });
+
+
+            
    var selectedBin = '{{ request("bin") }}';
                 if(selectedBin) {
                     $('#bin').prepend('<option selected value="'+selectedBin+'">'+selectedBin+'</option>').select2({
@@ -273,35 +293,23 @@ $(document).ready(function() {
                 }  
 
                 var selectedWard = '{{ request("ward") }}';
-                if(selectedWard) {
-                    $('#ward').prepend('<option selected value="'+selectedWard+'">'+selectedWard+'</option>').select2({
-                        ajax: {
-                            url:"{{ route('buildings.get-wards') }}",
-                            data: {
-            "ward": ($('#ward').val() !== '') ? $('#ward').val() : (new URLSearchParams(window.location.search)).get('ward'),
-            },
-                        },
-                        placeholder: 'BIN',
-                        allowClear: true,
-                        closeOnSelect: true,
+                if (selectedWard) {
+                    var $wards = {!! json_encode($wards) !!};
+                    var $wardSelect = $('#ward');
+                   
+                    $.each($wards, function(key, value) {
+                        $wardSelect.append($('<option>', {
+                            value: key,
+                            text: value
+                        }));
                     });
-                }  
+                    $wardSelect.val(selectedWard);
+                }
 
 
-   $('#bin').on('change', function(e){
-            var dataTable = $('#data-table').DataTable();
-        if ($.fn.DataTable.isDataTable('#data-table')) {
-            dataTable.destroy();
-        }
-        if (bin !== '') {
-            prefillForm();
-            initDataTable();
-        $('#data-table').show();
-            } else {
-                $('#data-table').hide();
-            }
-        });
 
+             
+                
 
         $('#businessmaintype').change(function(){
                 

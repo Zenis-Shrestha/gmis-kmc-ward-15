@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\BuildingRent;
 use App\Building;
 use App\BuildingBusiness;
 use App\Street;
@@ -43,7 +44,8 @@ class BuildingBusinessController extends Controller
     public function index()
     {
         $pageTitle = "Business List";
-        $wards = Ward::orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
+        $wards = Ward::select('ward')->distinct()->orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
+
         $taxStatuses = TaxStsCode::pluck('name', 'value');
         $yesNo = YesNo::pluck('name', 'value');
         $registration_status = BuildingBusiness::selectRaw("CASE WHEN registration_status THEN 'true' ELSE 'false' END AS registration_status_label, registration_status")
@@ -58,6 +60,7 @@ class BuildingBusinessController extends Controller
 
     public function getData(Request $request)
     {
+        
         DB::enableQueryLog();
 
         $buildingData = BuildingBusiness::select(
@@ -205,7 +208,9 @@ class BuildingBusinessController extends Controller
         }
         $building_business->geom = DB::raw("ST_GeomFromText('".$centroid[0]->central_point."', 4326)");      
         $building_business->businessmaintype = $request->businessmaintype ? $request->businessmaintype : null;
+        
         $building_business->save();
+        
         Flash::success('Business added successfully');
         return redirect()->action('BuildingBusinessController@add', ['bin' =>  $building_business->bin, 'ward' =>  $building_business->ward]);
     }
@@ -501,11 +506,18 @@ class BuildingBusinessController extends Controller
     {
         if(BuildingBusiness::where('bin', $request->bin)->exists()){
             $building_business = BuildingBusiness::where('bin', $request->bin)->first();
-            return response()->json($building_business);
+
         } else {
             $building_business = Building::where('bin', $request->bin)->first();
-            return response()->json($building_business);
+           
         }
+        if ($request->has('ward')) {
+            $building_business['ward'] = $building_business->ward;
+        }
+        
+    
+        return response()->json( $building_business);
+      
   }
 
   public function businessTaxReportPdf(){
