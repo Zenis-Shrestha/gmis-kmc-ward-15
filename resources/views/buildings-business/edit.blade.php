@@ -36,87 +36,24 @@ $(document).ready(function() {
                         closeOnSelect: true,
                     });
                     
-                    $('#ward').prepend('<option selected="{{$buildingBusiness->ward}}">{{$buildingBusiness->ward}}</option>').select2({
-                        ajax: {
-                            url:"{{ route('buildings.get-wards') }}",
-                            data: function (params) {
-                                return {
-                                    search: params.term,
-                                   
-                                    page: params.page || 1
-                                };
-                            },
-                        },
-                        placeholder: 'Ward',
-                        allowClear: true,
-                        closeOnSelect: true,
-                    });
-            }
-                    
-                
-  
-                 var selectedBin = '{{ request("bin") }}';
-                if(selectedBin) {
-                    $('#bin').val(selectedBin).trigger('change');
-                } else {
-                    $('#bin').select2({
-                        ajax: {
-                            url:"{{ route('buildings.get-bin-numbers') }}",
-                            data: function (params) {
-                                return {
-                                    search: params.term,
-                                    page: params.page || 1
-                                };
-                            },
-                        },
-                        placeholder: 'Bin',
-                        allowClear: true,
-                        closeOnSelect: true,
-                    });
-                }
 
-                var selectedWard = '{{ request("ward") }}';
-                if(selectedWard) {
-                    $('#ward').prepend('<option selected value="'+selectedWard+'">'+selectedWard+'</option>').select2({
-                        ajax: {
-                            url:"{{ route('buildings.get-wards') }}",
-                            data: function (params) {
-                                return {
-                                    search: params.term,
-                                    bin: $('#bin').val(),
-                                    page: params.page || 1
-                                };
-                            },
-                        },
-                        placeholder: 'Ward',
-                        allowClear: true,
-                        closeOnSelect: true,
+                    var selectedWard = '{{$buildingBusiness->ward}}';
+                if (selectedWard) {
+                    var $wards = {!! json_encode($wards) !!};
+                    var $wardSelect = $('#ward');
+                   
+                    $.each($wards, function(key, value) {
+                        $wardSelect.append($('<option>', {
+                            value: key,
+                            text: value
+                        }));
                     });
-                } else {
-                    $('#bin').change(function(){
-                        
-                        $('#ward').prepend('<option selected=""></option>').select2({
-                           
-                            ajax: {
-                              
-                                url:"{{ route('buildings.get-wards') }}",
-                                data: function (params) {
-                                    return {
-                                        search: params.term,
-                                    bin: $('#bin').val(),
-                                    page: params.page || 1
-                                    }
-                    },
+                    $wardSelect.val(selectedWard);
+                }
                     
-                },
-                placeholder: 'Ward',
-                        allowClear: true,
-                        closeOnSelect: true,
-            });
-        })
-    }
-                
-  
+
+            }
+                   
                     @if(isset($buildingBusiness)) 
                     $("#businessmaintype option[value='<?php echo $buildingBusiness->businessmaintype;?>']").attr('selected', 'selected'); // added single quotes
 

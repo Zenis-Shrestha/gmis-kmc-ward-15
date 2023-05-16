@@ -9,7 +9,7 @@
     <div class="form-group col-md-6">
         {!! Form::label('ward', __('Ward'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
-            {!! Form::select('ward', [], null, ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
+        {!! Form::select('ward', [], $wards, ['class' => 'form-control', 'placeholder' => __('--- Choose ward ---')]) !!}
         </div>
     </div>
    
@@ -209,7 +209,7 @@ $(document).ready(function() {
            }else{
             $('#hownername').val(res.hownername);
            }
-            
+           $('#ward').val(res.ward);
             $('#roadname').val(res.roadname);
             $('#hownernumber').val(res.hownernumber);
             $('#howneremail').val(res.howneremail);
@@ -233,7 +233,26 @@ $(document).ready(function() {
         }
    }
 
-   
+   $('#bin').on('change', function(e) {
+                var bin = $('#bin').val();
+                var dataTable = $('#data-table').DataTable();
+
+                if ($.fn.DataTable.isDataTable('#data-table')) {
+                    dataTable.destroy();
+                }
+
+                if (bin !== '') {
+                  
+                    prefillForm();
+                    initDataTable();
+                    $('#data-table').show();
+                } else {
+                    $('#data-table').hide();
+                }
+            });
+
+
+            
    var selectedBin = '{{ request("bin") }}';
                 if(selectedBin) {
                     $('#bin').prepend('<option selected value="'+selectedBin+'">'+selectedBin+'</option>').select2({
@@ -250,34 +269,18 @@ $(document).ready(function() {
                 }  
 
                 var selectedWard = '{{ request("ward") }}';
-                if(selectedWard) {
-                    $('#ward').prepend('<option selected value="'+selectedWard+'">'+selectedWard+'</option>').select2({
-                        ajax: {
-                            url:"{{ route('buildings.get-wards') }}",
-                            data: {
-            "ward": ($('#ward').val() !== '') ? $('#ward').val() : (new URLSearchParams(window.location.search)).get('ward'),
-            },
-                        },
-                        placeholder: 'BIN',
-                        allowClear: true,
-                        closeOnSelect: true,
+                if (selectedWard) {
+                    var $wards = {!! json_encode($wards) !!};
+                    var $wardSelect = $('#ward');
+                   
+                    $.each($wards, function(key, value) {
+                        $wardSelect.append($('<option>', {
+                            value: key,
+                            text: value
+                        }));
                     });
-                }  
-
-
-   $('#bin').on('change', function(e){
-            var dataTable = $('#data-table').DataTable();
-        if ($.fn.DataTable.isDataTable('#data-table')) {
-            dataTable.destroy();
-        }
-        if (bin !== '') {
-            prefillForm();
-            initDataTable();
-        $('#data-table').show();
-            } else {
-                $('#data-table').hide();
-            }
-        });
+                    $wardSelect.val(selectedWard);
+                }
 
    
    
