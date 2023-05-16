@@ -139,7 +139,7 @@ class BuildingRentController extends Controller
         $buildingRent = new BuildingRent();
         $buildingRent->ward = $request->ward ? $request->ward : null;
         $buildingRent->roadname = $request->roadname ? $request->roadname : null;
-        $buildingRent->houseno = $request->houseno ? $request->roadname : null;
+        $buildingRent->houseno = $request->houseno ? $request->houseno  : null;
         $buildingRent->bin = $request->bin ? $request->bin : null;
         $buildingRent->taxpayercode = $request->taxpayercode ? $request->taxpayercode : null;
         $buildingRent->hownername = $request->hownername ? $request->hownername : null;
@@ -225,7 +225,7 @@ class BuildingRentController extends Controller
         
         $buildingRent->ward = $request->ward ? $request->ward : null;
         $buildingRent->roadname = $request->roadname ? $request->roadname : null;
-        $buildingRent->houseno = $request->houseno ? $request->roadname : null;
+        $buildingRent->houseno = $request->houseno ? $request->houseno : null;
         $buildingRent->bin = $request->bin ? $request->bin : null;
         $buildingRent->taxpayercode = $request->taxpayercode ? $request->taxpayercode : null;
         $buildingRent->hownername = $request->hownername ? $request->hownername : null;
@@ -399,16 +399,20 @@ class BuildingRentController extends Controller
 
     public function rentReportPdf(){
 
-        $query = "SELECT w.ward, count(b.number)
+        $query_one = "SELECT w.ward, count(b.number)
         FROM wardpl w LEFT JOIN bldg_rent_tax b ON b.ward = w.ward
         GROUP BY w.ward
         ORDER BY w.ward ASC";
 
-        $results_one = DB::select($query);   
-        return PDF::loadView('buildings-rent.rent-report', compact("results_one"))->inline('Business Tax Report.pdf');
+        $results_one = DB::select($query_one);  
+        
+      
+        return PDF::loadView('buildings-rent.rent-report', compact("results_one"))->inline('Rent Tax Report.pdf');
     
               
         }
+
+        
 
   
 }

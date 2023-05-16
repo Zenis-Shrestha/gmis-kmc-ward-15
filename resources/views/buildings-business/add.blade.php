@@ -32,17 +32,15 @@
                 width: '100%'
             });
 
-            var selectedBin = '{{ request("bin") }}';
-                if(selectedBin) {
-                    $('#bin').val(selectedBin).trigger('change');
-                } else {
+           
                     $('#bin').select2({
                         ajax: {
                             url:"{{ route('buildings.get-bin-numbers') }}",
                             data: function (params) {
                                 return {
                                     search: params.term,
-                                    page: params.page || 1
+                                    page: params.page || 1,
+                                  
                                 };
                             },
                         },
@@ -50,46 +48,26 @@
                         allowClear: true,
                         closeOnSelect: true,
                     });
-                }
+              
 
-                var selectedWard = '{{ request("ward") }}';
-                if(selectedWard) {
-                    $('#ward').prepend('<option selected value="'+selectedWard+'">'+selectedWard+'</option>').select2({
-                        ajax: {
-                            url:"{{ route('buildings.get-wards') }}",
-                            data: function (params) {
-                                return {
-                                    search: params.term,
-                                    bin: $('#bin').val(),
-                                    page: params.page || 1
-                                };
-                            },
-                        },
-                        placeholder: 'WARD',
-                        allowClear: true,
-                        closeOnSelect: true,
-                    });
-                } else {
+     
+                    var $wards = {!! json_encode($wards) !!};
                     $('#bin').change(function(){
                         
-                        $('#ward').prepend('<option selected=""></option>').select2({
-                           
-                            ajax: {
-                              
-                                url:"{{ route('buildings.get-wards') }}",
-                                data: function (params) {
-                                    return {
-                                        search: params.term,
-                                    bin: $('#bin').val(),
-                                    page: params.page || 1
-                                    }
-                    }
-                    
-                    
-                }
-            });
+                        $('#ward').empty();
+
+                        // Loop through the $wards array and add an option for each ward
+                        $.each($wards, function(key, value) {
+                            $('#ward').append($('<option>', {
+                                value: key,
+                                text: value
+                            }));
+                        });
+
+                       
+
         })
-    }
+    
  })
            
     </script>
