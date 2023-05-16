@@ -208,10 +208,10 @@
     <div class="form-group col-md-6">
        {!! Form::label('footprint_option','Footprint',['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
-        @if(!@$building)
+            <input type="radio" name="footprint_option" value="draw_plygon" {{ (@$geom)? "checked" : "checked" }} > Draw Polygon
+            @if(!@$building)
             <input type="radio" name="footprint_option" value="upload_kml"> KML
             @endif
-            <input type="radio" name="footprint_option" value="draw_plygon" {{ (@$geom)? "checked" : "" }} > Draw Polygon
         </div>
         
         
