@@ -191,8 +191,10 @@ class BuildingController extends Controller
             'sngwoman'  => 'numeric',
             'gt60yr' => 'numeric',
             'dsblppl' => 'numeric',
-            'kml_file' => 'required|file_extension:kml',
-            'house_new_photo' => 'required|image|mimes:png,jpg,jpeg'
+            'house_new_photo' => 'required|image|mimes:png,jpg,jpeg',
+            'footprint_option' => 'required',
+            'kml_file' => 'required_if:footprint_option,==,upload_kml|file_extension:kml',
+            'geom' => 'required_if:footprint_option,==,draw_plygon',
         ]);
 
         $building = new Building();
@@ -221,8 +223,11 @@ class BuildingController extends Controller
         $building->bprmtno = $request->bprmtno ? $request->bprmtno : null;
         $building->offcnm = $request->offcnm ? $request->offcnm : null;
         $building->dsblppl = $request->dsblppl ? $request->dsblppl : 0;
+        if($request->geom && $request->footprint_option == 'draw_plygon'){
+        $building->geom = $request->geom ? DB::raw("ST_Multi(ST_GeomFromText('" . $request->geom . "', 4326))") : null;
+        }
         $building->save();
-        if($request->hasFile('kml_file')) {
+        if($request->hasFile('kml_file') && $request->footprint_option == 'upload_kml') {
             $xml = new DOMDocument();
             $xml->load($request->kml_file);
             
@@ -251,7 +256,7 @@ class BuildingController extends Controller
             }
         }
         if($request->hasFile('house_new_photo')) {
-        $imageName = $request->bin.'.'.$request->house_new_photo->extension();
+        $imageName = $request->bin.'.'.$request->house_new_photo->getClientOriginalExtension();
 
         $storeHouseImg = Image::make($request->house_new_photo)->save(Storage::disk('public')->path('/buildings/new-photos/' . $imageName),50);
         $building->house_new_photo = $imageName ? $imageName : null;
@@ -305,10 +310,11 @@ class BuildingController extends Controller
         $constructionTypes = BuildingConstr::pluck('name', 'value');
         $taxStatuses = TaxStsCode::pluck('name', 'value');
         $yesNo = YesNo::pluck('name', 'value');
-
+        $geomArr = DB::select("SELECT ST_X(ST_AsText(ST_Centroid(ST_Centroid(geom)))) AS long, ST_Y(ST_AsText(ST_Centroid(ST_Centroid(geom)))) AS lat, ST_AsText(geom) AS geom FROM bldg WHERE bin = $id");
+        $geom = ($geomArr[0]->geom);
         if ($building) {
             $pageTitle = "Edit Building";
-            return view('buildings.edit', compact('pageTitle', 'building',  'wards', 'streets', 'buildingUses', 'constructionTypes', 'taxStatuses', 'yesNo'));
+            return view('buildings.edit', compact('pageTitle', 'building',  'wards', 'streets', 'buildingUses', 'constructionTypes', 'taxStatuses', 'yesNo', 'geom'));
         } else {
             abort(404);
         }
@@ -350,7 +356,9 @@ class BuildingController extends Controller
                 'sngwoman'  => 'numeric',
                 'gt60yr' => 'numeric',
                 'dsblppl' => 'numeric',
-                'kml_file' => 'file_extension:kml'
+                'house_new_photo' => 'image|mimes:png,jpg,jpeg',
+                //'kml_file' => 'required_if:footprint_option,==,upload_kml|file_extension:kml',
+                //'geom' => 'required_if:footprint_option,==,draw_plygon',
             ]);
 
         $building->bin = $request->bin ? $request->bin : null;
@@ -378,10 +386,13 @@ class BuildingController extends Controller
         $building->bprmtno = $request->bprmtno ? $request->bprmtno : null;
         $building->offcnm = $request->offcnm ? $request->offcnm : null;
         $building->dsblppl = $request->dsblppl ? $request->dsblppl : 0;
+        if($request->geom && $request->footprint_option == 'draw_plygon'){
+        $building->geom = $request->geom ? DB::raw("ST_Multi(ST_GeomFromText('" . $request->geom . "', 4326))") : $building->geom;
+        }
         $building->save();
         
         $building->save();
-        if($request->hasFile('kml_file')) {
+        if($request->hasFile('kml_file') && $request->footprint_option == 'upload_kml') {
             $xml = new DOMDocument();
             $xml->load($request->kml_file);
             
@@ -410,7 +421,7 @@ class BuildingController extends Controller
             }
             }
         if($request->hasFile('house_new_photo')) {
-        $imageName = $request->bin.'.'.$request->house_new_photo->extension();
+        $imageName = $request->bin.'.'.$request->house_new_photo->getClientOriginalExtension();
         $storeHouseImg = Image::make($request->house_new_photo)->save(Storage::disk('public')->path('/buildings/new-photos/' . $imageName),50);
         $building->house_new_photo = $imageName ? $imageName : null;
         $building->save();
@@ -563,7 +574,7 @@ class BuildingController extends Controller
     public function downloadPhoto($building_id) {
         $building = Building::find($building_id);
         if($building) {
-            $filepath = storage_path('app/photos/' . $building->house_photo);
+            $filepath = storage_path('app/photos/' . $building->bin . '.JPG');
             if(File::exists($filepath)) {
                 return response()->file($filepath);
             }
@@ -579,7 +590,7 @@ class BuildingController extends Controller
     public function downloadNewPhoto($building_id) {
         $building = Building::find($building_id);
         if($building) {
-            $filepath = storage_path('app/new-photos/' . $building->house_new_photo);
+            $filepath = storage_path('app/new-photos/' . $building->bin . '.jpg');
             if(File::exists($filepath)) {
                 return response()->file($filepath);
             }
@@ -623,60 +634,9 @@ class BuildingController extends Controller
         foreach ($house_numbers as $house_number) {
             $json[] = ['id' => $house_number['bin'], 'text' => $house_number['bin']];
         }
-    
         return response()->json(['results' => $json, 'pagination' => ['more' => $more]]);
     }
     
-    
-    
-    public function getWards()
-    {
-        
-        $query = Building::select('ward')->distinct()->orderBy('ward', 'ASC');
-        
-        if (request()->search){
-          
-            $query->where('ward', 'ILIKE', '%'.request()->search.'%');
-         
-        }
-        if (request()->bin){
-            $query->where('bin','=',request()->bin);
-        }
-      
-        $total = $query->count();
-        $limit = 10;
-        if (request()->page) {
-            $page  = request()->page;
-        }
-        else{
-            $page=1;
-        };
-        $start_from = ($page-1) * $limit;
-   
-        $total_pages = ceil($total / $limit);
-        
-        if($page < $total_pages){
-            $more = true;
-        }
 
-        else
-        {
-            $more = false;
-        }
-    
-        $ward_numbers = $query->offset($start_from)
-            ->limit($limit)
-            ->get();
-               
-        $json = [];
-        foreach($ward_numbers as $ward_number)
-        {
-            $json[] = ['id'=>$ward_number['ward'], 'text'=>$ward_number['ward']];
-        }
-    
-        return response()->json(['results' =>$json, 'pagination' => ['more' => $more] ]);
-          
-        
-    }
 }   
     
