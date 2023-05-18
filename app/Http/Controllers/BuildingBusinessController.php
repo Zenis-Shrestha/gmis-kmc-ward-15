@@ -45,7 +45,7 @@ class BuildingBusinessController extends Controller
     {
         $pageTitle = "Business List";
         $wards = Ward::select('ward')->distinct()->orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
-
+        $businessMainTypes = BusinessTaxRate::pluck('businessmaintype','businessmaintype')->toArray();
         $taxStatuses = TaxStsCode::pluck('name', 'value');
         $yesNo = YesNo::pluck('name', 'value');
         $registration_status = BuildingBusiness::selectRaw("CASE WHEN registration_status THEN 'true' ELSE 'false' END AS registration_status_label, registration_status")
@@ -55,7 +55,7 @@ class BuildingBusinessController extends Controller
                 ->pluck('registration_status_label', 'registration_status');
 
 
-        return view('buildings-business.index', compact('pageTitle', 'wards', 'taxStatuses', 'yesNo', 'registration_status'));
+        return view('buildings-business.index', compact('pageTitle', 'wards', 'taxStatuses', 'yesNo', 'registration_status','businessMainTypes'));
     }
 
     public function getData(Request $request)
@@ -110,6 +110,16 @@ class BuildingBusinessController extends Controller
                 }
                 if ($request->registration_status) {
                     $query->where('registration_status', $request->registration_status);
+                }
+                if ($request->businessmaintype) {
+                   
+                   
+                    $query->where('businessmaintype', 'ilike', '%'.trim($request->businessmaintype).'%');
+                }
+                if ($request->businesstype) {
+                   
+                   
+                    $query->where('businesstype', 'ilike', '%'.trim($request->businesstype).'%');
                 }
             })
             ->addColumn('action', function ($model) {
