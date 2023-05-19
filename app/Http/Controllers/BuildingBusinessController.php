@@ -359,9 +359,11 @@ class BuildingBusinessController extends Controller
         $houseno = isset($_GET['houseno']) ? $_GET['houseno'] : null;
         $btxsts_select = isset($_GET['btxsts_select']) ? $_GET['btxsts_select'] : null;
         $registration = isset($_GET['registration']) ? $_GET['registration'] : null;
-        $columns = ['ward','roadname','houseno','bin','houseownername','ownerphone','houseownermail','businesowner','businessname','businesstype','category','businessoprdate','registration','oldinternalnumber','taxlastdate','rent','rentresponsible','businessownermobile','email','remarks'];
+        $businessmaintype = isset($_GET['businessmaintype']) ? $_GET['businessmaintype'] : null;
+        $businesstype = isset($_GET['businesstype']) ? $_GET['businesstype'] : null;
+        $columns = ['ward','roadname','houseno','bin','houseownername','ownerphone','houseownermail','businesowner','businessname','businesstype','category','businessoprdate','registration','oldinternalnumber','taxlastdate','rent','rentresponsible','businessownermobile','email','remarks', 'businessmaintype'];
 
-        $query = BuildingBusiness::select('ward','roadname','houseno','bin','houseownername','ownerphone','houseownermail','businesowner','businessname','businesstype','category','businessoprdate','registration','oldinternalnumber','taxlastdate','rent','rentresponsible','businessownermobile','email','remarks');
+        $query = BuildingBusiness::select('ward','roadname','houseno','bin','houseownername','ownerphone','houseownermail','businesowner','businessname','businesstype','category','businessoprdate','registration','oldinternalnumber','taxlastdate','rent','rentresponsible','businessownermobile','email','remarks','businessmaintype');
 
         if (!empty($searchData)) {
             foreach ($columns as $column) {
@@ -400,6 +402,14 @@ class BuildingBusinessController extends Controller
             $query->where('registration', 'ilike', '%'.trim($registration).'%');
         }
   
+        if (!empty($businessmaintype)) {
+
+            $query->where('businessmaintype', 'ilike', '%'.trim($businessmaintype).'%');
+        }
+        if (!empty($businesstype)) {
+
+            $query->where('businesstype', 'ilike', '%'.trim($businesstype).'%');
+        }
         $style = (new StyleBuilder())
             ->setFontBold()
             ->setFontSize(13)
@@ -434,6 +444,7 @@ class BuildingBusinessController extends Controller
             $values[] = $building->businessownermobile;
             $values[] = $building->email;
             $values[] = $building->remarks;
+            $values[] = $building->businessmaintype;
             $writer->addRow($values);
 
            }

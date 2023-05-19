@@ -185,7 +185,6 @@ $(function() {
       houseownername = $('#houseownername');
       btxsts_select = $('#btxsts_select');
       registration = $('#registration');
-      registration_status = $('#registration_status');
       businessmaintype = $('#businessmaintype');
       businesstype = $('#businesstype');
     });
@@ -199,7 +198,6 @@ $(function() {
         $('#houseownername').val('');
         $('#btxsts_select').val('');
         $('#registration').val('');
-        $('#registration_status').val('');
         $('#businessmaintype').val('');
         $('#businesstype').val('');
         $('#data-table').dataTable().fnDraw();
@@ -218,7 +216,9 @@ $(function() {
         var houseownername = $('#houseownername').val();
         var btxsts_select = $('#btxsts_select').val();
         var registration = $('#registration').val();
-        window.location.href="{!! url('buildings-business/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&houseno="+houseno+"&businessname="+businessname+"&businesowner="+businesowner+"&houseownername="+houseownername+"&btxsts_select="+btxsts_select+"&registration="+registration;
+        var businessmaintype = $('#businessmaintype').val();
+        var businesstype = $('#businesstype').val();
+        window.location.href="{!! url('buildings-business/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&houseno="+houseno+"&businessname="+businessname+"&businesowner="+businesowner+"&houseownername="+houseownername+"&btxsts_select="+btxsts_select+"&registration="+registration+"&businessmaintype="+businessmaintype+"&businesstype="+businesstype;
     });
     $("#export-shp").on("click", function(e) {
         e.preventDefault();
@@ -252,6 +252,9 @@ $(function() {
             var houseownername = $('#houseownername').val();
             var btxsts_select = $('#btxsts_select').val();
             var registration = $('#registration').val();
+            var registration_status = $('#registration_status').val();
+            var businessmaintype = $('#businessmaintype').val();
+            var businesstype = $('#businesstype').val();
        
         var cql_param = "1=1";
         if (bin) {
@@ -281,6 +284,15 @@ $(function() {
         }
         if (registration) {
             cql_param += " AND registration  = '" + registration + "'";
+        }
+        if (registration_status) {
+            cql_param += " AND registration_status  = '" + registration_status + "'";
+        }
+        if (businessmaintype) {
+            cql_param += " AND businessmaintype  = '" + businessmaintype + "'";
+        }
+        if (businesstype) {
+            cql_param += " AND businesstype  = '" + businesstype + "'";
         }
         return encodeURI(cql_param);
     }
