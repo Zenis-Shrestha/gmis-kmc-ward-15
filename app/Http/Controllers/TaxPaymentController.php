@@ -80,14 +80,14 @@ class TaxPaymentController extends Controller
             else {
                 return true;
             }
-        }, 'File must be csv/excel format');
+        }, 'File must be csv format');
         $this->validate($request,
-                ['excelfile' => 'required|file_extension:csv,xls,xlsx']
+                ['excelfile' => 'required|file_extension:csv']
         );
 
         if (!$request->hasfile('excelfile')) {
             
-            return redirect('tax-payment/data')->with('error','Excel file is required.');
+            return redirect('tax-payment/data')->with('error','CSV file is required.');
         }
         if ($request->hasFile('excelfile')) {
                 

@@ -22,11 +22,12 @@ class BuildingsInfoAreaExport implements FromView, WithTitle, WithEvents
        
         $geom = $this->geom;
         
-        $buildingQuery =  "SELECT b.gid, b.bin, b.ward, b.tole, b.haddr, b.hownr, b.yoc, b.flrcount, bu.name AS building_use, bc.name AS construction_type, t.name AS tax_status, s.strtnm AS street, ST_AsText(b.geom) AS geom
+        $buildingQuery =  "SELECT b.bin, b.ward, b.tole, b.haddr, b.hownr, b.yoc, b.flrcount, bu.name AS building_use, bc.name AS construction_type, s.strtnm AS street, due.name AS tax_status
         FROM bldg b
         LEFT JOIN building_use bu ON b.bldguse = bu.value
         LEFT JOIN building_construction bc ON b.consttyp = bc.value
-        LEFT JOIN tax_status_code t ON b.btxsts = t.value
+        left join bldg_tax_payment_status tax ON tax.bin = b.bin
+        left join due_years due ON due.value = tax.due_year
         LEFT JOIN street s ON b.strtcd = s.strtcd
         WHERE ST_Intersects(b.geom, ST_GeomFromText('$geom' , 4326))";
        

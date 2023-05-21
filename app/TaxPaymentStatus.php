@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class TaxPaymentStatus extends Model
 {
-    use HasFactory;
 
     protected $table = 'tax_payment_status';
     protected $primaryKey = 'bin';
