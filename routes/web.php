@@ -44,6 +44,7 @@ Route::get('buildings-rent/add', 'BuildingRentController@add')->name('buildings.
 Route::resource('buildings-rent', 'BuildingRentController', ['except' => ['create']]);
 
 Route::get('get-bin-numbers','BuildingController@getBinNumbers')->name('buildings.get-bin-numbers');
+Route::get('get-street-names','BuildingController@getStreetNames')->name('buildings.get-street-names');
 Route::get('get-wards', 'BuildingController@getWards')->name('buildings.get-wards');
 
 
