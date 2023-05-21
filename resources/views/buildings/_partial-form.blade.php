@@ -664,6 +664,24 @@ $(document).ready(function() {
                     }
                 });
             }
+            
+               
+               $('#strtcd').prepend('<option selected="">{{$building->strtcd ?? '' }}</option>').select2({
+                    ajax: {
+                        url:"{{ route('buildings.get-street-names') }}",
+                        data: function (params) {
+                            return {
+                                search: params.term,
+                                page: params.page || 1
+                            };
+                        },
+                    },
+                    placeholder: 'Street Name',
+                    allowClear: true,
+                    closeOnSelect: true,
+                });
+
+                  
         });
     </script>
 @endpush

@@ -101,19 +101,10 @@ class BuildingController extends Controller
               
                 }
 
-                
-
-                if ($request->sngwoman) {
-                    $query->where('sngwoman', '>', '0');
+                if ($request->strtcd) {
+                       $query->where('bldg.strtcd', $request->strtcd);
                 }
 
-                if ($request->gt60yr) {
-                    $query->where('gt60yr', '>', '0');
-                }
-
-                if ($request->dsblppl) {
-                    $query->where('dsblppl', '>', '0');
-                }
                 
             })
             ->addColumn('action', function ($model) {
@@ -494,9 +485,8 @@ class BuildingController extends Controller
         $bin = isset($_GET['bin']) ? $_GET['bin'] : null;
         $due_year = isset($_GET['due_year']) ? $_GET['due_year'] : null;
         $hownr = isset($_GET['hownr']) ? $_GET['hownr'] : null;
-        $sngwoman = isset($_GET['sngwoman']) ? $_GET['sngwoman'] : null;
-        $gt60yr = isset($_GET['gt60yr']) ? $_GET['gt60yr'] : null;
-        $dsblppl = isset($_GET['dsblppl']) ? $_GET['dsblppl'] : null;
+        $tole = isset($_GET['tole']) ? $_GET['tole'] : null;
+        $strtcd = isset($_GET['strtcd']) ? $_GET['strtcd'] : null;
         $ward = isset($_GET['ward']) ? $_GET['ward'] : null;
         
         
@@ -533,17 +523,14 @@ class BuildingController extends Controller
             $query->where('due.name', $due_year);
         }
 
-        if (!empty($sngwoman)) {
-            $query->where('bldg.sngwoman', '>', '0');
+        if ($tole) {
+            $query->where('bldg.tole', $tole);
         }
 
-        if (!empty($gt60yr)) {
-            $query->where('bldg.gt60yr', '>', '0');
+       if ($strtcd) {
+            $query->where('bldg.strtcd', $strtcd);
         }
 
-        if (!empty($dsblppl)) {
-            $query->where('bldg.dsblppl', '>', '0');
-        }
         
         $style = (new StyleBuilder())
             ->setFontBold()
@@ -672,7 +659,41 @@ class BuildingController extends Controller
         }
         return response()->json(['results' => $json, 'pagination' => ['more' => $more]]);
     }
+    public function getStreetNames(){
+       
+        $query = Street::select('strtcd', 'strtnm')->distinct()->orderBy('strtcd', 'ASC');
+        
     
+        if (request()->search) {
+            $query->where('strtcd', 'ILIKE', '%' . request()->search . '%');
+            $query->orWhere('strtnm', 'ILIKE', '%' . request()->search . '%');
+        }
+    
+        $total = $query->count();
+        $limit = 10;
+        if (request()->page) {
+            $page = request()->page;
+        } else {
+            $page = 1;
+        };
+        $start_from = ($page - 1) * $limit;
+    
+        $total_pages = ceil($total / $limit);
+        if ($page < $total_pages) {
+            $more = true;
+        } else {
+            $more = false;
+        }
+        $house_numbers = $query->offset($start_from)
+            ->limit($limit)
+            ->get();
+    
+        $json = [];
+        foreach ($house_numbers as $house_number) {
+            $json[] = ['id' => $house_number['strtcd'], 'text' => $house_number['strtcd'] . ' - ' .$house_number['strtnm']];
+        }
+        return response()->json(['results' => $json, 'pagination' => ['more' => $more]]);
+    }
 
 }   
     

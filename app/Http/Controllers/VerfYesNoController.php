@@ -6,7 +6,7 @@ use App\VerfYesNo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laracasts\Flash\Flash;
-use Yajra\Datatables\Facades\Datatables;
+use Datatables;
 
 class VerfYesNoController extends Controller
 {
