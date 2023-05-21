@@ -60,6 +60,16 @@
                         <div class="col-md-2"> 
                             <input type="text" class="form-control" id="registration" /></div>
                             
+                            <label for="businessmaintype" class="control-label col-md-2">Business Main Type</label>
+                                <div class="col-md-2">
+                                    <select class="form-control" id="businessmaintype">
+                                        <option value=""> Choose Business Main Type </option>
+                                        @foreach($businessMainTypes as $key => $value)
+                                            <option value="{{ $key }}">{{ $value }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                           
                            
 <!--                            <label class="control-label col-md-2" for="registration_status">Registration Status</label>
                             <div class="col-md-2"> 
@@ -72,7 +82,18 @@
                                 </div>-->
                     
                     </div>
-                   
+
+                    <div class="form-group">
+                  
+                
+                                <label for="businesstype" class="control-label col-md-2">Business Sub Type</label>
+                                <div class="col-md-2">
+                                    <select class="form-control" id="businesstype" placeholder="--- Choose Business Sub Type ---">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+
                     <div class="text-right">
                         <button type="submit" class="btn btn-info">Filter</button>
                         <button type="reset" class="btn btn-info reset">Reset</button>
@@ -124,6 +145,9 @@ $(function() {
                 d.btxsts_select = $('#btxsts_select').val();
                 d.registration = $('#registration').val();
                 d.registration_status = $('#registration_status').val();
+                d.businessmaintype = $('#businessmaintype').val();
+                d.businesstype = $('#businesstype').val();
+              
             }
         },
         columns: [
@@ -147,7 +171,7 @@ $(function() {
         "order": [[ 0, 'DESC' ]]
     });
 
-    var businessname = '', bin = '',  ward = '', road = '', taxcode = '', houseno = '', houseownername = '', businesowner = '', btxsts_select = '', registration = '';
+    var businessname = '', bin = '',  ward = '', road = '', taxcode = '', houseno = '', houseownername = '', businesowner = '', btxsts_select = '', registration = '', businessmaintype='', businesstype='';
 
     $('#filter-form').on('submit', function(e){
       e.preventDefault();
@@ -161,7 +185,8 @@ $(function() {
       houseownername = $('#houseownername');
       btxsts_select = $('#btxsts_select');
       registration = $('#registration');
-      registration_status = $('#registration_status');
+      businessmaintype = $('#businessmaintype');
+      businesstype = $('#businesstype');
     });
     $(".reset").on("click", function (e) {
 
@@ -173,7 +198,8 @@ $(function() {
         $('#houseownername').val('');
         $('#btxsts_select').val('');
         $('#registration').val('');
-        $('#registration_status').val('');
+        $('#businessmaintype').val('');
+        $('#businesstype').val('');
         $('#data-table').dataTable().fnDraw();
 
     })
@@ -190,7 +216,9 @@ $(function() {
         var houseownername = $('#houseownername').val();
         var btxsts_select = $('#btxsts_select').val();
         var registration = $('#registration').val();
-        window.location.href="{!! url('buildings-business/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&houseno="+houseno+"&businessname="+businessname+"&businesowner="+businesowner+"&houseownername="+houseownername+"&btxsts_select="+btxsts_select+"&registration="+registration;
+        var businessmaintype = $('#businessmaintype').val();
+        var businesstype = $('#businesstype').val();
+        window.location.href="{!! url('buildings-business/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&houseno="+houseno+"&businessname="+businessname+"&businesowner="+businesowner+"&houseownername="+houseownername+"&btxsts_select="+btxsts_select+"&registration="+registration+"&businessmaintype="+businessmaintype+"&businesstype="+businesstype;
     });
     $("#export-shp").on("click", function(e) {
         e.preventDefault();
@@ -224,6 +252,9 @@ $(function() {
             var houseownername = $('#houseownername').val();
             var btxsts_select = $('#btxsts_select').val();
             var registration = $('#registration').val();
+            var registration_status = $('#registration_status').val();
+            var businessmaintype = $('#businessmaintype').val();
+            var businesstype = $('#businesstype').val();
        
         var cql_param = "1=1";
         if (bin) {
@@ -254,8 +285,71 @@ $(function() {
         if (registration) {
             cql_param += " AND registration  = '" + registration + "'";
         }
+        if (registration_status) {
+            cql_param += " AND registration_status  = '" + registration_status + "'";
+        }
+        if (businessmaintype) {
+            cql_param += " AND businessmaintype  = '" + businessmaintype + "'";
+        }
+        if (businesstype) {
+            cql_param += " AND businesstype  = '" + businesstype + "'";
+        }
         return encodeURI(cql_param);
     }
+
+
+    
+    $('#businessmaintype').change(function(){
+                
+                   
+          var businessmaintype = $(this).val();
+           
+             $('#businesstype').html('<option value="">--- Choose Business Sub Type ---</option>');
+             
+             if(businessmaintype) {
+                 loadSubTypes(businessmaintype, null);
+             }
+         });
+
+
+        function loadSubTypes(businessmaintype, callback) {
+                    
+            $('#businesstype').html('<option value="">Loading...</option>');
+            //$('#businesstype').attr('disabled', 'disabled');
+            $.ajax({
+                
+                method: 'GET',
+                url: '{{ url("building-business/business-sub-types") }}',
+                data:{
+                    businesstype : encodeURIComponent(businessmaintype),
+                },
+                success: function(data) {
+                    data = $.parseJSON(data);
+                    var html = '<option value="">--- Choose Business Sub Type ---</option>';
+                    $.each(data, function(key, value){
+                html += '<option value="' + value + '">' + value + '</option>';
+                        });
+                        $('#businesstype').html(html);
+                        $('#businesstype').removeAttr('disabled');
+                        @if(isset($buildingBusiness)) 
+                        
+                    $("#businesstype option[value='<?php echo $buildingBusiness->businesstype;?>']").attr('selected', 'selected'); 
+                    @endif
+                        if(callback) {
+                callback(null);
+                        }
+                },
+                error: function() {
+                    $('#businesstype').html('<option value="">--- Choose Business Sub Type ---</option>');
+                    $('#businesstype').removeAttr('disabled');
+                    // Display error message
+                    callback('error occurred');
+                }
+            });
+        }
+            
+
+
 });
 </script>
 @endpush

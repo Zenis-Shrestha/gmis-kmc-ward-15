@@ -19,16 +19,15 @@ class TaxImport implements ToModel, WithHeadingRow, WithChunkReading,WithValidat
     
     public function model(array $row)
     {
-       
         $fiscal_year = explode("/",$row['fiscal_year']);
         $tax_paid_end_year = $fiscal_year[1] + 1;
         $tax_paid_end_at = $tax_paid_end_year.'-03-31';
         return new BldgTaxPayment([
             "bin" => $row['bin'],
+            "owner_name" => $row['owner_name'],
             "fiscal_year" => $row['fiscal_year'],
-            "tax_paid_end_at" => $tax_paid_end_at
+            "tax_paid_end_at" => $tax_paid_end_at,
            
-      
         ]);
     }
       
@@ -45,11 +44,16 @@ class TaxImport implements ToModel, WithHeadingRow, WithChunkReading,WithValidat
                 'required',
                 'integer',
             ],
+            'owner_name' => [
+                'nullable',
+                'string',
+            ],
              'fiscal_year' => [
                  'nullable',
                  'string',
              //'regex:/\d{1,2}\/\d{1,2}\/\d{4}/'
             ],
+           
         ];
     }
 
