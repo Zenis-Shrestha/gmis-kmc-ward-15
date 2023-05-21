@@ -32,7 +32,7 @@ class TaxPaymentController extends Controller
      */
     public function index()
     {
-         $pageTitle = "Building Tax Payments";
+        $pageTitle = "Building Tax Payments";
         $wards = Ward::orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
         $dueYears = DueYear::getInAscOrder();
         return view('taxpayment-info.index', compact('pageTitle','wards', 'dueYears'));
@@ -41,10 +41,11 @@ class TaxPaymentController extends Controller
     public function getData(Request $request)
     {
 
-        $buildingData = DB::table('bldg_tax_payment_status AS tax')
+        $buildingData = DB::table('bldg_tax_payments AS btp')
+                                ->leftjoin('bldg_tax_payment_status AS tax', 'tax.bldg_tax_payments_id', '=', 'btp.bin')
                                 ->leftjoin('due_years AS due', 'due.value', '=', 'tax.due_year')
                                 ->leftjoin('bldg AS b', 'tax.bin', '=', 'b.bin')
-                                ->select('tax.*', 'due.name', 'b.ward')
+                                ->select('btp.*', 'tax.ward', 'tax.ward', 'tax.match', 'due.name', 'b.ward')
                                 ->orderBy('tax.bin', 'DESC');
 
         return DataTables::of($buildingData)
@@ -112,11 +113,15 @@ class TaxPaymentController extends Controller
                     if (!in_array("bin", $headings[0][0])) {
                         $heading_row_errors['bin'] = "Heading row : bin is required";
                     }
-                    
+                    if (!in_array("owner_name", $headings[0][0])) {
+                        $heading_row_errors['owner_name'] = "Heading row : owner_name is required";
+                    }
                     if (!in_array("fiscal_year", $headings[0][0])) {
                         $heading_row_errors['fiscal_year'] = "Heading row : fiscal_year is required";
                     }
+                    
                     if (count($heading_row_errors) > 0) {
+                      
                     return back()->withErrors($heading_row_errors);
                     }
                     $today_nepali = NepaliCalendar::AD2BS(today());
@@ -146,7 +151,7 @@ class TaxPaymentController extends Controller
                         $message .= ' and no. of unmatched row is '.$unMatchCount.'.';
                     }
                     
-
+                    \DB::statement('select fnc_insrtupd_taxbuildowner()');
                     return redirect('tax-payment')->with('success',$message);
                     
                 }

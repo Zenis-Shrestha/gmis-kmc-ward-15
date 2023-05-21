@@ -1117,11 +1117,11 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                     clipLegend: true,
                     showCount: true
                 },
-                bldg_btxsts: {
-                    name: 'Building Tax Paid Status',
-                    clipLegend: true,
-                    showCount: true
-                },
+//                bldg_btxsts: {
+//                    name: 'Building Tax Paid Status',
+//                    clipLegend: true,
+//                    showCount: true
+//                },
                 bldg_sngwoman: {
                     name: 'Single Women',
                     clipLegend: true,
@@ -1158,14 +1158,14 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
             group: 'buildings',
         },
         
-//        bldg_tax_payment_status: {
-//            name: 'Tax Payment Status',
-//            styles: {},
-//            clipLegend: true,
-//            showCount: true,
-//            filters: [],
-//            group: 'buildings',
-//        },
+        bldg_tax_payment_status: {
+            name: 'Tax Payment Status',
+            styles: {},
+            clipLegend: true,
+            showCount: true,
+            filters: [],
+            group: 'buildings',
+        },
         
         @if(auth()->user()->can('Tax Payment Status Buildings Map Layer') || auth()->user()->can('Water Payment Status Map Layer'))
         @can('Tax Payment Status Buildings Map Layer')

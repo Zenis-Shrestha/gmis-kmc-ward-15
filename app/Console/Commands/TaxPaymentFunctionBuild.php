@@ -42,8 +42,7 @@ class TaxPaymentFunctionBuild extends Command
     {
         // function to create table
         DB::unprepared(Config::get('taxpayment-info.fnc_create_bldgtaxpaymentstatus'));
-        //DB::unprepared(Config::get('taxpayment-info.fnc_insrtupd_taxbuildowner'));
-
+        DB::unprepared(Config::get('taxpayment-info.fnc_insrtupd_taxbuildowner'));
 
         \Log::info("Functions to create table and update bldg after import successfully!!");
         $this->info('Functions to create table and update bldg after import successfully!!');
