@@ -42,6 +42,7 @@ class PermissionsTableSeeder extends Seeder
 //            array('name' => 'export-buildings-excel', 'display_name' => 'Export Buildings to Excel'),
 //            array('name' => 'export-buildings-shape', 'display_name' => 'Export Buildings to Shape'),
 //            array('name' => 'export-buildings-kml', 'display_name' => 'Export Buildings to KML'),
+            array('name' => 'export-buildings-pdf', 'display_name' => 'Export Buildings to PDF'),
 //            
 //            array('name' => 'list-streets', 'display_name' => 'List Streets'),
 //            array('name' => 'view-street', 'display_name' => 'View Street'),
@@ -126,12 +127,15 @@ class PermissionsTableSeeder extends Seeder
 //            array('name' => 'add-building-business', 'display_name' => 'Add Building Business'),
 //            array('name' => 'edit-building-business', 'display_name' => 'Edit Building Business'),
 //            array('name' => 'delete-building-business', 'display_name' => 'Delete Building Business'),
+             array('name' => 'export-buildings-business-pdf', 'display_name' => 'Export Buildings Business to PDF'),
+
 //            
 //            array('name' => 'list-buildings-rent', 'display_name' => 'List Building Rent'),
 //            array('name' => 'view-building-rent', 'display_name' => 'View Building Rent'),
 //            array('name' => 'add-building-rent', 'display_name' => 'Add Building Rent'),
 //            array('name' => 'edit-building-rent', 'display_name' => 'Edit Building Rent'),
 //            array('name' => 'delete-building-rent', 'display_name' => 'Delete Building Rent'),
+              array('name' => 'export-buildings-rent-pdf', 'display_name' => 'Export Buildings Rent to PDF'), 
             
 //            array('name' => 'export-buildings-rent-shape', 'display_name' => 'Export Building Rent Shape'),
 //            array('name' => 'export-buildings-rent-kml', 'display_name' => 'Export Building Rent KML'),
@@ -141,13 +145,23 @@ class PermissionsTableSeeder extends Seeder
             
             
             // array('name' => 'export-buildings-business-excel', 'display_name' => 'Export Building Business Excel'),
+
             // array('name' => 'export-buildings-rent-excel', 'display_name' => 'Export Building Rent Excel'),
             
-            array('name' => 'list-revenue', 'display_name' => 'List Revenue'),
-            array('name' => 'list-business-revenue', 'display_name' => 'List Business Revenue'),
-            array('name' => 'list-dashboard-revenue', 'display_name' => 'List Dashboard Revenue'),
-            array('name' => 'import-business-revenue', 'display_name' => 'Import Business Revenue'),
-            array('name' => 'export-business-revenue', 'display_name' => 'Export Business Revenue'),
+            // array('name' => 'list-revenue', 'display_name' => 'List Revenue'),
+            // array('name' => 'list-business-revenue', 'display_name' => 'List Business Revenue'),
+            // array('name' => 'list-dashboard-revenue', 'display_name' => 'List Dashboard Revenue'),
+            // array('name' => 'import-business-revenue', 'display_name' => 'Import Business Revenue'),
+            // array('name' => 'export-business-revenue', 'display_name' => 'Export Business Revenue'),
+
+
+
+            array('name' => 'list-data-import', 'display_name' => 'List Data Import'),
+            array('name' => 'list-buildings-tax', 'display_name' => 'List Building Tax'),
+
+            array('name' => 'import-building-tax-excel', 'display_name' => 'Import Building Tax Excel'),
+            array('name' => 'export-building-tax-excel', 'display_name' => 'Export Building Tax Excel'),
+
         );
 
         foreach ($permissions as $permission) {

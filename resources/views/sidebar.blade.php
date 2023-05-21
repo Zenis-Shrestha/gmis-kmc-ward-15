@@ -20,27 +20,24 @@
             </li>
             @endability
 
-            @ability('super-admin', 'list-business-revenue, list-dashboard-revenue')
+            @ability('super-admin', 'list-dashboard-revenue,   list-buildings-tax')
             <li class="treeview">
                 <a href="#"><i class="fa fa-upload" aria-hidden="true"></i><span>Revenue</span> <i class="fa fa-angle-left pull-right"></i></a>
                 <ul class="treeview-menu">
-                     @ability('super-admin', 'list-dashboard-revenue')
-                   <li><a href="{{ action('TaxPaymentDashboardController@index') }}"><i class="fa fa-circle-o"></i><span>Dashboard </span></a></li>
+                    @ability('super-admin', 'list-dashboard-revenue')
+                         <li  class="treeview"><a href="{{ action('TaxPaymentDashboardController@index') }}"><i class="fa fa-circle-o"></i><span>Dashboard </span></a></li>
                     @endability
                
-                     @ability('super-admin', 'list-business-revenue')
-                    <li><a href=""><i class="fa fa-circle-o"></i><span> Data Import </span> <i class="fa fa-angle-left pull-right"></i></a>
-                    <ul class="treeview-menu">
-                        @ability('super-admin', 'list-buildings')
-                        <li><a href="{{ action('TaxPaymentController@index') }}"><i class="fa fa-circle-o"></i>Building Tax</a></li>
-                        @endability
-<!--                         @ability('super-admin', 'list-business-revenue')
-                          <li><a href="{{ action('BusinessTaxPaymentController@index') }}"><i class="fa fa-circle-o"></i>Business Tax</a></li>
-                        @endability-->
-                          
-                            </ul>
-                    </li>   
-                    @endability
+                            @ability('super-admin', 'list-buildings-tax')
+                            <li  class="treeview"><a href=""><i class="fa fa-circle-o"></i><span> Data Import </span> <i class="fa fa-angle-left pull-right"></i></a>
+                                @ability('super-admin', 'list-buildings-tax')
+                                    <ul class="treeview-menu">
+                                    
+                                        <li  class="treeview"><a href="{{ action('TaxPaymentController@index') }}"><i class="fa fa-circle-o"></i>Building Tax</a></li>
+                                    </ul>
+                                @endability
+                            </li>   
+                            @endability
                 </ul>
             </li>
             @endability

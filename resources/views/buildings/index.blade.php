@@ -17,7 +17,9 @@
                 @ability('super-admin', 'export-buildings-kml')
                 <a href="#" id="export-kml" class="btn btn-info">Export to KML</a>
                 @endability
+                @ability('super-admin', 'export-buildings-pdf')
                 <a href="#" id="export-pdf" class="btn btn-info">Export to PDF</a>
+                @endability
             </div><!-- /.box-header -->
             <div class="box-body">
                 <form class="form-horizontal" id="filter-form">
