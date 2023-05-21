@@ -147,7 +147,7 @@ class BuildingController extends Controller
         $constructionTypes = BuildingConstr::pluck('name', 'value');
         $taxStatuses = TaxStsCode::pluck('name', 'value');
         $yesNo = YesNo::pluck('name', 'value');
-        $nextBin = Building::max('bin');
+        $nextBin = Building::max('bin') + 1;
 
         return view('buildings.add', compact('pageTitle', 'wards', 'streets', 'buildingUses', 'constructionTypes', 'taxStatuses', 'yesNo', 'nextBin'));
     }
@@ -170,7 +170,7 @@ class BuildingController extends Controller
         }, 'File must be kml format');
         
         $this->validate($request, [
-            'bin' => 'required|unique:bldg,bin',
+            //'bin' => 'required|unique:bldg,bin',
             'yoc' => 'numeric',
             'flrcount' => 'numeric',
             'consttyp' => 'numeric',
@@ -193,7 +193,7 @@ class BuildingController extends Controller
         ]);
 
         $building = new Building();
-        $building->bin = Building::max('bin');
+        $building->bin = Building::max('bin') + 1;
         $building->bldgcd = $request->bldgcd ? $request->bldgcd : null;
         $building->ward = $request->ward ? $request->ward : null;
         $building->tole = $request->tole ? $request->tole : null;
