@@ -842,8 +842,9 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
 //    console.log(mapbounds);
 //    console.log(mapbounds.transform('EPSG:4326', 'EPSG:3857'));
     // URL of GeoServer
-    var gurl = "<?php echo Config::get("constants.GURL_URL"); ?>/";
-    //var gurl = "http://localhost:8080/geoserver/dharan_gmis/";
+  
+     var gurl = "http://10.10.10.15:8080/geoserver/dharan_gmis/";
+    // var gurl = "http://localhost:8080/geoserver/dharan_gmis/";
     var gurl_wms = gurl + 'wms';
     var gurl_wfs = gurl + 'wfs';
     // URL of GeoServer Legends
@@ -1019,7 +1020,6 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         bldg_gt60yr: '',
         bldg_dsblppl: '',
         bylaw: '',
-        businessmaintype: '',
     };
 
     // Overlays Group Object
@@ -1199,6 +1199,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                     clipLegend: true,
                     showCount: true
                 },
+               
             },
             clipLegend: true,
           
@@ -4433,7 +4434,7 @@ popupAreaCloser.onclick = function() {
 
         updateAllCQLFiltersParams();
     });
-
+   
     // Add handler to water logging area filter checkbox change
     /*
     $('#watlog_checkbox').on('change', function(){
@@ -4484,6 +4485,7 @@ popupAreaCloser.onclick = function() {
 
     function updateAllCQLFiltersParams() {
         $.each(mLayer, function(key, value){
+          
             updateCQLFilterParams(key);
         });
     }

@@ -17,8 +17,10 @@
                 @ability('super-admin', 'export-buildings-business-kml')
                 <a href="#" id="export-kml" class="btn btn-info">Export to KML</a>
                 @endability
-                
+                @ability('super-admin', 'export-buildings-business-pdf')
                 <a href="#" id="export-pdf" class="btn btn-info">Export to PDF</a>
+                @endability
+              
                
             </div><!-- /.box-header -->
             <div class="box-body">
