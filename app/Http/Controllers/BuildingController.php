@@ -24,6 +24,8 @@ use DomXpath;
 use DB;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
+use App\DueYear;
+use App\BuildingOwner;
 
 class BuildingController extends Controller
 {
@@ -46,7 +48,7 @@ class BuildingController extends Controller
     {
         $pageTitle = "Building List";
         $wards = Ward::orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
-        $taxStatuses = TaxStsCode::pluck('name', 'value');
+        $dueYears = DueYear::getInAscOrder();
         $yesNo = YesNo::pluck('name', 'value');
         $currentYear = "2080";
         $yearOfConstruction = DB::table('bldg')
@@ -57,32 +59,30 @@ class BuildingController extends Controller
                             ->pluck('yoc');
         
 
-        return view('buildings.index', compact('pageTitle', 'wards', 'taxStatuses', 'yesNo','yearOfConstruction'));
+        return view('buildings.index', compact('pageTitle', 'wards', 'dueYears', 'yesNo','yearOfConstruction'));
     }
 
     public function getData(Request $request)
     {
-        //$buildingData = Building::select('gid', 'bin', 'bldgcd', 'ward', 'tole', 'toilyn', 'btxsts', 'sngwoman', 'gt60yr', 'dsblppl')
-        //                                ->with('toilynYesNo')
-        //                                ->with('taxStsCode');
-
-        
+       
         $buildingData = DB::table('bldg')
-        ->leftJoin('yes_no', 'bldg.toilyn', '=', 'yes_no.value')
-        ->leftJoin('tax_status_code', 'bldg.btxsts', '=', 'tax_status_code.value')
-        ->select('bldg.*', 'tax_status_code.name AS taxName', 'tax_status_code.value AS taxVal', 'yes_no.name AS ynName', 'yes_no.value AS ynVal');
-
+        ->leftJoin('bldg_tax_payment_status AS tax', 'bldg.bin', '=', 'tax.bin')
+        ->leftjoin('due_years AS due', 'due.value', '=', 'tax.due_year')
+        ->leftjoin('bldg_owners AS bo', 'bo.bin', '=', 'bldg.bin')
+        ->select('bldg.*', 'due.name AS taxName', 'tax.due_year', 'bo.owner_name AS owner_name')
+        
+    ;
 
 
         return Datatables::of($buildingData)
             ->filter(function ($query) use ($request) {
                
                 if ($request->bin) {
-                    $query->where('bin', $request->bin);
+                    $query->where('bldg.bin', $request->bin);
                 }
 
                 if ($request->ward) {
-                    $query->where('ward', $request->ward);
+                    $query->where('bldg.ward', $request->ward);
                 }
                 
                 if ($request->yoc) {
@@ -91,14 +91,17 @@ class BuildingController extends Controller
                   
                 }
 
-                if ($request->toilyn) {
-                    $query->where('toilyn', $request->toilyn);
+                if ($request->hownr) {
+                    $query->where('bo.owner_name', $request->hownr);
                 }
 
-                if ($request->btxsts || $request->btxsts == '0') {
-                    $query->where('btxsts', $request->btxsts);
+                if ($request->due_year) {
                     
+                    $query->where('due.name', $request->due_year);
+              
                 }
+
+                
 
                 if ($request->sngwoman) {
                     $query->where('sngwoman', '>', '0');
@@ -153,8 +156,9 @@ class BuildingController extends Controller
         $constructionTypes = BuildingConstr::pluck('name', 'value');
         $taxStatuses = TaxStsCode::pluck('name', 'value');
         $yesNo = YesNo::pluck('name', 'value');
+        $nextBin = Building::max('bin');
 
-        return view('buildings.add', compact('pageTitle', 'wards', 'streets', 'buildingUses', 'constructionTypes', 'taxStatuses', 'yesNo'));
+        return view('buildings.add', compact('pageTitle', 'wards', 'streets', 'buildingUses', 'constructionTypes', 'taxStatuses', 'yesNo', 'nextBin'));
     }
 
     /**
@@ -182,7 +186,7 @@ class BuildingController extends Controller
             'toilyn' => 'numeric',
             'hhcount' => 'numeric',
             'hhpop' => 'numeric',
-            'btxsts' => 'numeric',
+            'due_year' => 'numeric',
             'flrar' => 'numeric',
             'bprmtno' => 'numeric',
             'haddrplt' => 'numeric',
@@ -191,14 +195,14 @@ class BuildingController extends Controller
             'sngwoman'  => 'numeric',
             'gt60yr' => 'numeric',
             'dsblppl' => 'numeric',
-            'house_new_photo' => 'required|image|mimes:png,jpg,jpeg',
+            'house_new_photo' => 'image|mimes:png,jpg,jpeg',
             'footprint_option' => 'required',
             'kml_file' => 'required_if:footprint_option,==,upload_kml|file_extension:kml',
             'geom' => 'required_if:footprint_option,==,draw_plygon',
         ]);
 
         $building = new Building();
-        $building->bin = $request->bin ? $request->bin : null;
+        $building->bin = Building::max('bin');
         $building->bldgcd = $request->bldgcd ? $request->bldgcd : null;
         $building->ward = $request->ward ? $request->ward : null;
         $building->tole = $request->tole ? $request->tole : null;
@@ -207,7 +211,7 @@ class BuildingController extends Controller
         $building->haddrplt = $request->haddrplt ? $request->haddrplt : null;
         $building->strtcd = $request->strtcd ? $request->strtcd : null;
         $building->bldguse = $request->bldguse ? $request->bldguse : 0;
-        $building->hownr = $request->hownr ? $request->hownr : null;
+        //$building->hownr = $request->hownr ? $request->hownr : null;
         $building->yoc = $request->yoc ? $request->yoc : null;
         $building->flrcount = $request->flrcount ? $request->flrcount : null;
         $building->consttyp = $request->consttyp ? $request->consttyp : 0;
@@ -216,7 +220,7 @@ class BuildingController extends Controller
         $building->hhpop = $request->hhpop ? $request->hhpop : null;
         $building->txpyrid = $request->txpyrid ? $request->txpyrid : null;
         $building->txpyrname = $request->txpyrname ? $request->txpyrname : null;
-        $building->btxsts = $request->btxsts ? $request->btxsts : 99;
+        //$building->due_year = $request->due_year ? $request->due_year : 99;
         $building->sngwoman = $request->sngwoman ? $request->sngwoman : 0;
         $building->gt60yr = $request->gt60yr ? $request->gt60yr : 0; 
         $building->flrar = $request->flrar ? $request->flrar : null;
@@ -227,6 +231,13 @@ class BuildingController extends Controller
         $building->geom = $request->geom ? DB::raw("ST_Multi(ST_GeomFromText('" . $request->geom . "', 4326))") : null;
         }
         $building->save();
+        
+        $owner = new BuildingOwner();
+        $owner->bin = $request->bin;
+        $owner->owner_name = $request->hownr ? $request->hownr : null;
+        $owner->save();
+        
+        
         if($request->hasFile('kml_file') && $request->footprint_option == 'upload_kml') {
             $xml = new DOMDocument();
             $xml->load($request->kml_file);
@@ -287,6 +298,12 @@ class BuildingController extends Controller
        
         $building['photo_path'] = $photo_path;
         if ($building) {
+            $owner = BuildingOwner::select('*')->where('bin', $id)->first();
+            if($owner)
+            {
+                $building->owner_name = $owner->owner_name;
+
+            }
             $pageTitle = "Building Details";
 
             return view('buildings.show', compact('pageTitle', 'building', 'photo_path'));
@@ -304,17 +321,26 @@ class BuildingController extends Controller
     public function edit($id)
     {
         $building = Building::find($id);
+        $geomArr = DB::select("SELECT ST_X(ST_AsText(ST_Centroid(ST_Centroid(geom)))) AS long, ST_Y(ST_AsText(ST_Centroid(ST_Centroid(geom)))) AS lat, ST_AsText(geom) AS geom FROM bldg WHERE bin = $id");
+        $geom = ($geomArr[0]->geom);
+        $lat = $geomArr[0]->lat;
+        $long = $geomArr[0]->long;
         $wards = Ward::orderBy('ward')->pluck('ward', 'ward');
         $streets = Street::orderBy('strtcd')->pluck('strtcd', 'strtcd');
         $buildingUses = BuildingUse::pluck('name', 'value');
         $constructionTypes = BuildingConstr::pluck('name', 'value');
         $taxStatuses = TaxStsCode::pluck('name', 'value');
         $yesNo = YesNo::pluck('name', 'value');
-        $geomArr = DB::select("SELECT ST_X(ST_AsText(ST_Centroid(ST_Centroid(geom)))) AS long, ST_Y(ST_AsText(ST_Centroid(ST_Centroid(geom)))) AS lat, ST_AsText(geom) AS geom FROM bldg WHERE bin = $id");
-        $geom = ($geomArr[0]->geom);
+        
         if ($building) {
+             $owner = BuildingOwner::select('*')->where('bin', $id)->first();
+                if($owner)
+                {
+                    $building->owner_name = $owner->owner_name;
+                   
+                }
             $pageTitle = "Edit Building";
-            return view('buildings.edit', compact('pageTitle', 'building',  'wards', 'streets', 'buildingUses', 'constructionTypes', 'taxStatuses', 'yesNo', 'geom'));
+            return view('buildings.edit', compact('pageTitle', 'building',  'wards', 'streets', 'buildingUses', 'constructionTypes', 'taxStatuses', 'yesNo', 'geom', 'lat', 'long'));
         } else {
             abort(404);
         }
@@ -340,14 +366,14 @@ class BuildingController extends Controller
         $building = Building::find($id);
         if ($building) {
             $this->validate($request, [
-                'bin' => 'required|unique:bldg,bin,' . $id . ',bin',
+                //'bin' => 'required|unique:bldg,bin,' . $id . ',bin',
                 'yoc' => 'numeric',
                 'flrcount' => 'numeric',
                 'consttyp' => 'numeric',
                 'toilyn' => 'numeric',
                 'hhcount' => 'numeric',
                 'hhpop' => 'numeric',
-                'btxsts' => 'numeric',
+                'due_year' => 'numeric',
                 'flrar' => 'numeric',
                 'bprmtno' => 'numeric',
                 'haddrplt' => 'numeric',
@@ -361,7 +387,7 @@ class BuildingController extends Controller
                 //'geom' => 'required_if:footprint_option,==,draw_plygon',
             ]);
 
-        $building->bin = $request->bin ? $request->bin : null;
+        //$building->bin = $request->bin ? $request->bin : null;
         $building->bldgcd = $request->bldgcd ? $request->bldgcd : null;
         $building->ward = $request->ward ? $request->ward : null;
         $building->tole = $request->tole ? $request->tole : null;
@@ -370,7 +396,7 @@ class BuildingController extends Controller
         $building->haddrplt = $request->haddrplt ? $request->haddrplt : null;
         $building->strtcd = $request->strtcd ? $request->strtcd : null;
         $building->bldguse = $request->bldguse ? $request->bldguse : 0;
-        $building->hownr = $request->hownr ? $request->hownr : null;
+        //$building->hownr = $request->hownr ? $request->hownr : null;
         $building->yoc = $request->yoc ? $request->yoc : null;
         $building->flrcount = $request->flrcount ? $request->flrcount : null;
         $building->consttyp = $request->consttyp ? $request->consttyp : 0;
@@ -379,7 +405,7 @@ class BuildingController extends Controller
         $building->hhpop = $request->hhpop ? $request->hhpop : null;
         $building->txpyrid = $request->txpyrid ? $request->txpyrid : null;
         $building->txpyrname = $request->txpyrname ? $request->txpyrname : null;
-        $building->btxsts = $request->btxsts ? $request->btxsts : 99;
+        //$building->due_year = $request->due_year ? $request->due_year : 99;
         $building->sngwoman = $request->sngwoman ? $request->sngwoman : 0;
         $building->gt60yr = $request->gt60yr ? $request->gt60yr : 0; 
         $building->flrar = $request->flrar ? $request->flrar : null;
@@ -391,7 +417,10 @@ class BuildingController extends Controller
         }
         $building->save();
         
-        $building->save();
+        $owner = BuildingOwner::where('bin',$id)->first();
+        $owner->owner_name = $request->hownr ? $request->hownr : null;
+        $owner->save();
+        
         if($request->hasFile('kml_file') && $request->footprint_option == 'upload_kml') {
             $xml = new DOMDocument();
             $xml->load($request->kml_file);
@@ -463,18 +492,24 @@ class BuildingController extends Controller
 
         $searchData = isset($_GET['searchData']) ? $_GET['searchData'] : null;
         $bin = isset($_GET['bin']) ? $_GET['bin'] : null;
-        $btxsts = isset($_GET['btxsts']) ? $_GET['btxsts'] : null;
-        $toilyn = isset($_GET['toilyn']) ? $_GET['toilyn'] : null;
+        $due_year = isset($_GET['due_year']) ? $_GET['due_year'] : null;
+        $hownr = isset($_GET['hownr']) ? $_GET['hownr'] : null;
         $sngwoman = isset($_GET['sngwoman']) ? $_GET['sngwoman'] : null;
         $gt60yr = isset($_GET['gt60yr']) ? $_GET['gt60yr'] : null;
         $dsblppl = isset($_GET['dsblppl']) ? $_GET['dsblppl'] : null;
         $ward = isset($_GET['ward']) ? $_GET['ward'] : null;
         
         
-        $columns = ['bin','bldgcd','ward','tole','oldhno','haddr','haddrplt','strtcd','imgfl','addrzn','zonecode','bldgasc','bldguse','offcnm','hownr','prclkey','yoc','flrcount','flrar','consttyp','elecyn','bprmtyn','bprmtno','buildvflag','drnkwtr','wtrcons','toilyn','wwdischg','swsegyn','sngwoman','hhcount','hhpop','gt60yr','dsblppl','datsrc','txpyrname','txpyrid','btxyr','btxsts'];
-
-        $query = Building::select('bin','bldgcd','ward','tole','oldhno','haddr','haddrplt','strtcd','imgfl','addrzn','zonecode','bldgasc','bldguse','offcnm','hownr','prclkey','yoc','flrcount','flrar','consttyp','elecyn','bprmtyn','bprmtno','buildvflag','drnkwtr','wtrcons','toilyn','wwdischg','swsegyn','sngwoman','hhcount','hhpop','gt60yr','dsblppl','datsrc','txpyrname','txpyrid','btxyr','btxsts');
-        //var_dump($query);die;
+        $columns = ['bin','bldgcd','ward','tole','oldhno','haddr','haddrplt','strtcd','imgfl','addrzn','zonecode','bldgasc','bldguse','offcnm','hownr','prclkey','yoc','flrcount','flrar','consttyp','elecyn','bprmtyn','bprmtno','buildvflag','drnkwtr','wtrcons','toilyn','wwdischg','swsegyn','sngwoman','hhcount','hhpop','gt60yr','dsblppl','datsrc','txpyrname','txpyrid','btxyr'];
+        
+//        $query = DB::table('bldg')
+//        ->leftJoin('bldg_tax_payment_status AS tax', 'bldg.bin', '=', 'tax.bin')
+//        ->leftjoin('due_years AS due', 'due.value', '=', 'tax.due_year')
+//        ->select('bldg.bin','bldg.bldgcd','bldg.ward','bldg.tole','bldg.oldhno','bldg.haddr','bldg.haddrplt','bldg.strtcd','bldg.imgfl','bldg.addrzn','bldg.zonecode','bldg.bldgasc','bldg.bldguse','bldg.offcnm','bldg.hownr','bldg.prclkey','bldg.yoc','bldg.flrcount','bldg.flrar','bldg.consttyp','bldg.elecyn','bldg.bprmtyn','bldg.bprmtno','bldg.buildvflag','bldg.drnkwtr','bldg.wtrcons','bldg.toilyn','bldg.wwdischg','bldg.swsegyn','bldg.sngwoman','bldg.hhcount','bldg.hhpop','bldg.gt60yr','bldg.dsblppl','bldg.datsrc','bldg.txpyrname','bldg.txpyrid','bldg.btxyr')
+//        ;
+       
+        $query = Building::select('bin','bldgcd','ward','tole','oldhno','haddr','haddrplt','strtcd','imgfl','addrzn','zonecode','bldgasc','bldguse','offcnm','hownr','prclkey','yoc','flrcount','flrar','consttyp','elecyn','bprmtyn','bprmtno','buildvflag','drnkwtr','wtrcons','toilyn','wwdischg','swsegyn','sngwoman','hhcount','hhpop','gt60yr','dsblppl','datsrc','txpyrname','txpyrid','btxyr');
+        
         if (!empty($searchData)) {
             foreach ($columns as $column) {
                 $query->orWhereRaw("lower(cast(" . $column . " AS varchar)) LIKE lower('%" . $searchData . "%')");
@@ -483,33 +518,33 @@ class BuildingController extends Controller
         }
 
         if (!empty($bin)) {
-            $query->where('bin', $bin);
+            $query->where('bldg.bin', $bin);
         }
 
         if (!empty($ward)) {
-            $query->where('ward', $ward);
+            $query->where('bldg.ward', $ward);
         }
 
-        if (!empty($toilyn)) {
-            $query->where('toilyn', $toilyn);
+        if (!empty($hownr)) {
+            $query->where('tax.owner_name', $hownr);
         }
 
-        if (!empty($btxsts) || $btxsts == '0') {
-            $query->where('btxsts', $btxsts);
+        if ($due_year) {
+            $query->where('due.name', $due_year);
         }
 
         if (!empty($sngwoman)) {
-            $query->where('sngwoman', '>', '0');
+            $query->where('bldg.sngwoman', '>', '0');
         }
 
         if (!empty($gt60yr)) {
-            $query->where('gt60yr', '>', '0');
+            $query->where('bldg.gt60yr', '>', '0');
         }
 
         if (!empty($dsblppl)) {
-            $query->where('dsblppl', '>', '0');
+            $query->where('bldg.dsblppl', '>', '0');
         }
-
+        
         $style = (new StyleBuilder())
             ->setFontBold()
             ->setFontSize(13)
@@ -519,10 +554,11 @@ class BuildingController extends Controller
         $writer = WriterFactory::create(Type::CSV);
         $writer->openToBrowser('Buildings.csv')
             ->addRowWithStyle($columns, $style); //Top row of excel
-
+      
         $query->chunk(100, function ($buildings) use ($writer) {
+
             foreach($buildings as $building) {
-                
+          
                 $values = [];
                 $values[] = $building->bin;
                 $values[] = $building->bldgcd;
@@ -538,7 +574,7 @@ class BuildingController extends Controller
                 $values[] = $building->bldgasc;
                 $values[] = $building->bldguse;
                 $values[] = $building->offcnm;
-                $values[] = $building->hownr;
+                
                 $values[] = $building->prclkey;
                 $values[] = $building->yoc;
                 $values[] = $building->flrcount;
@@ -562,7 +598,7 @@ class BuildingController extends Controller
                 $values[] = $building->txpyrname;
                 $values[] = $building->txpyrid;
                 $values[] = $building->btxyr;
-                $values[] = $building->btxsts;
+                
                 $writer->addRow($values);
             }
             

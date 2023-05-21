@@ -84,9 +84,9 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('hownr', __('House Owner Name'), ['class' => 'col-sm-3 control-label']) !!}
+                {!! Form::label('owner_name', __('House Owner Name'), ['class' => 'col-sm-3 control-label']) !!}
                 <div class="col-sm-3">
-                    {!! Form::label(null, $building->hownr, ['class' => 'form-control']) !!}
+                    {!! Form::label(null, $building->owner_name, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">

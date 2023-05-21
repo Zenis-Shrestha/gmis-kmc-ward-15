@@ -33,20 +33,14 @@
                             @endforeach
                         </select>
                         </div>
-                        <label class="control-label col-md-2" for="toilyn_select">Toilet</label>
-                        <div class="col-md-2"><select class="form-control" id="toilyn_select">
-                            <option value="">All</option>
-                            @foreach($yesNo as $key=>$value)
-                            <option value="{{$key}}">{{$value}}</option>
-                            @endforeach
-                        </select>
-                        </div>
+                        <label class="control-label col-md-2" for="hownr">House Owner</label>
+                        <div class="col-md-2"> <input type="text" class="form-control" id="hownr" /></div>
                     </div>
                      <div class="form-group">
                             <label class="control-label col-md-2" for="btxsts_select">Tax Paid Status</label>
                                 <div class="col-md-2"> <select class="form-control" id="btxsts_select">
                                     <option value="">All</option>
-                                    @foreach($taxStatuses as $key=>$value)
+                                    @foreach($dueYears as $key=>$value)
                                     <option value="{{$key}}">{{$value}}</option>
                                     @endforeach
                                     </select>
@@ -91,7 +85,7 @@
                             <th>{{ __('Code') }}</th>
                             <th>{{ __('Ward') }}</th>
                             <th>{{ __('Place/Location') }}</th>
-                            <th>{{ __('Toilet') }}</th>
+                            <th>{{ __('House Owner') }}</th>
                             <th>{{ __('Tax Paid Status') }}</th>
                             <th>{{ __('Year of Contruction') }}</th>
                             <th>{{ __('No. of Single Women') }}</th>
@@ -119,8 +113,8 @@ $(function() {
             data: function(d) {
                 d.bin = $('#bin_text').val();
                 d.ward = $('#ward_select').val();
-                d.toilyn = $('#toilyn_select').val();
-                d.btxsts = $('#btxsts_select').val();
+                d.hownr = $('#hownr').val();
+                d.due_year = $('#btxsts_select').val();
                 d.yoc = $('#yoc_select').val();
                 d.sngwoman = $('#sngwoman_checkbox').is(':checked') ? '1' : '';
                 d.gt60yr = $('#gt60yr_checkbox').is(':checked') ? '1' : '';
@@ -132,8 +126,8 @@ $(function() {
             {data: 'bldgcd', name: 'bldgcd'},
             {data: 'ward', name: 'ward'},
             {data: 'tole', name: 'tole'},
-            {data: 'ynName', name: 'ynVal'},
-            {data: 'taxName', name: 'taxVal'},
+            {data: 'owner_name', name: 'owner_name'},
+            {data: 'taxName', name: 'taxName'},
             {data: 'yoc', name: 'yoc'},
             {data: 'sngwoman', name: 'sngwoman'},
             {data: 'gt60yr', name: 'gt60yr'},
@@ -143,15 +137,15 @@ $(function() {
         "order": [[ 0, 'DESC' ]]
     });
 
-    var bin = '',  ward = '', toilyn = '', btxsts = '', sngwoman = '', dsblppl = '', gt60yr ='', yoc ='';
+    var bin = '',  ward = '', hownr = '', due_year = '', sngwoman = '', dsblppl = '', gt60yr ='', yoc ='';
 
     $('#filter-form').on('submit', function(e){
       e.preventDefault();
       dataTable.draw();
       bin = $('#bin_text').val();
       ward = $('#ward_select').val();
-      toilyn = $('#toilyn_select').val();
-      btxsts = $('#btxsts_select').val();
+      hownr = $('#hownr').val();
+      due_year = $('#btxsts_select').val();
       yoc = $('#yoc_select').val();
       sngwoman = $('#sngwoman_checkbox').is(':checked') ? '1' : '';
       gt60yr = $('#gt60yr_checkbox').is(':checked') ? '1' : '';
@@ -164,7 +158,7 @@ $(function() {
 
                 $('#bin_text').val('');
                 $('#ward_select option:selected').removeAttr('selected');
-                $('#toilyn_select option:selected').removeAttr('selected');
+                $('#hownr').val('');
                 $('#btxsts_select option:selected').removeAttr('selected');
                 $('#yoc_select option:selected').removeAttr('selected');
                 $('#sngwoman_checkbox').prop('checked', false); // Unchecks it
@@ -179,13 +173,13 @@ $(function() {
         var searchData=$('input[type=search]').val();
         var bin = $('#bin_text').val();
         var ward = $('#ward_select').val();
-        var toilyn = $('#toilyn_select').val();
-        var btxsts = $('#btxsts_select').val();
+        var hownr = $('#hownr').val();
+        var due_year = $('#btxsts_select').val();
         var yoc = $('#yoc_select').val();
         var sngwoman = $('#sngwoman_checkbox').is(':checked') ? '1' : '';
         var gt60yr = $('#gt60yr_checkbox').is(':checked') ? '1' : '';
         var dsblppl = $('#dsblppl_checkbox').is(':checked') ? '1' : '';
-        window.location.href="{!! url('buildings/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&toilyn="+toilyn+"&btxsts="+btxsts+"&yoc="+yoc+"&sngwoman="+sngwoman+"&gt60yr="+gt60yr+"&dsblppl="+dsblppl;
+        window.location.href="{!! url('buildings/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&hownr="+hownr+"&due_year="+due_year+"&yoc="+yoc+"&sngwoman="+sngwoman+"&gt60yr="+gt60yr+"&dsblppl="+dsblppl;
     });
 
 
@@ -214,8 +208,8 @@ $(function() {
     function getCQLParams() {
             bin = $('#bin_text').val();
             ward = $('#ward_select').val();
-            toilyn = $('#toilyn_select').val();
-            btxsts = $('#btxsts_select').val();
+            hownr = $('#hownr').val();
+            due_year = $('#btxsts_select').val();
             var sngwoman = $('#sngwoman_checkbox').is(':checked') ? '1' : '';
             var gt60yr = $('#gt60yr_checkbox').is(':checked') ? '1' : '';
             var dsblppl = $('#dsblppl_checkbox').is(':checked') ? '1' : '';
@@ -231,12 +225,12 @@ $(function() {
         }
         
         
-        if (btxsts == '0') {
-            cql_param += " AND btxsts = '" + btxsts + "'";
+        if (due_year == '0') {
+            cql_param += " AND due_year = '" + due_year + "'";
         }
         
-        if (toilyn) {
-            cql_param += " AND toilyn = '" + toilyn + "'";
+        if (hownr) {
+            cql_param += " AND hownr = '" + hownr + "'";
         }
         if (gt60yr) {
             cql_param += " AND gt60yr > 0";

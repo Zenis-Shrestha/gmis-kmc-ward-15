@@ -31,12 +31,12 @@
                      @ability('super-admin', 'list-business-revenue')
                     <li><a href=""><i class="fa fa-circle-o"></i><span> Data Import </span> <i class="fa fa-angle-left pull-right"></i></a>
                     <ul class="treeview-menu">
-<!--                            @ability('super-admin', 'list-buildings')
+                        @ability('super-admin', 'list-buildings')
                         <li><a href="{{ action('TaxPaymentController@index') }}"><i class="fa fa-circle-o"></i>Building Tax</a></li>
-                        @endability-->
-                         @ability('super-admin', 'list-business-revenue')
-                          <li><a href="{{ action('BusinessTaxPaymentController@index') }}"><i class="fa fa-circle-o"></i>Business Tax</a></li>
                         @endability
+<!--                         @ability('super-admin', 'list-business-revenue')
+                          <li><a href="{{ action('BusinessTaxPaymentController@index') }}"><i class="fa fa-circle-o"></i>Business Tax</a></li>
+                        @endability-->
                           
                             </ul>
                     </li>   
@@ -72,9 +72,9 @@
                     @ability('super-admin', 'list-water-srcs')
                     <li><a href="{{ action('DrnkWtrSrcController@index') }}"><i class="fa fa-circle-o"></i>Drinking Water Sources</a></li>
                     @endability
-                    @ability('super-admin', 'list-tax-sts-codes')
+<!--                    @ability('super-admin', 'list-tax-sts-codes')
                     <li><a href="{{ action('TaxStsCodeController@index') }}"><i class="fa fa-circle-o"></i>Tax Status Codes</a></li>
-                    @endability
+                    @endability-->
                     @ability('super-admin', 'list-drainages')
                     <li><a href="{{ action('DrainageController@index') }}"><i class="fa fa-circle-o"></i>Drainages</a></li>
                     @endability
