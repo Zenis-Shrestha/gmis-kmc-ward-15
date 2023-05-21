@@ -10,7 +10,7 @@ class BldgTaxPayment extends Model
     
     protected $table = 'bldg_tax_payments';
     protected $fillable = [
-        'bin', 'fiscal_year', 'tax_paid_end_at'
+        'bin', 'owner_name', 'fiscal_year', 'tax_paid_end_at'
         
     ];
     public static function selectAll(){

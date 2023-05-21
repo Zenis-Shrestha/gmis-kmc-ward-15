@@ -50,7 +50,11 @@
     <div class="form-group col-md-6">
         {!! Form::label('bin', __('Building Identification Number'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
-            {!! Form::text('bin', null, ['class' => 'form-control', 'placeholder' => __('Building Identification Number')]) !!}
+            @if(isset($building))
+            {!! Form::label('bin', $building->bin, ['class' => 'form-control', 'placeholder' => __('Building Identification Number')]) !!}
+            @else
+            {!! Form::label('bin', $nextBin, ['class' => 'form-control', 'placeholder' => __('Building Identification Number')]) !!}
+            @endif
         </div>
     </div>
     <div class="form-group col-md-6">
@@ -367,7 +371,7 @@ $(document).ready(function() {
                 center: ol.proj.transform([87.2751,26.7981], 'EPSG:4326', 'EPSG:3857'),
                 // zoom: 12,
                 minZoom: 12.5,
-                maxZoom: 19,
+                maxZoom: 22,
                 //extent: ol.proj.transformExtent([85.32348539192756,27.58711426558866,85.44082675863419, 27.684646263435823 ], 'EPSG:4326', 'EPSG:3857')
             })
         });
@@ -423,9 +427,9 @@ $(document).ready(function() {
         setInitialZoom();
 
         function setInitialZoom() {
-            @if(isset($hotspotIdentification) && $lat && $long)
+            @if(isset($building) && $lat && $long)
             map.getView().setCenter(ol.proj.transform([<?php echo $long;?>, <?php echo $lat;?>], 'EPSG:4326', 'EPSG:3857'));
-            map.getView().setZoom(14);
+            map.getView().setZoom(18);
             @else
             map.getView().setCenter(ol.proj.transform([87.2751,26.7981], 'EPSG:4326', 'EPSG:3857'));
             map.getView().setZoom(12);

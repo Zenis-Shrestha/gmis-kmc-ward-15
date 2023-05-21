@@ -46,6 +46,12 @@
                             </select>
                           </div>
                     </div>
+                  <div class="form-group row">
+                      <label for="owner_name" class="control-label col-md-2">Owner Name</label>
+                       <div class="col-md-2">
+                        <input type="text" class="form-control" id="owner_name" />
+                       </div>
+                  </div>
                 <div class="text-right">
                     <button type="submit" class="btn btn-info " >Filter</button>
                   <button type="reset" class="btn btn-info " id="reset">Reset</button>
@@ -63,6 +69,7 @@
         <thead>
           <tr>
             <th>BIN</th>
+            <th>Owner Name</th>
             <th>Years Due</th>
             <th>Ward</th>
             <th>Match</th>
@@ -98,10 +105,13 @@ $(function() {
             d.ward_select = $('#ward_select').val();
             d.dueyear_select = $('#dueyear_select').val();
             d.match = $('#match_unmatch').val();
+            d.owner_name = $('#owner_name').val();
+            
           }
         },
         columns: [
             { data: 'bin', name: 'bin' },
+            { data: 'owner_name', name: 'owner_name' },
             { data: 'name', name: 'name' },
             { data: 'ward', name: 'ward' },
             { data: 'match', render : function (data, type, row) {
@@ -132,14 +142,14 @@ $(function() {
           })
       });
     } );
-    var ward_select = '', dueyear_select = '', match = '';
+    var ward = '', due_year = '', match = '', owner_name = '';
     $('#filter-form').on('submit', function(e){
-        
       e.preventDefault();
       dataTable.draw();
       ward = $('#ward_select').val();
       due_year = $('#dueyear_select').val();
       match = $('#match_unmatch').val();
+      owner_name = $('#owner_name').val();
     });
 
     // $('#data-table_filter input[type=search]').attr('readonly', 'readonly');
@@ -147,13 +157,14 @@ $(function() {
     $("#export").on("click",function(e){
         e.preventDefault();
         var searchData=$('input[type=search]').val();
-        window.location.href="{!! url('tax-payment/export?searchData=') !!}"+searchData+"&ward="+ward+"&due_year="+due_year+"&match="+match;
+        window.location.href="{!! url('tax-payment/export?searchData=') !!}"+searchData+"&ward="+ward+"&due_year="+due_year+"&match="+match+"&owner_name="+owner_name;
     })
     
     $("#reset").on("click",function(e){
     $('#ward_select').val('');
     $('#dueyear_select').val('');
     $('#match_unmatch').val('');
+    $('#owner_name').val('');
     $('#data-table').dataTable().fnDraw();localStorage.removeItem('DataTables_'+window.location.pathname);
     // localStorage.clear();
     // window.location.reload();
