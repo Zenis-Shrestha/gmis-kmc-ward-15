@@ -69,8 +69,8 @@ return [
         ],
         'importtax' => [
             'driver' => 'local',
-            'root' => 'D:\taxpayment'
-            //'root'   => env('STORAGE_PATH_BUILDINF_TAX'),
+            //'root' => 'D:\taxpayment'
+            'root'   => env('STORAGE_PATH_BUILDINF_TAX'),
         ],
 
         'importbusinesstax' => [
