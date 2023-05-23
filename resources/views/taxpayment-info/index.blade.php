@@ -6,9 +6,9 @@
       @ability('super-admin', 'import-building-tax-excel')
       <a href="{{ route('tax-payment.create') }}" class="btn btn-info">Import from Excel </a>
       @endability
-      @ability('super-admin', 'export-building-tax-excel')
+<!--      @ability('super-admin', 'export-building-tax-excel')
       <a href="{{ route('tax-payment.export') }}" class="btn btn-info">Export to Excel </a>
-      @endability
+      @endability-->
       <a href="#" class="btn btn-info float-right" id="headingOne" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
         Show Filter
       </a>
