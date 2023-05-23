@@ -26,7 +26,8 @@ return [
                     WHEN btp.bin is NULL or b.bin is NULL THEN False
                 End as match,
                 b.geom, Now() as created_at, Now() as updated_at
-            FROM bldg b LEFT JOIN bldg_tax_payments btp on btp.bin=b.bin
+            FROM bldg b LEFT JOIN (SELECT DISTINCT ON (bin) id, bin, owner_name, fiscal_year, tax_paid_end_at  FROM bldg_tax_payments
+) btp on btp.bin=b.bin
             CROSS JOIN nepali_date_today ndt WHERE ndt.id = 1;
             
             Return True
