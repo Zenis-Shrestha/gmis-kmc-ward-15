@@ -106,7 +106,7 @@ $(function() {
           data: function(d) {
             d.ward_select = $('#ward_select').val();
             d.dueyear_select = $('#dueyear_select').val();
-            d.match = $('#match_unmatch').val();
+            d.match_col = $('#match_unmatch').val();
             d.owner_name = $('#owner_name').val();
             
           }
@@ -116,14 +116,7 @@ $(function() {
             { data: 'owner_name', name: 'owner_name' },
             { data: 'name', name: 'name' },
             { data: 'ward', name: 'ward' },
-            { data: 'match', render : function (data, type, row) {
-                    if(data) {
-                        return 'Y' 
-                    }
-                    else {
-                        return 'N'
-                    }
-                } }
+            { data: 'match_col', name: 'match_col' },
         ]
     }).on( 'draw', function () {
           $('.delete').on('click', function(e) {
