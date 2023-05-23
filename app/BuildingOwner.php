@@ -20,5 +20,6 @@ class BuildingOwner extends Model
      */
     protected $primaryKey = 'id';
 
-    
+    protected $dateFormat = 'Y-m-d H:i:s.u';
+
 }

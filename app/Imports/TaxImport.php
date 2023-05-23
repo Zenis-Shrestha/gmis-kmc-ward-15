@@ -19,9 +19,15 @@ class TaxImport implements ToModel, WithHeadingRow, WithChunkReading,WithValidat
     
     public function model(array $row)
     {
+        if($row['fiscal_year'])
+        {
         $fiscal_year = explode("/",$row['fiscal_year']);
         $tax_paid_end_year = $fiscal_year[1] + 1;
         $tax_paid_end_at = $tax_paid_end_year.'-03-31';
+        }
+        else{
+            $tax_paid_end_at = null;
+        }
         return new BldgTaxPayment([
             "bin" => $row['bin'],
             "owner_name" => $row['owner_name'],
@@ -43,6 +49,8 @@ class TaxImport implements ToModel, WithHeadingRow, WithChunkReading,WithValidat
             'bin' => [
                 'required',
                 'integer',
+                'unique:bldg_tax_payments,bin',
+                
             ],
             'owner_name' => [
                 'nullable',
@@ -60,5 +68,7 @@ class TaxImport implements ToModel, WithHeadingRow, WithChunkReading,WithValidat
     public function onError(\Throwable $e) {
         
     }
+    
+
        
 }
