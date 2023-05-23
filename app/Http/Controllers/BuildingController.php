@@ -476,7 +476,13 @@ class BuildingController extends Controller
         $building = Building::find($id);
 
         if ($building) {
-            $building->delete();
+                if ($building->businesses()->exists() || $building->rents()->exists()) {
+                Flash::Error('Failed to delete building, it is associated with business or rent');
+                return redirect('buildings');
+                }
+                else{
+                    $building->delete();
+                }
 
             Flash::success('Building deleted successfully');
             return redirect('buildings');
