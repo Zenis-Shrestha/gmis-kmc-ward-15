@@ -49,7 +49,7 @@ class TaxImport implements ToModel, WithHeadingRow, WithChunkReading,WithValidat
             'bin' => [
                 'required',
                 'integer',
-                'unique:bldg_tax_payments,bin',
+                //'unique:bldg_tax_payments,bin',
                 
             ],
             'owner_name' => [

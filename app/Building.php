@@ -139,4 +139,12 @@ class Building extends Model
     {
         return $this->belongsTo('App\VerfYesNo', 'buildvflag', 'value');
     }
+    public function businesses()
+    {
+        return $this->hasMany(BuildingBusiness::class, 'bin');
+    }
+    public function rents()
+    {
+        return $this->hasMany(BuildingRent::class, 'bin');
+    }
 }
