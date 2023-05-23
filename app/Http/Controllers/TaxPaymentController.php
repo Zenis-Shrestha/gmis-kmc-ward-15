@@ -44,24 +44,49 @@ class TaxPaymentController extends Controller
 
     public function getData(Request $request)
     {
-        $buildingData = DB::table('bldg_tax_payments AS btp')
-                                ->leftjoin('bldg_tax_payment_status AS tax', 'tax.bldg_tax_payments_id', '=', 'btp.id')
-                                ->leftjoin('due_years AS due', 'due.value', '=', 'tax.due_year')
-                                ->leftjoin('bldg AS b', 'tax.bin', '=', 'b.bin')
-                                ->select(DB::raw("btp.*,tax.ward, (CASE WHEN tax.match IS TRUE THEN 'Y' ELSE 'N' END) as match_col, due.name, b.ward"))
-                                ->orderBy('btp.bin', 'DESC');
+        
+        
 
-
+        $buildingData = DB::table('bldg_tax_payments as btp')
+                        ->join('bldg_tax_payment_status AS tax', 'tax.bldg_tax_payments_id', '=', 'btp.id')
+                        ->join('due_years AS due', 'due.value', '=', 'tax.due_year')
+                        ->join('bldg AS b', 'tax.bin', '=', 'b.bin')
+                        ->select(DB::raw("btp.bin,btp.owner_name,tax.ward, (CASE WHEN tax.match IS TRUE THEN 'Y' ELSE 'N' END) as match_col, due.name, b.ward"))
+                        //->groupBy('btp.bin', 'btp.owner_name', 'tax.ward', 'tax.match', 'due.name', 'b.ward')
+                        ->distinct('btp.bin')
+                        ->orderBy('btp.bin', 'DESC');
+                
+           /* $where = "WHERE 1=1";
+                if ($request->dueyear_select) {
+                    $where .= " AND due.name ilike '%" . trim($request->dueyear_select) . "'";
+                }
+                if ($request->ward_select) {
+                    $where .= 'b.ward='.$request->ward_select;
+                }
+                if ($request->match) {
+                    $where .= 'btp.match_col='. $request->match;
+                }
+                if ($request->owner_name) {
+                    $where .= " AND btp.owner_name ilike '%" . trim($request->owner_name) . "'";
+                }
+        
+        $buildingData = DB::select(DB::raw("SELECT btp.bin,btp.owner_name,tax.ward, (CASE WHEN tax.match IS TRUE THEN 'Y' ELSE 'N' END) as match_col, due.name, b.ward FROM (select distinct on(bin) id, bin, owner_name, fiscal_year, tax_paid_end_at from bldg_tax_payments) btp 
+        left join bldg_tax_payment_status tax ON tax.bldg_tax_payments_id = btp.id
+        left join due_years due ON due.value = tax.due_year
+        left join bldg b ON tax.bin = b.bin $where"));*/
         return DataTables::of($buildingData)
             ->filter(function ($query) use ($request) {
                 if ($request->dueyear_select) {
-                    $query->where('due.name', $request->dueyear_select);
+                    $query->where('due.name',  'ilike', '%'.trim($request->dueyear_select).'%');
                 }
                 if ($request->ward_select) {
                     $query->where('b.ward', $request->ward_select);
                 }
                 if ($request->match) {
-                    $query->where('match_col', $request->match);
+                    $query->where('btp.match_col', $request->match);
+                }
+                if ($request->owner_name) {
+                    $query->where('btp.owner_name',  'ilike', '%'.trim($request->owner_name).'%');
                 }
             })
             ->make(true);
