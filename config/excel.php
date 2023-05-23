@@ -36,7 +36,7 @@ return [
             'delimiter'              => ',',
             'enclosure'              => '"',
             'line_ending'            => PHP_EOL,
-            'use_bom'                => false,
+            'use_bom'                => true,
             'include_separator_line' => false,
             'excel_compatibility'    => false,
         ],
@@ -74,6 +74,7 @@ return [
             'escape_character'       => '\\',
             'contiguous'             => false,
             'input_encoding'         => 'UTF-8',
+            //'use_bom' => true,
         ],
     ],
 
