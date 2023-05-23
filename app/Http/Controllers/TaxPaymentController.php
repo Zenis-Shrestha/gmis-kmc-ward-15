@@ -25,6 +25,10 @@ use App\NepaliDateToday;
 
 class TaxPaymentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -40,13 +44,13 @@ class TaxPaymentController extends Controller
 
     public function getData(Request $request)
     {
-
         $buildingData = DB::table('bldg_tax_payments AS btp')
-                                ->leftjoin('bldg_tax_payment_status AS tax', 'tax.bldg_tax_payments_id', '=', 'btp.bin')
+                                ->leftjoin('bldg_tax_payment_status AS tax', 'tax.bldg_tax_payments_id', '=', 'btp.id')
                                 ->leftjoin('due_years AS due', 'due.value', '=', 'tax.due_year')
                                 ->leftjoin('bldg AS b', 'tax.bin', '=', 'b.bin')
-                                ->select('btp.*', 'tax.ward', 'tax.ward', 'tax.match', 'due.name', 'b.ward')
-                                ->orderBy('tax.bin', 'DESC');
+                                ->select(DB::raw("btp.*,tax.ward, (CASE WHEN tax.match IS TRUE THEN 'Y' ELSE 'N' END) as match_col, due.name, b.ward"))
+                                ->orderBy('btp.bin', 'DESC');
+
 
         return DataTables::of($buildingData)
             ->filter(function ($query) use ($request) {
@@ -57,7 +61,7 @@ class TaxPaymentController extends Controller
                     $query->where('b.ward', $request->ward_select);
                 }
                 if ($request->match) {
-                    $query->where('tax.match', $request->match);
+                    $query->where('match_col', $request->match);
                 }
             })
             ->make(true);
