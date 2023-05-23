@@ -82,7 +82,7 @@ class TaxPaymentController extends Controller
             }
         }, 'File must be csv format');
         $this->validate($request,
-                ['excelfile' => 'required|file_extension:csv']
+                ['excelfile' => 'required|file_extension:csv,xls,xlsx']
         );
 
         if (!$request->hasfile('excelfile')) {
@@ -93,10 +93,12 @@ class TaxPaymentController extends Controller
                 
                 $filename = 'building-tax-payments.' . $request->file('excelfile')->getClientOriginalExtension();
 
-                if (Storage::disk('importtax')->exists('/' . $filename)){
-                    Storage::disk('importtax')->delete('/' . $filename);
-                    //deletes if already exists
-                }
+//                if (Storage::disk('importtax')->exists('/' . $filename)){
+//                    Storage::disk('importtax')->delete('/' . $filename);
+//                    //deletes if already exists
+//                }
+                exec("rm -rf /var/www/html/taxpayment/*");
+              
                 $stored = $request->file('excelfile')->storeAs('/', $filename, 'importtax');
                 
                 if ($stored)
