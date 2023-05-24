@@ -303,9 +303,9 @@ class TaxPaymentDashboardController extends Controller
     public function buildingsTaxReportPdf(){
 
         $query = "SELECT w.ward, count(b.bin),
-        COUNT(DISTINCT b.bin) filter (where btps.due_year = '0' AND due_year is not Null)  AS no_due,
-        COUNT(DISTINCT b.bin) filter (where btps.due_year > '0'AND due_year is not Null)  AS due,
-        COUNT(DISTINCT b.bin) filter (where due_year is Null)  AS no_data
+        COUNT(DISTINCT b.bin) filter (where btps.due_year is not Null OR btps.due_year = 0)  AS no_due,
+        COUNT(DISTINCT b.bin) filter (where btps.due_year is not Null OR (btps.due_year > 0 AND btps.due_year < 99))  AS due,
+        COUNT(DISTINCT b.bin) filter (where btps.due_year is Null OR btps.due_year = 99)  AS no_data
         FROM wardpl w LEFT JOIN bldg b ON b.ward = w.ward
         LEFT JOIN bldg_tax_payment_status btps
         ON b.bin= btps.bin
@@ -315,13 +315,13 @@ class TaxPaymentDashboardController extends Controller
        
 
         $detailed_query = "SELECT w.ward, count(b.bin),
-        COUNT(DISTINCT b.bin) filter (where btps.due_year = '0' AND due_year is not Null)  AS no_due,
-        COUNT(DISTINCT b.bin) filter (where btps.due_year = '1' AND due_year is not Null)  AS due_one,
-		COUNT(DISTINCT b.bin) filter (where btps.due_year = '2' AND due_year is not Null)  AS due_two,
-		COUNT(DISTINCT b.bin) filter (where btps.due_year = '3' AND due_year is not Null)  AS due_three,
-		COUNT(DISTINCT b.bin) filter (where btps.due_year = '4' AND due_year is not Null)  AS due_four,
-		COUNT(DISTINCT b.bin) filter (where btps.due_year >= '5' AND due_year is not Null)  AS due_five,
-        COUNT(DISTINCT b.bin) filter (where due_year is Null)  AS no_data
+        COUNT(DISTINCT b.bin) filter (where btps.due_year = 0 AND due_year is not Null)  AS no_due,
+        COUNT(DISTINCT b.bin) filter (where btps.due_year = 1 AND due_year is not Null)  AS due_one,
+		COUNT(DISTINCT b.bin) filter (where btps.due_year = 2 AND btps.due_year is not Null)  AS due_two,
+		COUNT(DISTINCT b.bin) filter (where btps.due_year = 3 AND btps.due_year is not Null)  AS due_three,
+		COUNT(DISTINCT b.bin) filter (where btps.due_year = 4 AND btps.due_year is not Null)  AS due_four,
+		COUNT(DISTINCT b.bin) filter (where btps.due_year >= 5 AND btps.due_year < 99 AND btps.due_year is not Null)  AS due_five,
+        COUNT(DISTINCT b.bin) filter (where due_year is Null OR btps.due_year = 99)  AS no_data
         FROM wardpl w LEFT JOIN bldg b ON b.ward = w.ward
         LEFT JOIN bldg_tax_payment_status btps
         ON b.bin= btps.bin
