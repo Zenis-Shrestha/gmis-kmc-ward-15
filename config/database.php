@@ -74,6 +74,12 @@ return [
             'charset'  => 'utf8',
             'prefix'   => '',
             'schema'   => 'public',
+            'dump' => [
+                    'dump_binary_path' => '/var/lib/postgresql/10', // only the path, so without `mysqldump` or `pg_dump`
+                    'use_single_transaction',
+                    'timeout' => 60 * 5, // 5 minute timeout
+		    'add_extra_option' => '--format=c', // and any other pg_dump flags
+                ]
         ],
 
         'sqlsrv' => [
