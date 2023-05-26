@@ -61,16 +61,23 @@
                     <label class="control-label col-md-2" for="registration">Registration No.</label>
                         <div class="col-md-2"> 
                             <input type="text" class="form-control" id="registration" /></div>
+                            <div class="form-group">
+                    <label class="control-label col-md-2" for="businesowner">Business Owner Name</label>
+                        <div class="col-md-2"> 
+                            <input type="text" class="form-control" id="businesowner" /></div>
+
+                            <!-- <label for="registration_status" class="col-md-2 col-form-label text-right">Registration Status</label>
+                            <div class="col-md-2">
+                            <select class="form-control chosen-select" id="registration_status" name="registration_status">
+                                <option value="">--- Choose Registration Status ---</option>
+                                @foreach($registration_status as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                            </div> -->
+
                             
-                            <label for="businessmaintype" class="control-label col-md-2">Business Main Type</label>
-                                <div class="col-md-2">
-                                    <select class="form-control" id="businessmaintype">
-                                        <option value=""> Choose Business Main Type </option>
-                                        @foreach($businessMainTypes as $key => $value)
-                                            <option value="{{ $key }}">{{ $value }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                           
                            
                            
 <!--                            <label class="control-label col-md-2" for="registration_status">Registration Status</label>
@@ -85,9 +92,17 @@
                     
                     </div>
 
-                    <div class="form-group">
+                 
                   
-                
+                    <label for="businessmaintype" class="control-label col-md-2">Business Main Type</label>
+                                <div class="col-md-2">
+                                    <select class="form-control" id="businessmaintype">
+                                        <option value=""> Choose Business Main Type </option>
+                                        @foreach($businessMainTypes as $key => $value)
+                                            <option value="{{ $key }}">{{ $value }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                                 <label for="businesstype" class="control-label col-md-2">Business Sub Type</label>
                                 <div class="col-md-2">
                                     <select class="form-control" id="businesstype" placeholder="--- Choose Business Sub Type ---">
@@ -147,8 +162,10 @@ $(function() {
                 d.btxsts_select = $('#btxsts_select').val();
                 d.registration = $('#registration').val();
                 d.registration_status = $('#registration_status').val();
+               console.log(d.registration_status);
                 d.businessmaintype = $('#businessmaintype').val();
                 d.businesstype = $('#businesstype').val();
+                
               
             }
         },
@@ -166,14 +183,14 @@ $(function() {
             {data: 'registration', name: 'registration'},
             {data : 'registration_status',
              render : function (data, type, row) {
-                          return (data === true) ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>';}
+                          return (data == true) ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>';}
             },
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ],
         "order": [[ 0, 'DESC' ]]
     });
 
-    var businessname = '', bin = '',  ward = '', road = '', taxcode = '', houseno = '', houseownername = '', businesowner = '', btxsts_select = '', registration = '', businessmaintype='', businesstype='';
+    var businessname = '', bin = '',  ward = '', road = '', taxcode = '', houseno = '', houseownername = '', businesowner = '', btxsts_select = '', registration = '', registration_status ='', businessmaintype='', businesstype='';
 
     $('#filter-form').on('submit', function(e){
       e.preventDefault();
@@ -187,6 +204,7 @@ $(function() {
       houseownername = $('#houseownername');
       btxsts_select = $('#btxsts_select');
       registration = $('#registration');
+      registration_status = $('#registration_status');
       businessmaintype = $('#businessmaintype');
       businesstype = $('#businesstype');
     });
@@ -200,6 +218,7 @@ $(function() {
         $('#houseownername').val('');
         $('#btxsts_select').val('');
         $('#registration').val('');
+        $('#registration_status').val('');
         $('#businessmaintype').val('');
         $('#businesstype').val('');
         $('#data-table').dataTable().fnDraw();
@@ -218,6 +237,7 @@ $(function() {
         var houseownername = $('#houseownername').val();
         var btxsts_select = $('#btxsts_select').val();
         var registration = $('#registration').val();
+        var registration_status = $('#registration_status').val();
         var businessmaintype = $('#businessmaintype').val();
         var businesstype = $('#businesstype').val();
         window.location.href="{!! url('buildings-business/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&houseno="+houseno+"&businessname="+businessname+"&businesowner="+businesowner+"&houseownername="+houseownername+"&btxsts_select="+btxsts_select+"&registration="+registration+"&businessmaintype="+businessmaintype+"&businesstype="+businesstype;
