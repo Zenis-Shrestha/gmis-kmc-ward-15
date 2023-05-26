@@ -300,6 +300,7 @@ $(document).ready(function() {
                 params: {
                     'LAYERS': workspace + ':' + 'bldg',
                     'TILED': true,
+                    'STYLES': 'bldg_none'
                 },
                 serverType: 'geoserver',
                 //crossOrigin: 'anonymous'
