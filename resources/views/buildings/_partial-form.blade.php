@@ -255,7 +255,7 @@
 $(document).ready(function() {
     $('.chosen-select').chosen();
    
-    $('input[type="radio"]').click(function(){
+    $('input[name="footprint_option"]:radio').click(function(){
         var inputValue = $(this).attr("value");
         console.log(inputValue);
         var targetBox = $("." + inputValue);
