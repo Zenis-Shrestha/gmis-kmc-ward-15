@@ -23,7 +23,6 @@ Route::resource('buildings', 'BuildingController', ['except' => ['create']]);
 
 Route::get('buildings/photos/{building_id}', 'BuildingController@downloadPhoto');
 Route::get('/buildings/building_infoexport', 'BuildingController@building_infoexport')->name('building_infoexport');
-
 Route::get('buildings/new-photos/{building_id}', 'BuildingController@downloadNewPhoto');
 
 
@@ -46,7 +45,6 @@ Route::resource('buildings-rent', 'BuildingRentController', ['except' => ['creat
 Route::get('get-bin-numbers','BuildingController@getBinNumbers')->name('buildings.get-bin-numbers');
 Route::get('get-street-names','BuildingController@getStreetNames')->name('buildings.get-street-names');
 Route::get('get-wards', 'BuildingController@getWards')->name('buildings.get-wards');
-
 
 Route::get('streets/data', 'StreetController@getData');
 Route::get('streets/export', 'StreetController@export');
@@ -580,23 +578,25 @@ Route::get('getBuildingInformation/{long}/{lat}', function ($long, $lat) {
 
     //Building Information
    
-    $buildings_query = "SELECT b.gid, b.bin, b.ward, b.tole, b.haddr, b.hownr, b.yoc, b.flrcount, bu.name AS building_use, bc.name AS construction_type, t.name AS tax_status, s.strtnm AS street, ST_AsText(b.geom) AS geom, b.house_photo AS house_photo, b.house_new_photo AS house_new_photo"
-        . " FROM bldg b"
-        . " LEFT JOIN building_use bu"
-        . " ON b.bldguse = bu.value"
-        . " LEFT JOIN building_construction bc"
-        . " ON b.consttyp = bc.value"
-        . " LEFT JOIN tax_status_code t"
-        . " ON b.btxsts = t.value"
-        . " LEFT JOIN street s"
-        . " ON b.strtcd = s.strtcd"
-        . " WHERE ST_Contains(b.geom, ST_GeomFromText('POINT(" . $long . " " . $lat . ")', 4326))";
+    $buildings_query = "SELECT b.gid, b.bin, b.ward, b.tole, b.haddr, b.hownr, b.yoc, b.flrcount, bo.owner_name  AS owner_name, bu.name AS building_use, bc.name AS construction_type, t.name AS tax_status, s.strtnm AS street, ST_AsText(b.geom) AS geom, b.house_photo AS house_photo, b.house_new_photo AS house_new_photo
+    FROM bldg b
+    LEFT JOIN building_use bu
+    ON b.bldguse = bu.value
+     LEFT JOIN building_construction bc
+   ON b.consttyp = bc.value
+      LEFT JOIN tax_status_code t
+     ON b.btxsts = t.value
+     LEFT JOIN bldg_owners bo
+    ON b.bin = bo.bin
+    LEFT JOIN street s
+     ON b.strtcd = s.strtcd  WHERE ST_Contains(b.geom, ST_GeomFromText('POINT(" . $long . " " . $lat . ")', 4326))";
 
     $results_buildings = DB::select($buildings_query);
 
     $data1 = array();
 
     foreach ($results_buildings as $row) {
+      
         $building = array();
         $building['gid'] = $row->gid ? $row->gid : '';
         $building['bin'] = $row->bin ? $row->bin : '';
@@ -604,6 +604,7 @@ Route::get('getBuildingInformation/{long}/{lat}', function ($long, $lat) {
         $building['tole'] = $row->tole ? $row->tole : '';
         $building['haddr'] = $row->haddr ? $row->haddr : '';
         $building['hownr'] = $row->hownr ? $row->hownr : '';
+        $building['owner_name'] = $row->owner_name ? $row->owner_name :  $building['hownr'];
         $building['yoc'] = $row->yoc ? $row->yoc : '';
         $building['flrcount'] = $row->flrcount ? $row->flrcount : '';
         $building['building_use'] = $row->building_use ? $row->building_use : '';

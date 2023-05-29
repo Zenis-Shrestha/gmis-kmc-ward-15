@@ -2955,7 +2955,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
 
         displayAjaxLoader();
         var url = '{{ url("getBuildingInformation") }}' +  '/' + long + '/' + lat;
-        
+        console.log(long, lat);
         $.ajax({
             url: url,
             type: 'get',
@@ -2994,6 +2994,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
 
             
                                         if( data.data1[0]){
+                                            console.log("kjfvhs", data.data1[0].owner_name);
                                         html += '<table class="table table-bordered table-striped">';
                                         html += '<thead>'
                                         html += '<tr>';
@@ -3011,7 +3012,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                                         html += '<tbody>'
                                         html += '<tr>'
                                         html += '<td>' + data.data1[0].bin + '</td>';
-                                        html += '<td>' + data.data1[0].hownr + '</td>';
+                                        html += '<td>' + data.data1[0].owner_name + '</td>';
                                         html += '<td>' + data.data1[0].haddr + '</td>';
                                         html += '<td>' + data.data1[0].street + '</td>';
                                         html += '<td>' + data.data1[0].ward + '</td>';
