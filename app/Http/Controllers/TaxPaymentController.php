@@ -47,15 +47,15 @@ class TaxPaymentController extends Controller
         
         
 
-        $buildingData = DB::table('bldg_tax_payments as btp')
+        $buildingData = 
+        DB::table('bldg_tax_payments as btp')
                         ->join('bldg_tax_payment_status AS tax', 'tax.bldg_tax_payments_id', '=', 'btp.id')
                         ->join('due_years AS due', 'due.value', '=', 'tax.due_year')
                         ->join('bldg AS b', 'tax.bin', '=', 'b.bin')
-                        ->select(DB::raw("btp.bin,btp.owner_name,tax.ward, (CASE WHEN tax.match IS TRUE THEN 'Y' ELSE 'N' END) as match_col, due.name, b.ward"))
+                        ->select(DB::raw("btp.bin,btp.owner_name,tax.ward,  (CASE WHEN tax.match IS TRUE THEN 'Y' ELSE 'N' END) as match_col, due.name, b.ward"))
                         //->groupBy('btp.bin', 'btp.owner_name', 'tax.ward', 'tax.match', 'due.name', 'b.ward')
                         ->distinct('btp.bin')
                         ->orderBy('btp.bin', 'DESC');
-                
            /* $where = "WHERE 1=1";
                 if ($request->dueyear_select) {
                     $where .= " AND due.name ilike '%" . trim($request->dueyear_select) . "'";
@@ -75,20 +75,20 @@ class TaxPaymentController extends Controller
         left join due_years due ON due.value = tax.due_year
         left join bldg b ON tax.bin = b.bin $where"));*/
         return DataTables::of($buildingData)
-            ->filter(function ($query) use ($request) {
-                if ($request->dueyear_select) {
-                    $query->where('due.name',  'ilike', '%'.trim($request->dueyear_select).'%');
-                }
-                if ($request->ward_select) {
-                    $query->where('b.ward', $request->ward_select);
-                }
-                if ($request->match) {
-                    $query->where('btp.match_col', $request->match);
-                }
-                if ($request->owner_name) {
-                    $query->where('btp.owner_name',  'ilike', '%'.trim($request->owner_name).'%');
-                }
-            })
+        ->filter(function ($query) use ($request) {
+            if ($request->name) {
+                $query->where('due.name',  'ilike', '%'.trim($request->name).'%');
+            }
+            if ($request->ward) {
+                $query->where('b.ward', $request->ward);
+            }
+            if ($request->match_col) {
+                $query->where('btp.match_col', $request->match_col);
+            }
+            if ($request->owner_name) {
+                $query->where('btp.owner_name',  'ilike', '%'.trim($request->owner_name).'%');
+            }
+        })
             ->make(true);
     
     }
@@ -198,24 +198,50 @@ class TaxPaymentController extends Controller
     public function export()
     {
         
-        $columns = ['Tax ID', 'Owner Name', 'Last Payment Date', 'Due Year', 'Existing Tax ID'];
+        $columns = ['bin', 'owner_name', 'fiscal_year'];
+        $searchData = isset($_GET['searchData']) ? $_GET['searchData'] : null;
+        $ward = isset($_GET['ward']) ? $_GET['ward'] : null;
+        $name = isset($_GET['name']) ? $_GET['name'] : null;
+        $match_col = isset($_GET['match_col']) ? $_GET['match_col'] : null;
+        $owner_name = isset($_GET['owner_name']) ? $_GET['owner_name'] : null;
 
-        $query = TaxPaymentStatus::selectAll();
+        $where = "WHERE 1=1";
+        if (!empty($name)) {
+            $where .= " AND due.name ilike '%" . trim($name) . "'";
+        }
+        if (!empty($ward)) {
+            $where .= ' AND b.ward='.$ward;
+        }
+        if (!empty($owner_name)) {
+           
+            $where .= " AND btp.owner_name ilike '%" . trim($owner_name) . "'";
+           
+        }
+        if (!empty($match_col)) {
+            $where .= ' AND btp.match_col='. $match_col;
+        }
+      
+        $buildingQuery = "SELECT DISTINCT ON (btp.bin) btp.bin, btp.owner_name, btp.fiscal_year
+            FROM bldg_tax_payments AS btp
+            JOIN bldg_tax_payment_status AS tax ON tax.bldg_tax_payments_id = btp.id
+            JOIN due_years AS due ON due.value = tax.due_year
+            JOIN bldg AS b ON tax.bin = b.bin $where
+            ORDER BY btp.bin DESC, tax.ward";
         
-        $style = (new StyleBuilder())
-            ->setFontBold()
-            ->setFontSize(13)
-            ->setBackgroundColor(Color::rgb(228, 228, 228))
-            ->build();
-            
+        $query = DB::select($buildingQuery);
+       
+    
         $writer = WriterFactory::create(Type::CSV);
-        $writer->openToBrowser('building-tax-payments.csv')
-            ->addRowWithStyle($columns, $style); //Top row of excel
-            
-        $query->chunk(5000, function ($taxpayments) use ($writer) {
-            $writer->addRows($taxpayments->toArray());
-        });
-
+        $writer->openToBrowser('tax-payments.csv')
+            ->addRow($columns); // Top row of the CSV file
+        
+        foreach ($query as $row) {
+            $writer->addRow((array) $row);
+        }
+        
+        
         $writer->close();
+        
+       
     }
 }
