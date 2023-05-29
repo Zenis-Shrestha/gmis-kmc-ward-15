@@ -6,9 +6,9 @@
       @ability('super-admin', 'import-building-tax-excel')
       <a href="{{ route('tax-payment.create') }}" class="btn btn-info">Import from Excel </a>
       @endability
-<!--      @ability('super-admin', 'export-building-tax-excel')
-      <a href="{{ route('tax-payment.export') }}" class="btn btn-info">Export to Excel </a>
-      @endability-->
+     @ability('super-admin', 'export-building-tax-excel')
+      <a href="{{ route('tax-payment.export') }}" id="export-excel" class="btn btn-info">Export to Excel </a>
+      @endability
       <a href="#" class="btn btn-info float-right" id="headingOne" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
         Show Filter
       </a>
@@ -21,27 +21,27 @@
             <div class="accordion-body">
               <form class="form-horizontal" id="filter-form">
                     <div class="form-group row">
-                            <label for="ward_select" class="control-label col-md-2">Ward</label>
+                            <label for="ward" class="control-label col-md-2">Ward</label>
                             <div class="col-md-2">
-                              <select class="form-control" id="ward_select">
+                              <select class="form-control" id="ward">
                                 <option value="">All Wards</option>
                                 @foreach($wards as $key=>$value)
                                 <option value="{{$key}}">{{$value}}</option>
                                 @endforeach
                               </select>
                             </div>
-                            <label for="dueyear_select" class="control-label col-md-2">Due</label>
+                            <label for="name" class="control-label col-md-2">Due</label>
                           <div class="col-md-2">
-                          <select class="form-control" id="dueyear_select">
+                          <select class="form-control" id="name">
                               <option value="">All Dues</option>
                                 @foreach($dueYears as $key=>$value)
                                 <option value="{{$key}}">{{$value}}</option>
                                 @endforeach
                           </select>
                           </div>
-                        <label for="match_unmatch" class="control-label col-md-2">Match</label>
+                        <label for="match_col" class="control-label col-md-2">Match</label>
                           <div class="col-md-2">
-                            <select class="form-control" id="match_unmatch">
+                            <select class="form-control" id="match_col">
                               <option value="">All</option>
                               <option value="true">Yes</option>
                               <option value="false">No</option>
@@ -104,9 +104,10 @@ $(function() {
         ajax: {
           url: '{!! url("tax-payment/data") !!}',
           data: function(d) {
-            d.ward_select = $('#ward_select').val();
-            d.dueyear_select = $('#dueyear_select').val();
-            d.match_col = $('#match_unmatch').val();
+           
+            d.ward = $('#ward').val();
+            d.name = $('#name').val();
+            d.match_col = $('#match_col').val();
             d.owner_name = $('#owner_name').val();
             
           }
@@ -137,28 +138,31 @@ $(function() {
           })
       });
     } );
-    var ward = '', due_year = '', match = '', owner_name = '';
+    var ward = '', name = '', match_col = '', owner_name = '';
     $('#filter-form').on('submit', function(e){
       e.preventDefault();
       dataTable.draw();
-      ward = $('#ward_select').val();
-      due_year = $('#dueyear_select').val();
-      match = $('#match_unmatch').val();
+      ward = $('#ward').val();
+      name = $('#name').val();
+      match_col = $('#match_col').val();
       owner_name = $('#owner_name').val();
+     
     });
 
     // $('#data-table_filter input[type=search]').attr('readonly', 'readonly');
     
-    $("#export").on("click",function(e){
-        e.preventDefault();
-        var searchData=$('input[type=search]').val();
-        window.location.href="{!! url('tax-payment/export?searchData=') !!}"+searchData+"&ward="+ward+"&due_year="+due_year+"&match="+match+"&owner_name="+owner_name;
-    })
-    
+    $("#export-excel").on('click', function(e) {
+  e.preventDefault();
+ 
+  var searchData=$('input[type=search]').val();
+  window.location.href = "{!! url('tax-payment/export?searchData=') !!}"+searchData+"&ward="+ward+"&name="+name+"&owner_name="+owner_name+"&match_col="+match_col;
+
+});
+
     $("#reset").on("click",function(e){
-    $('#ward_select').val('');
-    $('#dueyear_select').val('');
-    $('#match_unmatch').val('');
+    $('#ward').val('');
+    $('#name').val('');
+    $('#match_col').val('');
     $('#owner_name').val('');
     $('#data-table').dataTable().fnDraw();localStorage.removeItem('DataTables_'+window.location.pathname);
     // localStorage.clear();
