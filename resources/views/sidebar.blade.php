@@ -69,7 +69,7 @@
                     @ability('super-admin', 'list-water-srcs')
                     <li><a href="{{ action('DrnkWtrSrcController@index') }}"><i class="fa fa-circle-o"></i>Drinking Water Sources</a></li>
                     @endability
-<!--                    @ability('super-admin', 'list-tax-sts-codes')
+                    <!--  @ability('super-admin', 'list-tax-sts-codes')
                     <li><a href="{{ action('TaxStsCodeController@index') }}"><i class="fa fa-circle-o"></i>Tax Status Codes</a></li>
                     @endability-->
                     @ability('super-admin', 'list-drainages')
