@@ -51,66 +51,59 @@
                         
                     </div>
                     <div class="form-group">
-                    <label for="btxsts_select" class="control-label col-md-2">Tax Paid Status</label>
-                        <div class="col-md-2"> <select class="form-control" id="btxsts_select">
-                            <option value="">All</option>
-                            @foreach($taxStatuses as $key=>$value)
-                            <option value="{{$key}}">{{$value}}</option>
-                            @endforeach
-                            </select></div>
-                    <label class="control-label col-md-2" for="registration">Registration No.</label>
-                        <div class="col-md-2"> 
-                            <input type="text" class="form-control" id="registration" /></div>
-                            <div class="form-group">
-                    <label class="control-label col-md-2" for="businesowner">Business Owner Name</label>
-                        <div class="col-md-2"> 
-                            <input type="text" class="form-control" id="businesowner" /></div>
-
-                            <!-- <label for="registration_status" class="col-md-2 col-form-label text-right">Registration Status</label>
+                            <label for="btxsts_select" class="control-label col-md-2">Tax Paid Status</label>
+                                <div class="col-md-2"> <select class="form-control" id="btxsts_select">
+                                    <option value="">All</option>
+                                    @foreach($taxStatuses as $key=>$value)
+                                    <option value="{{$key}}">{{$value}}</option>
+                                    @endforeach
+                                    </select></div>
+                            <label class="control-label col-md-2" for="registration">Registration No.</label>
+                                <div class="col-md-2"> 
+                                    <input type="text" class="form-control" id="registration" /></div>
+                                     <label for="registration_status" class="col-md-2 col-form-label text-right">Registration Status</label>
                             <div class="col-md-2">
                             <select class="form-control chosen-select" id="registration_status" name="registration_status">
                                 <option value="">--- Choose Registration Status ---</option>
-                                @foreach($registration_status as $key => $value)
-                                <option value="{{ $key }}">{{ $value }}</option>
-                                @endforeach
+                                
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                               
                             </select>
-                            </div> -->
-
-                            
-                           
-                           
-                           
-<!--                            <label class="control-label col-md-2" for="registration_status">Registration Status</label>
-                            <div class="col-md-2"> 
-                                                        
-                            @foreach($registration_status as $key => $value)
-                                <div class="radio">
-                                    <label><input type="radio"  id="registration_status "value="{{ $key }}">{{ $value }}</label>
-                                </div>
-                            @endforeach
-                                </div>-->
-                    
+                            </div>
                     </div>
 
                  
-                  
-                    <label for="businessmaintype" class="control-label col-md-2">Business Main Type</label>
-                                <div class="col-md-2">
-                                    <select class="form-control" id="businessmaintype">
-                                        <option value=""> Choose Business Main Type </option>
-                                        @foreach($businessMainTypes as $key => $value)
+                    <div class="form-group">
+                                    <label class="control-label col-md-2" for="businesowner">Business Owner Name</label>
+                                                <div class="col-md-2"> 
+                                                    <input type="text" class="form-control" id="businesowner" /></div>
+                                    <label for="businessmaintype" class="control-label col-md-2">Business Main Type</label>
+                                                <div class="col-md-2">
+                                                    <select class="form-control" id="businessmaintype">
+                                                        <option value=""> Choose Business Main Type </option>
+                                                        @foreach($businessMainTypes as $key => $value)
+                                                            <option value="{{ $key }}">{{ $value }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <label for="businesstype" class="control-label col-md-2">Business Sub Type</label>
+                                                <div class="col-md-2">
+                                                    <select class="form-control" id="businesstype" placeholder="--- Choose Business Sub Type ---">
+                                                        <option value=""></option>
+                                                    </select>
+                                                </div>
+                    </div>
+                    <div class="form-group">
+                                <label class="control-label col-md-2" for="oldinternalnumber">Old Internal Number</label>
+                                 <div class="col-md-2"> 
+                                    <select class="form-control" id="oldinternalnumber">
+                                        <option value=""> Choose old internal number </option>
+                                        @foreach($oldinternalnumber as $key => $value)
                                             <option value="{{ $key }}">{{ $value }}</option>
                                         @endforeach
-                                    </select>
-                                </div>
-                                <label for="businesstype" class="control-label col-md-2">Business Sub Type</label>
-                                <div class="col-md-2">
-                                    <select class="form-control" id="businesstype" placeholder="--- Choose Business Sub Type ---">
-                                        <option value=""></option>
-                                    </select>
-                                </div>
+                                    </select></div>
                             </div>
-
                     <div class="text-right">
                         <button type="submit" class="btn btn-info">Filter</button>
                         <button type="reset" class="btn btn-info reset">Reset</button>
@@ -127,8 +120,8 @@
                             <th>{{ __('Road Name') }}</th>
                             <th>{{ __('Business Owner Name') }}</th>
                             <th>{{ __('House Owner Name') }}</th>
-                            <th>{{ __('Owner Phone No') }}</th>
-                            <th>{{ __('Tax last Date') }}</th>
+                            <th>{{ __('Old Internal No.') }}</th>
+                            <th>{{ __('Tax Last Date') }}</th>
                             <th>{{ __('Registration No.') }}</th>
                             <th>{{ __('Registration Status') }}</th>
                             <th>{{ __('Actions') }}</th>
@@ -144,6 +137,7 @@
 @push('scripts')
 <script>
 $(function() {
+    $('#oldinternalnumber').select2();
     var dataTable = $('#data-table').DataTable({
         processing: true,
         serverSide: true,
@@ -158,11 +152,12 @@ $(function() {
                 d.roadname = $('#roadname').val();
                 d.businesowner = $('#businesowner').val();
                 d.houseownername = $('#houseownername').val();
-                d.ownerphone = $('#ownerphone').val();
+                
                 d.btxsts_select = $('#btxsts_select').val();
                 d.registration = $('#registration').val();
+                d.oldinternalnumber = $('#oldinternalnumber').val();
                 d.registration_status = $('#registration_status').val();
-               console.log(d.registration_status);
+              
                 d.businessmaintype = $('#businessmaintype').val();
                 d.businesstype = $('#businesstype').val();
                 
@@ -178,7 +173,7 @@ $(function() {
             {data: 'roadname', name: 'roadname'},
             {data: 'businesowner', name: 'businesowner'},
             {data: 'houseownername', name: 'houseownername'},
-            {data: 'ownerphone', name: 'ownerphone'},
+            {data: 'oldinternalnumber', name: 'oldinternalnumber'},
             {data: 'taxlastdate', name: 'taxlastdate'},
             {data: 'registration', name: 'registration'},
             {data : 'registration_status',
@@ -207,6 +202,7 @@ $(function() {
       registration_status = $('#registration_status');
       businessmaintype = $('#businessmaintype');
       businesstype = $('#businesstype');
+      oldinternalnumber = $('#oldinternalnumber');
     });
     $(".reset").on("click", function (e) {
 
@@ -221,6 +217,7 @@ $(function() {
         $('#registration_status').val('');
         $('#businessmaintype').val('');
         $('#businesstype').val('');
+        $('#oldinternalnumber').val('');
         $('#data-table').dataTable().fnDraw();
 
     })
@@ -240,7 +237,8 @@ $(function() {
         var registration_status = $('#registration_status').val();
         var businessmaintype = $('#businessmaintype').val();
         var businesstype = $('#businesstype').val();
-        window.location.href="{!! url('buildings-business/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&houseno="+houseno+"&businessname="+businessname+"&businesowner="+businesowner+"&houseownername="+houseownername+"&btxsts_select="+btxsts_select+"&registration="+registration+"&businessmaintype="+businessmaintype+"&businesstype="+businesstype;
+        var oldinternalnumber = $('#oldinternalnumber').val();
+        window.location.href="{!! url('buildings-business/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&houseno="+houseno+"&businessname="+businessname+"&businesowner="+businesowner+"&houseownername="+houseownername+"&btxsts_select="+btxsts_select+"&registration="+registration+"&businessmaintype="+businessmaintype+"&businesstype="+businesstype+"&oldinternalnumber="+oldinternalnumber+"&registration_status="+registration_status;
     });
     $("#export-shp").on("click", function(e) {
         e.preventDefault();
@@ -277,6 +275,7 @@ $(function() {
             var registration_status = $('#registration_status').val();
             var businessmaintype = $('#businessmaintype').val();
             var businesstype = $('#businesstype').val();
+            var oldinternalnumber = $('#oldinternalnumber').val();
        
         var cql_param = "1=1";
         if (bin) {
@@ -315,6 +314,10 @@ $(function() {
         }
         if (businesstype) {
             cql_param += " AND businesstype  = '" + businesstype + "'";
+        }
+
+        if (oldinternalnumber) {
+            cql_param += " AND oldinternalnumber  = '" + oldinternalnumber + "'";
         }
         return encodeURI(cql_param);
     }

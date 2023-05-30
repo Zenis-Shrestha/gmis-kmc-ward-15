@@ -45,23 +45,25 @@ class BuildingBusinessController extends Controller
     {
         $pageTitle = "Business List";
         $wards = Ward::select('ward')->distinct()->orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
+        $oldinternalnumber = BuildingBusiness::select('oldinternalnumber')->distinct()->pluck('oldinternalnumber', 'oldinternalnumber')->all();
         $businessMainTypes = BusinessTaxRate::pluck('businessmaintype','businessmaintype')->toArray();
         $taxStatuses = TaxStsCode::pluck('name', 'value');
         $yesNo = YesNo::pluck('name', 'value');
-        $registration_status = BuildingBusiness::selectRaw("CASE WHEN registration_status THEN 'true' ELSE 'false' END AS registration_status_label, registration_status")
+        $registration_status = BuildingBusiness::selectRaw("CASE WHEN registration_status THEN 'Yes' ELSE 'No' END AS registration_status_label, registration_status")
                 ->whereNotNull('registration_status')
                 ->groupBy('registration_status')
                 ->orderBy('registration_status', 'asc')
                 ->pluck('registration_status_label', 'registration_status');
 
 
-        return view('buildings-business.index', compact('pageTitle', 'wards', 'taxStatuses', 'yesNo', 'registration_status','businessMainTypes'));
+        return view('buildings-business.index', compact('pageTitle', 'wards', 'oldinternalnumber', 'taxStatuses', 'yesNo', 'registration_status','businessMainTypes'));
     }
 
     public function getData(Request $request)
     {
         
         DB::enableQueryLog();
+        
 
         $buildingData = BuildingBusiness::select(
 
@@ -98,6 +100,10 @@ class BuildingBusinessController extends Controller
                     $query->where('houseownername', 'ilike', '%'.trim($request->houseownername).'%');
                 } 
                 
+                if ($request->oldinternalnumber) {
+                    $query->where('oldinternalnumber', 'ilike', '%'.trim($request->oldinternalnumber).'%');
+                } 
+
                 if ($request->btxsts_select) {
                    $btxsts_select = $request->btxsts_select;
                    
@@ -111,6 +117,7 @@ class BuildingBusinessController extends Controller
                if ($request->registration_status) {
                 
                     $query->where('registration_status', $request->registration_status);
+                    //dd($query);
                 }
 
                
@@ -370,9 +377,10 @@ class BuildingBusinessController extends Controller
         $registration_status = isset($_GET['registration_status']) ? $_GET['registration_status'] : null;
         $businessmaintype = isset($_GET['businessmaintype']) ? $_GET['businessmaintype'] : null;
         $businesstype = isset($_GET['businesstype']) ? $_GET['businesstype'] : null;
-        $columns = ['ward','roadname','houseno','bin','houseownername','ownerphone','houseownermail','businesowner','businessname','businesstype','category','businessoprdate','registration','registration_status','oldinternalnumber','taxlastdate','rent','rentresponsible','businessownermobile','email','remarks', 'businessmaintype'];
+        $oldinternalnumber = isset($_GET['oldinternalnumber']) ? $_GET['oldinternalnumber'] : null;
+        $columns = ['ward','roadname','houseno','bin','houseownername','ownerphone','houseownermail','businesowner','businessname','businesstype','category','businessoprdate','registration','registration_status','taxlastdate','oldinternalnumber','rent','rentresponsible','businessownermobile','email','remarks', 'businessmaintype'];
 
-        $query = BuildingBusiness::select('ward','roadname','houseno','bin','houseownername','ownerphone','houseownermail','businesowner','businessname','businesstype','category','businessoprdate','registration','registration_status','oldinternalnumber','taxlastdate','rent','rentresponsible','businessownermobile','email','remarks','businessmaintype');
+        $query = BuildingBusiness::select('ward','roadname','houseno','bin','houseownername','ownerphone','houseownermail','businesowner','businessname','businesstype','category','businessoprdate','registration','registration_status','taxlastdate','oldinternalnumber','rent','rentresponsible','businessownermobile','email','remarks','businessmaintype');
 
         if (!empty($searchData)) {
             foreach ($columns as $column) {
@@ -423,6 +431,10 @@ class BuildingBusinessController extends Controller
 
             $query->where('businesstype', 'ilike', '%'.trim($businesstype).'%');
         }
+        if (!empty($oldinternalnumber)) {
+
+            $query->where('oldinternalnumber', 'ilike', '%'.trim($oldinternalnumber).'%');
+        }
         $style = (new StyleBuilder())
             ->setFontBold()
             ->setFontSize(13)
@@ -451,8 +463,8 @@ class BuildingBusinessController extends Controller
             $values[] = $building->businessoprdate;
             $values[] = $building->registration;
             $values[] = $building->registration_status?'yes':'no';
-            $values[] = $building->oldinternalnumber;
             $values[] = $building->taxlastdate;
+            $values[] = $building->oldinternalnumber;
             $values[] = $building->rent;
             $values[] = $building->rentresponsible;
             $values[] = $building->businessownermobile;
