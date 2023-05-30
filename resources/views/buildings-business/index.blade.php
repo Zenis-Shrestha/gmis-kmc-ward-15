@@ -65,9 +65,10 @@
                             <div class="col-md-2">
                             <select class="form-control chosen-select" id="registration_status" name="registration_status">
                                 <option value="">--- Choose Registration Status ---</option>
-                                @foreach($registration_status as $key => $value)
-                                <option value="{{ $key }}">{{ $value }}</option>
-                                @endforeach
+                                
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                               
                             </select>
                             </div>
                     </div>
@@ -237,7 +238,7 @@ $(function() {
         var businessmaintype = $('#businessmaintype').val();
         var businesstype = $('#businesstype').val();
         var oldinternalnumber = $('#oldinternalnumber').val();
-        window.location.href="{!! url('buildings-business/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&houseno="+houseno+"&businessname="+businessname+"&businesowner="+businesowner+"&houseownername="+houseownername+"&btxsts_select="+btxsts_select+"&registration="+registration+"&businessmaintype="+businessmaintype+"&businesstype="+businesstype+"&oldinternalnumber="+oldinternalnumber;
+        window.location.href="{!! url('buildings-business/export?searchData=') !!}"+searchData+"&bin="+bin+"&ward="+ward+"&houseno="+houseno+"&businessname="+businessname+"&businesowner="+businesowner+"&houseownername="+houseownername+"&btxsts_select="+btxsts_select+"&registration="+registration+"&businessmaintype="+businessmaintype+"&businesstype="+businesstype+"&oldinternalnumber="+oldinternalnumber+"&registration_status="+registration_status;
     });
     $("#export-shp").on("click", function(e) {
         e.preventDefault();
