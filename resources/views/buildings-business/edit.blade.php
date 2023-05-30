@@ -19,7 +19,7 @@ $(document).ready(function() {
     <script>
         $(document).ready(function() {
             
-            if({{$buildingBusiness->bin}} && {{$buildingBusiness->ward}}){
+           
                 $('#bin').prepend('<option selected="{{$buildingBusiness->bin}}">{{$buildingBusiness->bin}}</option>').select2({
                         ajax: {
                             url:"{{ route('buildings.get-bin-numbers') }}",
@@ -52,7 +52,7 @@ $(document).ready(function() {
                 }
                     
 
-            }
+           
                    
                     @if(isset($buildingBusiness)) 
                     $("#businessmaintype option[value='<?php echo $buildingBusiness->businessmaintype;?>']").attr('selected', 'selected'); // added single quotes
