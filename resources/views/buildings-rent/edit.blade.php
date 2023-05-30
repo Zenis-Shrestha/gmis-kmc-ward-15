@@ -13,7 +13,7 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            if({{$buildingRent->bin}} && {{$buildingRent->ward}}){
+           
                 $('#bin').prepend('<option selected="{{$buildingRent->bin}}">{{$buildingRent->bin}}</option>').select2({
                         ajax: {
                             url:"{{ route('buildings.get-bin-numbers') }}",
@@ -45,11 +45,7 @@
                         });
                         
                         $wardSelect.val(selectedWard);
-                    }
-
-
-            }
-                    
+                    }     
          });
     </script>
 @endpush
