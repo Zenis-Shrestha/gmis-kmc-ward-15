@@ -117,7 +117,7 @@ class BuildingBusinessController extends Controller
                if ($request->registration_status) {
                 
                     $query->where('registration_status', $request->registration_status);
-                    dd($query);
+                    //dd($query);
                 }
 
                
