@@ -1020,6 +1020,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         bldg_gt60yr: '',
         bldg_dsblppl: '',
         bylaw: '',
+        bldg_none: '',
     };
 
     // Overlays Group Object
@@ -1147,11 +1148,11 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
                     clipLegend: true,
                     showCount: true
                 },
-                bldg_business_tax_status: {
-                    name: 'Business Tax Status',
-                    clipLegend: true,
-                    showCount: true
-                },
+//                bldg_business_tax_status: {
+//                    name: 'Business Tax Status',
+//                    clipLegend: true,
+//                    showCount: true
+//                },
             },
             clipLegend: true,
             filters: [],
@@ -1458,6 +1459,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
 
     // Add filter to layer
     function addFilterToLayer(layer, filter) {
+        console.log(filter);
         if(mLayer.hasOwnProperty(layer) && mFilter.hasOwnProperty(filter)) {
             var index = mLayer[layer].filters.indexOf(filter);
             if(index == -1) {
@@ -1476,11 +1478,12 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         }
     }
 
-    addFilterToLayer('building', 'building_structype');
-    addFilterToLayer('settarea', 'settarea_setttoilet');
-    addFilterToLayer('bldg', 'bldg_sngwoman');
-    addFilterToLayer('bldg', 'bldg_gt60yr');
-    addFilterToLayer('bldg', 'bldg_dsblppl');
+    addFilterToLayer('bldg', 'bldg_none');
+   // addFilterToLayer('bldg', 'building_structype');
+//    addFilterToLayer('settarea', 'settarea_setttoilet');
+//    addFilterToLayer('bldg', 'bldg_sngwoman');
+//    addFilterToLayer('bldg', 'bldg_gt60yr');
+//    addFilterToLayer('bldg', 'bldg_dsblppl');
 
     // HTML for Overlay Group collapsibles
     var html = '';
