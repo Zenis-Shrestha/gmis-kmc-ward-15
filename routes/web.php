@@ -782,6 +782,7 @@ Route::get('searchStreetsByKeywords/{keywords}', function($keywords){
 
 Route::get('getExportCSV', 'MapsController@getBuildingsReportCSV')->name('export-buildings');
 Route::get('getAreaExportCSV', 'MapsController@getBuildingsAreaReportCSV')->name('export-buildings');
+Route::get('get-photos', 'PhotoController@getAllPhotos')->name('get-photos');
 
 
 
