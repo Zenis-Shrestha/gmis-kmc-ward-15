@@ -390,9 +390,13 @@ class BuildingRentController extends Controller
     {
         if(BuildingRent::where('bin', $request->bin)->exists()){
             $building_rent = BuildingRent::where('bin', $request->bin)->first();
+            $build_owner = \App\BuildingOwner::where('bin', $request->bin)->first();
+            $building_rent['owner_name'] = $build_owner->owner_name;
             return response()->json($building_rent);
         } else {
             $building_rent = Building::where('bin', $request->bin)->first();
+            $build_owner = \App\BuildingOwner::where('bin', $request->bin)->first();
+            $building_rent['owner_name'] = $build_owner->owner_name;
             return response()->json($building_rent);
         }
     }

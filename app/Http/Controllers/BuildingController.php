@@ -26,8 +26,8 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use App\DueYear;
 use App\BuildingOwner;
-use App\Exports\BuildingsWithTaxStatusExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\BuildingsWithTaxStatusExport;
 
 class BuildingController extends Controller
 {
@@ -219,6 +219,7 @@ class BuildingController extends Controller
         $building->flrar = $request->flrar ? $request->flrar : null;
         $building->bprmtno = $request->bprmtno ? $request->bprmtno : null;
         $building->offcnm = $request->offcnm ? $request->offcnm : null;
+        $building->owner_contact = $request->owner_contact ? $request->owner_contact : null; 
         $building->dsblppl = $request->dsblppl ? $request->dsblppl : 0;
         if($request->geom && $request->footprint_option == 'draw_plygon'){
         $building->geom = $request->geom ? DB::raw("ST_Multi(ST_GeomFromText('" . $request->geom . "', 4326))") : null;
@@ -407,6 +408,7 @@ class BuildingController extends Controller
         $building->flrar = $request->flrar ? $request->flrar : null;
         $building->bprmtno = $request->bprmtno ? $request->bprmtno : null;
         $building->offcnm = $request->offcnm ? $request->offcnm : null;
+        $building->owner_contact = $request->owner_contact ? $request->owner_contact : null; 
         $building->dsblppl = $request->dsblppl ? $request->dsblppl : 0;
         if($request->geom && $request->footprint_option == 'draw_plygon'){
         $building->geom = $request->geom ? DB::raw("ST_Multi(ST_GeomFromText('" . $request->geom . "', 4326))") : $building->geom;
@@ -497,7 +499,6 @@ class BuildingController extends Controller
         ini_set('memory_limit', '512MB');
         ob_end_clean();
         set_time_limit(500); // 
-
         $searchData = isset($_GET['searchData']) ? $_GET['searchData'] : null;
         $bin = isset($_GET['bin']) ? $_GET['bin'] : null;
         $due_year = isset($_GET['due_year']) ? $_GET['due_year'] : null;
@@ -506,7 +507,110 @@ class BuildingController extends Controller
         $strtcd = isset($_GET['strtcd']) ? $_GET['strtcd'] : null;
         $ward = isset($_GET['ward']) ? $_GET['ward'] : null;
         
-        return Excel::download(new BuildingsWithTaxStatusExport($bin, $due_year, $hownr, $tole, $strtcd, $ward), 'Building Info.xlsx');
+        $columns = ['bin','bldgcd','ward','tole','oldhno','haddr','haddrplt','strtcd','imgfl','addrzn','zonecode','bldgasc','bldguse','offcnm','hownr','prclkey','yoc','flrcount','flrar','consttyp','elecyn','bprmtyn','bprmtno','buildvflag','drnkwtr','wtrcons','toilyn','wwdischg','swsegyn','sngwoman','hhcount','hhpop','gt60yr','dsblppl','datsrc','txpyrname','txpyrid','btxyr','due'];
+        
+        $query = DB::table('bldg')
+        ->leftJoin('bldg_tax_payment_status AS tax', 'bldg.bin', '=', 'tax.bin')
+        ->leftjoin('due_years AS due', 'due.value', '=', 'tax.due_year')
+        ->leftjoin('bldg_owners AS bo', 'bo.bin', '=', 'bldg.bin')
+        ->selectRaw('bldg.bin,bldg.bldgcd,bldg.ward,bldg.tole,bldg.oldhno,bldg.haddr,bldg.haddrplt,bldg.strtcd,bldg.imgfl,bldg.addrzn,bldg.zonecode,bldg.bldgasc,bldg.bldguse,bldg.offcnm,bldg.hownr,bldg.prclkey,bldg.yoc,bldg.flrcount,bldg.flrar,bldg.consttyp,bldg.elecyn,bldg.bprmtyn,bldg.bprmtno,bldg.buildvflag,bldg.drnkwtr,bldg.wtrcons,bldg.toilyn,bldg.wwdischg,bldg.swsegyn,bldg.sngwoman,bldg.hhcount,bldg.hhpop,bldg.gt60yr,bldg.dsblppl,bldg.datsrc,bldg.txpyrname,bldg.txpyrid,bldg.btxyr,due.name AS due_name')
+        ->orderBy('bldg.bin', 'asc');
+       
+        //$query = Building::select('bin','bldgcd','ward','tole','oldhno','haddr','haddrplt','strtcd','imgfl','addrzn','zonecode','bldgasc','bldguse','offcnm','hownr','prclkey','yoc','flrcount','flrar','consttyp','elecyn','bprmtyn','bprmtno','buildvflag','drnkwtr','wtrcons','toilyn','wwdischg','swsegyn','sngwoman','hhcount','hhpop','gt60yr','dsblppl','datsrc','txpyrname','txpyrid','btxyr');
+        
+        if (!empty($searchData)) {
+            foreach ($columns as $column) {
+                $query->orWhereRaw("lower(cast(" . $column . " AS varchar)) LIKE lower('%" . $searchData . "%')");
+                //casting to varchar LOWER doesn't work on int, double precision
+            }
+        }
+
+        if (!empty($bin)) {
+            $query->where('bldg.bin', $bin);
+        }
+
+        if (!empty($ward)) {
+            $query->where('bldg.ward', $ward);
+        }
+
+        if (!empty($hownr)) {
+            $query->where('tax.owner_name', $hownr);
+        }
+
+        if ($due_year) {
+            $query->where('due.name', $due_year);
+        }
+
+        if ($tole) {
+            $query->where('bldg.tole', $tole);
+        }
+
+       if ($strtcd) {
+            $query->where('bldg.strtcd', $strtcd);
+        }
+
+        
+        $style = (new StyleBuilder())
+            ->setFontBold()
+            ->setFontSize(13)
+            ->setBackgroundColor(Color::rgb(228, 228, 228))
+            ->build();
+
+        $writer = WriterFactory::create(Type::CSV);
+        $writer->openToBrowser('Buildings.csv')
+            ->addRowWithStyle($columns, $style); //Top row of excel
+      
+        $query->chunk(100, function ($buildings) use ($writer) {
+
+            foreach($buildings as $building) {
+          
+                $values = [];
+                $values[] = $building->bin;
+                $values[] = $building->bldgcd;
+                $values[] = $building->ward;
+                $values[] = $building->tole;
+                $values[] = $building->oldhno;
+                $values[] = $building->haddr;
+                $values[] = $building->haddrplt;
+                $values[] = $building->strtcd;
+                $values[] = $building->imgfl;
+                $values[] = $building->addrzn;
+                $values[] = $building->zonecode;
+                $values[] = $building->bldgasc;
+                $values[] = $building->bldguse;
+                $values[] = $building->offcnm;
+                
+                $values[] = $building->prclkey;
+                $values[] = $building->yoc;
+                $values[] = $building->flrcount;
+                $values[] = $building->flrar;
+                $values[] = $building->consttyp;
+                $values[] = $building->elecyn;
+                $values[] = $building->bprmtyn;
+                $values[] = $building->bprmtno;
+                $values[] = $building->buildvflag;
+                $values[] = $building->drnkwtr;
+                $values[] = $building->wtrcons;
+                $values[] = $building->toilyn;
+                $values[] = $building->wwdischg;
+                $values[] = $building->swsegyn;
+                $values[] = $building->sngwoman;
+                $values[] = $building->hhcount;
+                $values[] = $building->hhpop;
+                $values[] = $building->gt60yr;
+                $values[] = $building->dsblppl;
+                $values[] = $building->datsrc;
+                $values[] = $building->txpyrname;
+                $values[] = $building->txpyrid;
+                $values[] = $building->btxyr;
+                $values[] = $building->due_name;
+                $writer->addRow($values);
+            }
+            
+        });
+
+        $writer->close();
+    
 
     }
 
