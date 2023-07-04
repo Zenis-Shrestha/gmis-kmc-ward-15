@@ -204,14 +204,20 @@ $(document).ready(function() {
             $('#houseno').val(res.houseno);
            }
            
-           if( res.hownr){
-            $('#hownername').val(res.hownr);
+           if( res.owner_name){
+            $('#hownername').val(res.owner_name);
            }else{
             $('#hownername').val(res.hownername);
            }
            $('#ward').val(res.ward);
             $('#roadname').val(res.roadname);
+            if(res.hownernumber)
+            {
             $('#hownernumber').val(res.hownernumber);
+            } else {
+            $('#hownernumber').val(res.owner_contact);
+            }
+            
             $('#howneremail').val(res.howneremail);
             $('#housetype').val(res.housetype);
             $('#length').val(res.length);

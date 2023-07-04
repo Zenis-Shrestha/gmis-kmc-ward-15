@@ -225,8 +225,8 @@ $(document).ready(function() {
         success: function (res) {
            
             $('#ward').val(res.ward);
-            if (res.hownr) {
-                $('#houseownername').val(res.hownr);
+            if (res.owner_name) {
+                $('#houseownername').val(res.owner_name);
             } else {
                 $('#houseownername').val(res.houseownername);
             }
@@ -236,7 +236,12 @@ $(document).ready(function() {
                 $('#houseno').val(res.houseno);
             }
             $('#roadname').val(res.roadname);
-            $('#ownerphone').val(res.ownerphone);
+            if(res.ownerphone)
+            {
+                $('#ownerphone').val(res.ownerphone);
+            } else {
+            $('#ownerphone').val(res.owner_contact);
+            }
             $('#email').val(res.email);
             
         }

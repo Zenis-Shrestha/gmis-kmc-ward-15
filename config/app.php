@@ -230,7 +230,9 @@ return [
         'Pusher' => \Pusher\Pusher::class,
         'PDF' => Barryvdh\Snappy\Facades\SnappyPdf::class,
         'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
-        'Image' => Intervention\Image\Facades\Image::class
+        'Image' => Intervention\Image\Facades\Image::class,
+        'ChannelLog' => App\Contracts\Facades\ChannelLog::class,
+
 
 
     ],

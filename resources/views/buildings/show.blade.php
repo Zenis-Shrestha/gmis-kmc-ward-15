@@ -90,6 +90,12 @@
                 </div>
             </div>
             <div class="form-group">
+                {!! Form::label('owner_contact', __('House Owner Contact Number'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-3">
+                    {!! Form::label(null, $building->owner_contact, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
                 {!! Form::label('prclkey', __('Parcel Key'), ['class' => 'col-sm-3 control-label']) !!}
                 <div class="col-sm-3">
                     {!! Form::label(null, $building->prclkey, ['class' => 'form-control']) !!}
