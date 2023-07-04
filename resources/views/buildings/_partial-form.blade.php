@@ -112,6 +112,12 @@
         </div>
     </div>
     <div class="form-group col-md-6">
+        {!! Form::label('owner_contact', __('House Owner Contact Number'), ['class' => 'col-sm-4 control-label']) !!}
+        <div class="col-sm-8">
+            {!! Form::text('owner_contact', null, ['class' => 'form-control', 'placeholder' => __('House Owner Contact Number')]) !!}
+        </div>
+    </div>
+    <div class="form-group col-md-6">
         {!! Form::label('yoc', __('Year of Construction'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
             {!! Form::text('yoc', null, ['class' => 'form-control', 'placeholder' => __('Year of Construction')]) !!}

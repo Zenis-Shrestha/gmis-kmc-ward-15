@@ -553,9 +553,13 @@ class BuildingBusinessController extends Controller
     {
         if(BuildingBusiness::where('bin', $request->bin)->exists()){
             $building_business = BuildingBusiness::where('bin', $request->bin)->first();
+            $build_owner = \App\BuildingOwner::where('bin', $request->bin)->first();
+            $building_business['owner_name'] = $build_owner->owner_name;
 
         } else {
             $building_business = Building::where('bin', $request->bin)->first();
+            $build_owner = \App\BuildingOwner::where('bin', $request->bin)->first();
+            $building_business['owner_name'] = $build_owner->owner_name;
            
         }
         if ($request->has('ward')) {
@@ -563,7 +567,7 @@ class BuildingBusinessController extends Controller
         }
         
     
-        return response()->json( $building_business);
+        return response()->json($building_business);
       
   }
 
