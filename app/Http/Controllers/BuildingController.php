@@ -261,7 +261,7 @@ class BuildingController extends Controller
             }
         }
         if($request->hasFile('house_new_photo')) {
-        $imageName = $request->bin.'.'.$request->house_new_photo->getClientOriginalExtension();
+        $imageName = $building->bin.'.'.$request->house_new_photo->getClientOriginalExtension();
 
         $storeHouseImg = Image::make($request->house_new_photo)->save(Storage::disk('public')->path('/buildings/new-photos/' . $imageName),50);
         $building->house_new_photo = $imageName ? $imageName : null;
@@ -453,7 +453,7 @@ class BuildingController extends Controller
             }
             }
         if($request->hasFile('house_new_photo')) {
-        $imageName = $request->bin.'.'.$request->house_new_photo->getClientOriginalExtension();
+        $imageName = $id.'.'.$request->house_new_photo->getClientOriginalExtension();
         $storeHouseImg = Image::make($request->house_new_photo)->save(Storage::disk('public')->path('/buildings/new-photos/' . $imageName),50);
         $building->house_new_photo = $imageName ? $imageName : null;
         $building->save();
