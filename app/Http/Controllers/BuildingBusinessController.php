@@ -196,6 +196,7 @@ class BuildingBusinessController extends Controller
         
         $this->validate($request, [
             'bin' => 'required',
+            'taxlastdate' => 'date_format:Y/m/d',
         ]);
         $building = Building::where('bin', $request->bin)->first();
         $centroid = DB::select(DB::raw("SELECT (ST_AsText(st_centroid(st_union(geom)))) AS central_point FROM bldg WHERE bin = '$request->bin'"));
@@ -298,9 +299,11 @@ class BuildingBusinessController extends Controller
     public function update(Request $request, $id)
     {
         $building_business = BuildingBusiness::find($id);
+       
         if ($building_business) {
             $this->validate($request, [
                 'bin' => 'required',
+                'taxlastdate' => 'date_format:Y/m/d',
             ]);
 
             $building = Building::where('bin', $request->bin);
