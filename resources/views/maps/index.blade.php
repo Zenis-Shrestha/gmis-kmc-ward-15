@@ -1090,7 +1090,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
             styles: {
                 bldg_none: {
                     name: 'None',
-                    clipLegend: false,
+                    clipLegend: true,
                     showCount: false
                 },
                 bldg_bldguse: {
