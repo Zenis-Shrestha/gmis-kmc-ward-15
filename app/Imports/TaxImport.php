@@ -22,7 +22,9 @@ class TaxImport implements ToModel, WithHeadingRow, WithChunkReading,WithValidat
         if($row['fiscal_year'])
         {
         $fiscal_year = explode("/",$row['fiscal_year']);
-        $tax_paid_end_year = $fiscal_year[1] + 1;
+        //**Added one year 
+        //$tax_paid_end_year = $fiscal_year[1] + 1;
+        $tax_paid_end_year = $fiscal_year[1];
         $tax_paid_end_at = $tax_paid_end_year.'-03-31';
         }
         else{

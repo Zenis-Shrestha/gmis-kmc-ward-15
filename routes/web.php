@@ -578,14 +578,12 @@ Route::get('getBuildingInformation/{long}/{lat}', function ($long, $lat) {
 
     //Building Information
    
-    $buildings_query = "SELECT b.gid, b.bin, b.ward, b.tole, b.haddr, b.hownr, b.yoc, b.flrcount, bo.owner_name  AS owner_name, bu.name AS building_use, bc.name AS construction_type, t.name AS tax_status, s.strtnm AS street, ST_AsText(b.geom) AS geom, b.house_photo AS house_photo, b.house_new_photo AS house_new_photo
+    $buildings_query = "SELECT b.gid, b.bin, b.ward, b.tole, b.haddr, b.hownr, b.yoc, b.flrcount, bo.owner_name  AS owner_name, bu.name AS building_use, bc.name AS construction_type, s.strtnm AS street, ST_AsText(b.geom) AS geom, b.house_photo AS house_photo, b.house_new_photo AS house_new_photo
     FROM bldg b
     LEFT JOIN building_use bu
     ON b.bldguse = bu.value
      LEFT JOIN building_construction bc
    ON b.consttyp = bc.value
-      LEFT JOIN tax_status_code t
-     ON b.btxsts = t.value
      LEFT JOIN bldg_owners bo
     ON b.bin = bo.bin
     LEFT JOIN street s
@@ -596,7 +594,10 @@ Route::get('getBuildingInformation/{long}/{lat}', function ($long, $lat) {
     $data1 = array();
 
     foreach ($results_buildings as $row) {
-      
+        if(Schema::hasTable('bldg_tax_payment_status')){
+
+        $tax_result = DB::select("select d.name from due_years d join bldg_tax_payment_status b ON d.value = b.due_year where b.bin = ".$row->bin);
+        }
         $building = array();
         $building['gid'] = $row->gid ? $row->gid : '';
         $building['bin'] = $row->bin ? $row->bin : '';
@@ -609,7 +610,7 @@ Route::get('getBuildingInformation/{long}/{lat}', function ($long, $lat) {
         $building['flrcount'] = $row->flrcount ? $row->flrcount : '';
         $building['building_use'] = $row->building_use ? $row->building_use : '';
         $building['construction_type'] = $row->construction_type ? $row->construction_type : '';
-        $building['tax_status'] = $row->tax_status ? $row->tax_status : '';
+        $building['tax_status'] = $tax_result[0]->name ? $tax_result[0]->name : '';
         $building['street'] = $row->street ? $row->street : '';
         $building['geom'] = $row->geom ? $row->geom : '';
         if ($row->house_new_photo != null && Storage::disk('public')->exists('buildings/new-photos/'.$row->house_new_photo)) {
