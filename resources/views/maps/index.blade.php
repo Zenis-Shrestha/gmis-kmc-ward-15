@@ -848,12 +848,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
     var gurl_wms = gurl + 'wms';
     var gurl_wfs = gurl + 'wfs';
     // URL of GeoServer Legends
-    var gurl_legend = gurl_wms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=";
-
-    // URL of GeoServer Legends
-    var gurl_legend = gurl_wms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=";
-
-
+    var gurl_legend = gurl_wms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&BBOX=86.801605,26.616406,87.867279,27.114057&LAYER=";
     // Base Layers Object
     var bLayer = {
         osm: { name: 'OpenStreetMap', type: 'osm' },
