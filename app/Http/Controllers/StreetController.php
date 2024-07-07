@@ -92,7 +92,7 @@ class StreetController extends Controller
      */
     public function add()
     {
-        $pageTitle = "Add Street";
+        $pageTitle = "Add Road";
         $addZones = AddZone::orderBy('name')->pluck('name', 'value');
 
         return view('streets.add', compact('pageTitle', 'addZones'));
@@ -129,7 +129,7 @@ class StreetController extends Controller
         $street = Street::find($id);
 
         if ($street) {
-            $pageTitle = "Street Details";
+            $pageTitle = "Road Details";
 
             return view('streets.show', compact('pageTitle', 'street'));
         } else {
@@ -148,7 +148,7 @@ class StreetController extends Controller
         $street = Street::find($id);
 
         if ($street) {
-            $pageTitle = "Edit Street";
+            $pageTitle = "Edit Road";
 
             return view('streets.edit', compact('pageTitle', 'street'));
         } else {

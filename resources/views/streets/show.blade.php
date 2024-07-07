@@ -15,7 +15,7 @@
                 </div>
             </div>
             <div class="form-group col-md-6">
-                {!! Form::label('strtcd', __('Code'), ['class' => 'col-sm-3 control-label']) !!}
+                {!! Form::label('strtcd', __('Tax Road Code'), ['class' => 'col-sm-3 control-label']) !!}
                 <div class="col-sm-9">
                     {!! Form::label(null, $street->strtcd, ['class' => 'form-control']) !!}
                 </div>
@@ -32,12 +32,12 @@
                     {!! Form::label(null, $street->vflag ? __('Yes') : __('No') , ['class' => 'form-control']) !!}
                 </div>
             </div>
-            <div class="form-group col-md-6">
+            <!-- <div class="form-group col-md-6">
                 {!! Form::label('addrzn', __('Address Zone'), ['class' => 'col-sm-3 control-label']) !!}
                 <div class="col-sm-9">
                     {!! Form::label(null, $street->addrzn ? $street->addZone->name : '', ['class' => 'form-control']) !!}
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>

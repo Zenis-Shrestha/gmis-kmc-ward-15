@@ -6,7 +6,7 @@
         <div class="box">
             <div class="box-header">
                 @ability('super-admin', 'add-street')
-                <a href="{{ action('StreetController@add') }}" class="btn btn-info">Add Street</a>
+                <a href="{{ action('StreetController@add') }}" class="btn btn-info">Add Road</a>
                 @endability
                 @ability('super-admin', 'export-streets-excel')
                 <a href="#{{-- action('StreetController@export') --}}" id="export" class="btn btn-info">Export to Excel</a>
