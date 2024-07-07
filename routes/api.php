@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('login', [App\Http\Controllers\ApiServiceController::class, 'apiLogin']);
+Route::post('login', [ApiServiceController::class, 'apilogin']);
 
 Route::middleware('auth.fixed')->group(function () {
     Route::get('/get-bin-details/{bin}',[ApiServiceController::class,'getBinDetails']);

@@ -30,23 +30,46 @@ class ApiServiceController extends Controller
         $credentials = $request->only('email', 'password');
     
         if (Auth::attempt($credentials)) {
-            // Authentication successful
             $user = Auth::user();
-            
-            // Generate a new API token for the user
             $token = Str::random(60); // Generate a random string for token
-            
-            $user->forceFill([
-                'api_token' => hash('sha256', $token),
-            ])->save();
     
-            return response()->json(['token' => $token], 200);
+            // Hash the token before saving it
+            $hashedToken = bcrypt($token);
+    
+            // Store the hashed token in the user model
+            $user->api_token = $hashedToken;
+            $user->save();
+
+            return response()->json(['token' => $hashedToken], 200);
         } else {
-            // Authentication failed
             return response()->json(['error' => 'Unauthorized'], 401);
         }
     }
     
+    
+
+    // public function login(Request $request){
+
+           
+
+    //         if(!Auth::attempt($request->only(['email', 'password']))){
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => 'Email & Password does not match with our records.',
+    //             ], 401);
+    //         }
+
+    //         $user = User::where('email', $request->email)->first();
+
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'User Logged In Successfully.',
+    //             'token' => $user->createToken("API TOKEN")->plainTextToken,
+    //         ]);
+
+     
+    // }
 
     public function getBinDetails($bin) {
         try {

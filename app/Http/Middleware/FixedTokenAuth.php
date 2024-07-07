@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use App\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str; 
 
 class FixedTokenAuth
 {
@@ -15,39 +16,28 @@ class FixedTokenAuth
      * @param  \Closure  $next
      * @return mixed
      */
-    // public function handle($request, Closure $next)
-    // {
-    //     $token = $request->header('Authorization');
-
-    //     // Replace with the token generated in the seeder
-    //     $fixedToken = '8yHEEFVhEzqozp0VjalXqaeihuPkpjMvVGIE2ho8GjaPMCgMuuHDdbPcW6Vq';
-
-    //     if ($token !== $fixedToken) {
-    //         return response()->json(['error' => 'Unauthorized'], 401);
-    //     }
-
-    //     // Find the user with the fixed token
-    //     $user = User::where('api_token', $fixedToken)->first();
-    //     if (!$user) {
-    //         return response()->json(['error' => 'Unauthorized'], 401);
-    //     }
-
-    //     // Authenticate the user
-    //     Auth::login($user);
-
-    //     return $next($request);
-    // }
+  
 
 
     public function handle($request, Closure $next)
     {
-       
-        $token = $request->bearerToken();
-      
-        if (!$token) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-
+        // Extract the Authorization header
+        $authorizationHeader = $request->header('Authorization');
+    
+        if (Str::startsWith($authorizationHeader, 'Bearer ')) {
+            // Remove 'Bearer ' from the start to get the actual token
+            $token = Str::substr($authorizationHeader, 7); // 7 is the length of 'Bearer '
+            $user = User::where('api_token', $token)->first();
+                if (!$user) {
+                    return response()->json(['error' => 'Unauthorized'], 401);
+                }
+        
+                // Authenticate the user
+                Auth::login($user);
+        
+            }
+    
         return $next($request);
     }
+    
 }
