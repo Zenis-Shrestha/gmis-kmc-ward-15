@@ -76,12 +76,12 @@
         </div>
     </div>
     <div class="form-group col-md-6">
-        {!! Form::label('oldhno', __('Old House Number'), ['class' => 'col-sm-4 control-label']) !!}
+        {!! Form::label('oldhno', __('House Number'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
-            {!! Form::text('oldhno', null, ['class' => 'form-control', 'placeholder' => __('Old House Number')]) !!}
+            {!! Form::text('oldhno', null, ['class' => 'form-control', 'placeholder' => __('House Number')]) !!}
         </div>
     </div>
-    <div class="form-group col-md-6">
+    <!-- <div class="form-group col-md-6">
         {!! Form::label('haddr', __('Metric House Address'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
             {!! Form::text('haddr', null, ['class' => 'form-control', 'placeholder' => __('Metric House Address')]) !!}
@@ -92,11 +92,11 @@
         <div class="col-sm-8">
             {!! Form::checkbox('haddrplt') !!}
         </div>
-    </div>
+    </div> -->
     <div class="form-group col-md-6">
-        {!! Form::label('strtcd', __('Street'), ['class' => 'col-sm-4 control-label']) !!}
+        {!! Form::label('strtcd', __('Road'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
-            {!! Form::select('strtcd', $streets, null, ['class' => 'form-control', 'placeholder' => __('--- Choose street ---')]) !!}
+            {!! Form::select('strtcd', $streets, null, ['class' => 'form-control', 'placeholder' => __('--- Choose road ---')]) !!}
         </div>
     </div>
     <div class="form-group col-md-6">
@@ -154,18 +154,18 @@
             {!! Form::select('toilyn', $yesNo, null, ['class' => 'form-control', 'placeholder' => __('--- Choose option ---')]) !!}
         </div>
     </div>
-    <div class="form-group col-md-6">
+    <!-- <div class="form-group col-md-6">
         {!! Form::label('hhcount', __('Number of households'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
             {!! Form::text('hhcount', null, ['class' => 'form-control', 'placeholder' => __('Number of households')]) !!}
         </div>
-    </div>
-    <div class="form-group col-md-6">
+    </div> -->
+    <!-- <div class="form-group col-md-6">
         {!! Form::label('hhpop', __('Household populations'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
             {!! Form::text('hhpop', null, ['class' => 'form-control', 'placeholder' => __('Household populations')]) !!}
         </div>
-    </div>
+    </div> -->
     {{-- <div class="form-group col-md-6">
         {!! Form::label('txpyrid', __('Tax Payer\'s ID'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
@@ -185,24 +185,24 @@
         </div>
     </div> --}}
 
-    <div class="form-group col-md-6">
+    <!-- <div class="form-group col-md-6">
         {!! Form::label('sngwoman', __('Single Woman'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
             {!! Form::text('sngwoman', null, ['class' => 'form-control', 'placeholder' => __('Single Woman')]) !!}
         </div>
-    </div>
-    <div class="form-group col-md-6">
+    </div> -->
+    <!-- <div class="form-group col-md-6">
         {!! Form::label('gt60yr', __('Greater than 60 year'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
             {!! Form::text('gt60yr', null, ['class' => 'form-control', 'placeholder' => __('Greater than 60 year')]) !!}
         </div>
-    </div>
-    <div class="form-group col-md-6">
+    </div> -->
+    <!-- <div class="form-group col-md-6">
         {!! Form::label('dsblppl', __('Number of disabled people'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">
             {!! Form::text('dsblppl', null, ['class' => 'form-control', 'placeholder' => __('Number of disabled people')]) !!}
         </div>
-    </div>
+    </div> -->
     <div class="form-group col-md-6">
         {!! Form::label('offcnm', __('Office Name'), ['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-8">

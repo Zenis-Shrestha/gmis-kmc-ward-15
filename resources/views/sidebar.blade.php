@@ -44,14 +44,14 @@
             
             @ability('super-admin', 'list-streets')
             <li class="treeview">
-                <a href="{{ action('StreetController@index') }}"><i class="fa fa-road" aria-hidden="true"></i><span>Streets</span></a>
+                <a href="{{ action('StreetController@index') }}"><i class="fa fa-road" aria-hidden="true"></i><span>Roads</span></a>
             </li>
             @endability
-            @ability('super-admin', 'list-roads')
+            <!-- @ability('super-admin', 'list-roads')
             <li class="treeview">
                 <a href="{{ action('RoadController@index') }}"><i class="fa fa-road" aria-hidden="true"></i><span>Roads</span></a>
             </li>
-            @endability
+            @endability -->
 
             @ability('super-admin', 'list-add-zones,list-building-constructions,list-building-uses,list-water-srcs,list-tax-sts-codes,list-drainages,list-verf-yes-nos,list-yes-nos,list-road-hierarchies,list-road-surfaces')
             <li class="treeview">
