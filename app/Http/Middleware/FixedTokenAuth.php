@@ -21,23 +21,28 @@ class FixedTokenAuth
 
     public function handle($request, Closure $next)
     {
-        // Extract the Authorization header
-        $authorizationHeader = $request->header('Authorization');
-    
-        if (Str::startsWith($authorizationHeader, 'Bearer ')) {
-            // Remove 'Bearer ' from the start to get the actual token
-            $token = Str::substr($authorizationHeader, 7); // 7 is the length of 'Bearer '
-            $user = User::where('api_token', $token)->first();
-                if (!$user) {
-                    return response()->json(['error' => 'Unauthorized'], 401);
-                }
-        
-                // Authenticate the user
-                Auth::login($user);
-        
-            }
-    
-        return $next($request);
+      // Extract the Authorization header
+      $authorizationHeader = $request->header('Authorization');
+
+      // Check if Authorization header exists and starts with 'Bearer '
+      if ($authorizationHeader && Str::startsWith($authorizationHeader, 'Bearer ')) {
+          // Extract token
+          $token = Str::substr($authorizationHeader, 7); // Remove 'Bearer ' from token
+
+          // Find user by token in database
+          $user = User::where('api_token', $token)->first();
+
+          // If user exists, authenticate the user
+          if ($user) {
+              Auth::login($user); // Log in the user
+          } else {
+              return response()->json(['error' => 'Token mismatched'], 401);
+          }
+      } else {
+          return response()->json(['error' => 'Unauthorized '], 401);
+      }
+
+      return $next($request);
     }
     
 }

@@ -15,7 +15,7 @@ class FixedUserSeeder extends Seeder
     {
         DB::table('users')->insert([
             'name' => 'API',
-            'email' => 'api@gmail.com',
+            'email' => 'api_user@gmail.com',
             'password' => bcrypt('Api_user@123'), 
             'api_token' => Str::random(60),  
             'created_at' => now(),
