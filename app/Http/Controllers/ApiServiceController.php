@@ -9,21 +9,14 @@ use App\BuildingRent;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
+use GuzzleHttp\Client;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 
 class ApiServiceController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth:api');
-    // }
-
-    // public function index(Request $request)
-    // {
-    //     return response()->json(['message' => 'Access granted to protected API'], 200);
-    // }
+   
 
     public function apiLogin(Request $request)
     {
@@ -48,33 +41,14 @@ class ApiServiceController extends Controller
     
     
 
-    // public function login(Request $request){
-
-           
-
-    //         if(!Auth::attempt($request->only(['email', 'password']))){
-    //             return response()->json([
-    //                 'status' => false,
-    //                 'message' => 'Email & Password does not match with our records.',
-    //             ], 401);
-    //         }
-
-    //         $user = User::where('email', $request->email)->first();
-
-
-    //         return response()->json([
-    //             'status' => true,
-    //             'message' => 'User Logged In Successfully.',
-    //             'token' => $user->createToken("API TOKEN")->plainTextToken,
-    //         ]);
-
-     
-    // }
 
     public function getBinDetails($bin) {
         try {
             // Fetch Building data
-            $building = Building::findOrFail($bin);
+            $building = Building::select('bin', 'bldgcd', 'ward', 'tole', 'oldhno', 'strtcd', 'bldgasc', 'bldguse', 
+            'offcnm', 'hownr', 'yoc', 'flrcount', 'flrar', 'consttyp', 'bprmtyn', 'bprmtno', 'toilyn', 'sbin', 
+            'txpyrname', 'txpyrid', 'btxyr', 'btxsts', 'businessno', 'rentno', 'house_photo', 'house_new_photo')
+            ->findOrFail($bin);
     
             // Initialize variables for business and rent
             $business = "No Business registegred for BIN $bin";
@@ -82,18 +56,67 @@ class ApiServiceController extends Controller
     
             // fetch BuildingBusiness and BuildingRent data
             try {
-                $business = BuildingBusiness::where('bin', $bin)->get();
+                $business = BuildingBusiness::select(
+                    'id',
+                    'ward',
+                    'roadname',
+                    'houseno',
+                    'bin',
+                    'houseownername',
+                    'ownerphone',
+                    'houseownermail',
+                    'businesowner',
+                    'businessname',
+                    'businesstype',
+                    'category',
+                    'businessoprdate',
+                    'registration',
+                    'oldinternalnumber',
+                    'taxlastdate',
+                    'rent',
+                    'rentresponsible',
+                    'businessownermobile',
+                    'email',
+                    'remarks',
+                    'business_tax_rates_id',
+                    'businessmaintype',
+                    'registration_status'
+                )->where('bin', $bin)->get();
+                
             } catch (ModelNotFoundException $e) {
                 Log::warning("No BuildingBusiness found for BIN $bin.");
             }
-    
+           
             try {
-                $rent = BuildingRent::where('bin', $bin)->get();
+                $rent = BuildingRent::select(
+                    'id',
+                    'ward',
+                    'roadname',
+                    'houseno',
+                    'bin',
+                    'taxpayercode',
+                    'hownername',
+                    'hownernumber',
+                    'howneremail',
+                    'housetype',
+                    'length',
+                    'width',
+                    'area',
+                    'rentername',
+                    'rentpurpose',
+                    'rentstart',
+                    'rentend',
+                    'monthlyrent',
+                    'rentaxresponsible',
+                    'rentincreseperyear',
+                    'rentmobilenumber',
+                    'remarks'
+                )->where('bin', $bin)->get();
             } catch (ModelNotFoundException $e) {
                 Log::warning("No BuildingRent found for BIN $bin.");
             }
-    
-           $map =  $this->viewMap($bin);
+        //     $token_map = Auth::user()->api_token;
+        //    $map =  $this->viewMap($bin, $token_map);
             // Return JSON response with success and data
             return response()->json([
                 'success' => true,
@@ -101,7 +124,7 @@ class ApiServiceController extends Controller
                     'building' => $building,
                     'business' => $business,
                     'rent' => $rent,
-                    'map' =>  $map
+                    // 'map' =>  $map
                 ],
                 'message' => 'BIN Details retrieved successfully.'
             ]);
@@ -120,16 +143,20 @@ class ApiServiceController extends Controller
         }
     }
 
-    public function viewMap($bin)
-    {
-        $url = action('MapsController@index', [
-            'layer' => 'bldg',
-            'field' => 'bin',
-            'val' => $bin
-        ]);
-    
-        return $url;
-    }
+
+
+
+public function viewMap($bin, $token)
+{
+    // URL to your MapsController@viewBin route
+    $url = action('MapsController@viewBin', [
+        'layer' => 'bldg',
+        'field' => 'bin',
+        'val' => $bin,
+    ]);
+return $url;
+}
+ 
 
     public function updateBuilding(Request $request, $bin)
     {
@@ -160,7 +187,9 @@ class ApiServiceController extends Controller
      
                 $resource->save();
     
-                return response()->json(['message' => 'Building updated successfully', 'resource' => $resource]);
+                // return response()->json(['message' => 'Building updated successfully', 'resource' => $resource]);
+                return response()->json(['message' => 'Building updated successfully']);
+
             } else {
                 return response()->json(['error' => 'Building not found'], 404);
             }
