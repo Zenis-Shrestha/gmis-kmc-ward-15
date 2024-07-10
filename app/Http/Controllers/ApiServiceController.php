@@ -115,8 +115,8 @@ class ApiServiceController extends Controller
             } catch (ModelNotFoundException $e) {
                 Log::warning("No BuildingRent found for BIN $bin.");
             }
-        //     $token_map = Auth::user()->api_token;
-        //    $map =  $this->viewMap($bin, $token_map);
+            $token_map = Auth::user()->api_token;
+           $map =  $this->viewMap($bin, $token_map);
             // Return JSON response with success and data
             return response()->json([
                 'success' => true,
@@ -165,26 +165,26 @@ return $url;
         $resource = Building::where('bin', $bin)->first();
 
         if ($resource) {
-            $resource->bldguse = $request->input('bldguse');
-            $resource->yoc = $request->input('yoc');
-            $resource->flrcount = $request->input('flrcount');
-            $resource->consttyp = $request->input('consttyp');
-            $resource->toilyn = $request->input('toilyn');
-            $resource->hhcount = $request->input('hhcount');
-            $resource->hhpop = $request->input('hhpop');
-            $resource->txpyrid = $request->input('txpyrid');
-            $resource->txpyrname = $request->input('txpyrname');
-            $resource->flrar = $request->input('flrar');
-            $resource->bprmtno = $request->input('bprmtno');
-            $resource->offcnm = $request->input('offcnm');
-            $resource->bldgcd = $request->input('bldgcd');
-            $resource->ward = $request->input('ward');
-            $resource->tole = $request->input('tole');
-            $resource->strtcd = $request->input('strtcd');
-            $resource->hownr = $request->input('hownr');
-            $resource->flrar = $request->input('flrar');
 
-     
+            //bin:
+
+            $resource->oldhno = $request->input('oldhno', null); 
+            $resource->txpyrname = $request->input('txpyrname', null); 
+            $resource->txpyrid = $request->input('txpyrid', null); 
+            $resource->flrcount = $request->input('flrcount', null);
+            $resource->consttyp = $request->input('consttyp', null);
+            $resource->yoc = $request->input('yoc', null); 
+            $resource->ward = $request->input('ward', null); 
+            $resource->strtcd = $request->input('strtcd', null); 
+            $resource->flrar = $request->input('flrar', null); 
+            $resource->sbin = $request->input('sbin', null); 
+            $resource->tole = $request->input('tole', null); 
+            $resource->hownr = $request->input('hownr', null); 
+            $resource->bprmtno = $request->input('bprmtno', null);
+            $resource->toilyn = $request->input('toilyn', null);
+            $resource->btxyr = $request->input('btxyr', null); 
+            
+
                 $resource->save();
     
                 // return response()->json(['message' => 'Building updated successfully', 'resource' => $resource]);
