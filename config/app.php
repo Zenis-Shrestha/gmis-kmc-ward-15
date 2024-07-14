@@ -156,6 +156,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\BroadcastServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
 
         // Illuminate\Html\HtmlServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,

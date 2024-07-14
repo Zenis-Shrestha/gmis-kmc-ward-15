@@ -2,6 +2,12 @@
 
 Auth::routes();
 
+// Route::middleware('auth.fixed')->group(function () {
+//     Route::get('/get-bin-details/{bin}','ApiServiceController@getBinDetails');
+//     Route::post('/update-building/{bin}', [ApiServiceController::class,'updateBuilding']);
+//     Route::get('/redirect-to-map/{bin}', 'ApiServiceController@redirectToMap')->name('redirect-to-map');
+// });
+
 Route::get('/', 'HomeController@index');
 
 // Replace "create" with "add"
@@ -12,6 +18,7 @@ Route::resource('roles', 'RoleController');
 
 Route::resource('role_permission', 'RolesPermissionsController');
 
+Route::get('view-bin-maps', 'MapsController@viewBin');
 Route::get('maps', 'MapsController@index');
 Route::resource('importexcel', 'ImportExcelController');
 

@@ -55,7 +55,6 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        // 'auth:api' => \App\Http\Middleware\FixedTokenAuth::class,
         'auth.fixed' => \App\Http\Middleware\FixedTokenAuth::class,
     ];
 }

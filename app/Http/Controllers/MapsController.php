@@ -47,6 +47,21 @@ class MapsController extends Controller
         return view('maps.index', compact('wards', 'bylaws', 'pageTitle', 'businessmaintype', 'businesssubtype'));
     }
 
+    public function viewBin()
+    {
+       
+        $wards = Ward::orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
+        $bylaws = ByLaw::orderBy('name', 'asc')->pluck('name', 'name')->all();
+        $businessmaintype = BuildingBusiness::whereNotNull('businessmaintype')->groupBy('businessmaintype')->pluck('businessmaintype', 'businessmaintype')->all();
+        
+        $businesssubtype = BuildingBusiness::whereNotNull('businesstype')->groupBy('businesstype')->pluck('businesstype', 'businesstype')->all();
+
+        $pageTitle = "Map";
+    
+            return view('maps.index-bin', compact('wards', 'bylaws', 'pageTitle', 'businessmaintype', 'businesssubtype'));
+        
+    } 
+    
     public function map1()
     {
         $districts = Distpl::orderBy('district', 'asc')->pluck('district','district')->all();

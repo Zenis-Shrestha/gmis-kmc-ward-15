@@ -20,9 +20,14 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', [ApiServiceController::class, 'apilogin']);
 
 Route::middleware('auth.fixed')->group(function () {
-    Route::get('/get-bin-details/{bin}',[ApiServiceController::class,'getBinDetails']);
-    // Route::post('/save-building', [ApiServiceController::class,'getBuilding']);
-    Route::post('/update-building/{bin}', [ApiServiceController::class,'updateBuilding']);
+    //get building, rent, business details
+    Route::get('/get-bin-details/{bin}','ApiServiceController@getBinDetails');
+    //redirection to map
+    Route::get('/redirect-to-map/{bin}', 'ApiServiceController@redirectToMap')->name('redirect-to-map');
+    //update building details from shangrila
+    Route::post('/update-building/{bin}','ApiServiceController@updateBuilding');
+    // destory building if deleted from Shangrila
+    Route::post('/delete-building/{bin}','ApiServiceController@deleteBuilding');
 
 });
 
