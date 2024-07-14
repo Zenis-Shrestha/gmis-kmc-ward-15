@@ -25,10 +25,10 @@ class ApiServiceController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             $token = Str::random(60); // Generate a random string for token
-
+    
             // Hash the token before saving it
             $hashedToken = bcrypt($token);
-
+    
             // Store the hashed token in the user model
             $user->api_token = $hashedToken;
             $user->save();
@@ -42,45 +42,81 @@ class ApiServiceController extends Controller
     
 
 
-    public function getBinDetails($bin)
-    {
+    public function getBinDetails($bin) {
         try {
             // Fetch Building data
-            $building = Building::select('bin', 'bldgcd', 'ward', 'tole', 'oldhno', 'strtcd', 'bldgasc', 'bldguse',
-                'offcnm', 'hownr', 'yoc', 'flrcount', 'flrar', 'consttyp', 'bprmtyn', 'bprmtno', 'toilyn', 'sbin',
-                'txpyrname', 'txpyrid', 'btxyr', 'btxsts', 'businessno', 'rentno', 'house_photo', 'house_new_photo')
-                ->findOrFail($bin);
-
+            $building = Building::select('bin', 'bldgcd', 'ward', 'tole', 'oldhno', 'strtcd', 'bldgasc', 'bldguse', 
+            'offcnm', 'hownr', 'yoc', 'flrcount', 'flrar', 'consttyp', 'bprmtyn', 'bprmtno', 'toilyn', 'sbin', 
+            'txpyrname', 'txpyrid', 'btxyr', 'btxsts', 'businessno', 'rentno', 'house_photo', 'house_new_photo')
+            ->findOrFail($bin);
+    
             // Initialize variables for business and rent
             $business = "No Business registegred for BIN $bin";
             $rent = "No Rent registegred for BIN $bin";
-
+    
             // fetch BuildingBusiness and BuildingRent data
             try {
                 $business = BuildingBusiness::select(
-                    'id', 'ward', 'roadname', 'houseno', 'bin', 'houseownername', 'ownerphone', 
-                    'houseownermail', 'businesowner', 'businessname', 'businesstype', 'category', 
-                    'businessoprdate', 'registration', 'oldinternalnumber', 'taxlastdate', 'rent', 
-                    'rentresponsible', 'businessownermobile', 'email', 'remarks', 'business_tax_rates_id', 
-                    'businessmaintype', 'registration_status'
+                    'id',
+                    'ward',
+                    'roadname',
+                    'houseno',
+                    'bin',
+                    'houseownername',
+                    'ownerphone',
+                    'houseownermail',
+                    'businesowner',
+                    'businessname',
+                    'businesstype',
+                    'category',
+                    'businessoprdate',
+                    'registration',
+                    'oldinternalnumber',
+                    'taxlastdate',
+                    'rent',
+                    'rentresponsible',
+                    'businessownermobile',
+                    'email',
+                    'remarks',
+                    'business_tax_rates_id',
+                    'businessmaintype',
+                    'registration_status'
                 )->where('bin', $bin)->get();
-
+                
             } catch (ModelNotFoundException $e) {
                 Log::warning("No BuildingBusiness found for BIN $bin.");
             }
-
+           
             try {
                 $rent = BuildingRent::select(
-                    'id', 'ward', 'roadname', 'houseno', 'bin', 'taxpayercode', 'hownername', 'hownernumber', 
-                    'howneremail', 'housetype', 'length', 'width', 'area', 'rentername', 'rentpurpose', 
-                    'rentstart', 'rentend', 'monthlyrent', 'rentaxresponsible', 'rentincreseperyear', 
-                    'rentmobilenumber', 'remarks'
+                    'id',
+                    'ward',
+                    'roadname',
+                    'houseno',
+                    'bin',
+                    'taxpayercode',
+                    'hownername',
+                    'hownernumber',
+                    'howneremail',
+                    'housetype',
+                    'length',
+                    'width',
+                    'area',
+                    'rentername',
+                    'rentpurpose',
+                    'rentstart',
+                    'rentend',
+                    'monthlyrent',
+                    'rentaxresponsible',
+                    'rentincreseperyear',
+                    'rentmobilenumber',
+                    'remarks'
                 )->where('bin', $bin)->get();
             } catch (ModelNotFoundException $e) {
                 Log::warning("No BuildingRent found for BIN $bin.");
             }
             $token_map = Auth::user()->api_token;
-            $map = $this->viewMap($bin, $token_map);
+           $map =  $this->viewMap($bin, $token_map);
             // Return JSON response with success and data
             return response()->json([
                 'success' => true,
@@ -88,17 +124,17 @@ class ApiServiceController extends Controller
                     'building' => $building,
                     'business' => $business,
                     'rent' => $rent,
-                    'mapUrl' =>  $mapUrl
+                    // 'map' =>  $map
                 ],
                 'message' => 'BIN Details retrieved successfully.'
             ]);
-
+    
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'status' => false,
                 'message' => "No BIN found for ID $bin."
             ], 404); // Use 404 for resource not found
-
+    
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -157,14 +193,5 @@ return $url;
             } else {
                 return response()->json(['error' => 'Building not found'], 404);
             }
-        }
-
-        public function redirectToMap($bin) 
-        {
-            return redirect()->action('MapsController@index', [
-                'layer' => 'bldg',
-                'field' => 'bin',
-                'val' => $bin
-            ]);
         }
 }

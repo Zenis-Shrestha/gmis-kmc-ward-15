@@ -23,7 +23,6 @@ Route::middleware('auth.fixed')->group(function () {
     Route::get('/get-bin-details/{bin}',[ApiServiceController::class,'getBinDetails']);
     // Route::post('/save-building', [ApiServiceController::class,'getBuilding']);
     Route::post('/update-building/{bin}', [ApiServiceController::class,'updateBuilding']);
-    Route::get('/redirect-to-map/{bin}', [ApiServiceController::class, 'redirectToMap']);
 
 });
 
