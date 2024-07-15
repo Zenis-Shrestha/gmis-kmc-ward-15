@@ -11,6 +11,7 @@ use App\Models\Token;
 use Illuminate\Support\Facades\App;
 use Lcobucci\JWT\Parser;
 use Laravel\Passport\TokenRepository;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class FixedTokenAuth
 {
@@ -22,15 +23,13 @@ class FixedTokenAuth
      * @return mixed
      */
   
-
-    
     public function handle($request, Closure $next)
     {
         $token = $request->bearerToken();
 
             // If Bearer token is not present, try to get it from request input
             if (!$token) {
-                $token = $request->input('token');
+                $token = decrypt($request->input('token'));
         
             }
 
