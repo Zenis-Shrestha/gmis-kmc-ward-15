@@ -1,9 +1,11 @@
 <aside class="main-sidebar">
     <section class="sidebar">
         <ul class="sidebar-menu">
+        @ability('super-admin,normal', 'dashboard')
             <li class="treeview">
                 <a href="{{ action('HomeController@index') }}"><i class="fa fa-home" aria-hidden="true"></i><span>Dashboard</span></a>
             </li>
+            @endability
             @ability('super-admin', 'list-buildings')
             <li class="treeview">
                 <a href="{{ action('BuildingController@index') }}"><i class="fa fa-building-o" aria-hidden="true"></i><span>Buildings</span></a>
