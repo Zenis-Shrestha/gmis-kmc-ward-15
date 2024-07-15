@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Crypt;
 
 class ApiServiceController extends Controller
 {
@@ -39,6 +40,7 @@ class ApiServiceController extends Controller
 
     public function getBinDetails($bin, Request $request)
     {
+
         try {
             // Fetch Building data
             $building = Building::select('bin', 'bldgcd', 'ward', 'tole', 'oldhno', 'strtcd', 'bldgasc', 'bldguse', 
@@ -53,30 +55,11 @@ class ApiServiceController extends Controller
             // fetch BuildingBusiness and BuildingRent data
             try {
                 $business = BuildingBusiness::select(
-                    'id',
-                    'ward',
-                    'roadname',
-                    'houseno',
-                    'bin',
-                    'houseownername',
-                    'ownerphone',
-                    'houseownermail',
-                    'businesowner',
-                    'businessname',
-                    'businesstype',
-                    'category',
-                    'businessoprdate',
-                    'registration',
-                    'oldinternalnumber',
-                    'taxlastdate',
-                    'rent',
-                    'rentresponsible',
-                    'businessownermobile',
-                    'email',
-                    'remarks',
-                    'business_tax_rates_id',
-                    'businessmaintype',
-                    'registration_status'
+                    'id', 'ward', 'roadname', 'houseno', 'bin', 'houseownername', 'ownerphone', 
+                    'houseownermail', 'businesowner', 'businessname', 'businesstype', 'category', 
+                    'businessoprdate', 'registration', 'oldinternalnumber', 'taxlastdate', 'rent', 
+                    'rentresponsible', 'businessownermobile', 'email', 'remarks', 'business_tax_rates_id', 
+                    'businessmaintype', 'registration_status'
                 )->where('bin', $bin)->get();
                 
             } catch (ModelNotFoundException $e) {
@@ -85,34 +68,16 @@ class ApiServiceController extends Controller
            
             try {
                 $rent = BuildingRent::select(
-                    'id',
-                    'ward',
-                    'roadname',
-                    'houseno',
-                    'bin',
-                    'taxpayercode',
-                    'hownername',
-                    'hownernumber',
-                    'howneremail',
-                    'housetype',
-                    'length',
-                    'width',
-                    'area',
-                    'rentername',
-                    'rentpurpose',
-                    'rentstart',
-                    'rentend',
-                    'monthlyrent',
-                    'rentaxresponsible',
-                    'rentincreseperyear',
-                    'rentmobilenumber',
-                    'remarks'
+                    'id', 'ward', 'roadname', 'houseno', 'bin', 'taxpayercode', 'hownername', 'hownernumber', 
+                    'howneremail', 'housetype', 'length', 'width', 'area', 'rentername', 'rentpurpose', 
+                    'rentstart', 'rentend', 'monthlyrent', 'rentaxresponsible', 'rentincreseperyear', 
+                    'rentmobilenumber', 'remarks'
                 )->where('bin', $bin)->get();
             } catch (ModelNotFoundException $e) {
                 Log::warning("No BuildingRent found for BIN $bin.");
             }
             $token_map = Auth::user()->api_token;
-            $map = route('redirect-to-map', ['bin' => $bin]) . '?token=' . urlencode($token_map);
+            $map = route('redirect-to-map', ['bin' => $bin]) . '?token=' . Crypt::encrypt(urlencode($token_map));
             // Return JSON response with success and data
             return response()->json([
                 'success' => true,
@@ -141,6 +106,7 @@ class ApiServiceController extends Controller
 
     public function redirectToMap($bin) 
     {
+        
         return redirect()->action('MapsController@viewBin', [
             'layer' => 'bldg',
             'field' => 'bin',
@@ -151,7 +117,6 @@ class ApiServiceController extends Controller
     public function updateBuilding(Request $request, $bin)
     {
         $resource = Building::where('bin', $bin)->first();
-    
         if ($resource) {
             $validator = Validator::make($request->all(), [
                 'oldhno' => 'nullable|string',
@@ -226,6 +191,7 @@ class ApiServiceController extends Controller
         }
     }
     
+
 
        
 }

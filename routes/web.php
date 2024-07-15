@@ -2,11 +2,9 @@
 
 Auth::routes();
 
-// Route::middleware('auth.fixed')->group(function () {
-//     Route::get('/get-bin-details/{bin}','ApiServiceController@getBinDetails');
-//     Route::post('/update-building/{bin}', [ApiServiceController::class,'updateBuilding']);
-//     Route::get('/redirect-to-map/{bin}', 'ApiServiceController@redirectToMap')->name('redirect-to-map');
-// });
+
+
+
 
 Route::get('/', 'HomeController@index');
 
@@ -792,6 +790,15 @@ Route::get('getExportCSV', 'MapsController@getBuildingsReportCSV')->name('export
 Route::get('getAreaExportCSV', 'MapsController@getBuildingsAreaReportCSV')->name('export-buildings');
 Route::get('get-photos', 'PhotoController@getAllPhotos')->name('get-photos');
 
+Route::group([
+    'prefix' => 'api',
+    'middleware'=> 'auth.fixed'
+], function () {
+  
+    //redirection to map
+    Route::get('/redirect-to-map/{bin}', 'ApiServiceController@redirectToMap')->name('redirect-to-map');
+    
+});
 
 
 
