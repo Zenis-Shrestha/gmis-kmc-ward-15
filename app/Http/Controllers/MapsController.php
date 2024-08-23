@@ -1,11 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Distpl;
 use App\Vdcpl;
 use App\Operator;
@@ -17,13 +11,13 @@ use App\Exports\BuildingsInfoExport;
 use App\Exports\BuildingsMultisheet;
 use App\Exports\BuildingsAreaMultisheet;
 use App\BuildingBusiness;
+use Illuminate\Http\Request;
 
 class MapsController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');//, ['except' => ['index']]);
-        $this->middleware('ability:super-admin,view-map', ['only' =>['index']]);
     }
     /**
      * Display a listing of the resource.
@@ -31,7 +25,8 @@ class MapsController extends Controller
      * @return Response
      */
     public function index()
-    {
+    {   
+    
         /*$districts = Distpl::orderBy('district', 'asc')->pluck('district','district')->all();
         $vdcs = Vdcpl::orderBy('vdc_name', 'asc')->pluck('vdc_name','vdc_name')->all();
         $operators = Operator::pluck('oprcode','oprcode')->all();
@@ -39,11 +34,8 @@ class MapsController extends Controller
         $wards = Ward::orderBy('ward', 'asc')->pluck('ward', 'ward')->all();
         $bylaws = ByLaw::orderBy('name', 'asc')->pluck('name', 'name')->all();
         $businessmaintype = BuildingBusiness::whereNotNull('businessmaintype')->groupBy('businessmaintype')->pluck('businessmaintype', 'businessmaintype')->all();
-        
         $businesssubtype = BuildingBusiness::whereNotNull('businesstype')->groupBy('businesstype')->pluck('businesstype', 'businesstype')->all();
-
         $pageTitle = "Map";
-      
         return view('maps.index', compact('wards', 'bylaws', 'pageTitle', 'businessmaintype', 'businesssubtype'));
     }
 

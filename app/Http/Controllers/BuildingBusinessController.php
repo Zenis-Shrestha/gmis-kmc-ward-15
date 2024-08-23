@@ -29,11 +29,11 @@ class BuildingBusinessController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('ability:super-admin,list-buildings-business', ['only' => ['index']]);
-        $this->middleware('ability:super-admin,view-building-business', ['only' => ['show']]);
-        $this->middleware('ability:super-admin,add-building-business', ['only' => ['add', 'store']]);
-        $this->middleware('ability:super-admin,edit-building-business', ['only' => ['edit', 'update']]);
-        $this->middleware('ability:super-admin,delete-building-business', ['only' => ['destroy']]);
+        // $this->middleware('ability:super-admin,list-buildings-business', ['only' => ['index']]);
+        // $this->middleware('ability:super-admin,view-building-business', ['only' => ['show']]);
+        // $this->middleware('ability:super-admin,add-building-business', ['only' => ['add', 'store']]);
+        // $this->middleware('ability:super-admin,edit-building-business', ['only' => ['edit', 'update']]);
+        // $this->middleware('ability:super-admin,delete-building-business', ['only' => ['destroy']]);
     }
 
     /**
@@ -140,21 +140,21 @@ class BuildingBusinessController extends Controller
             ->addColumn('action', function ($model) {
                 $content = \Form::open(['method' => 'DELETE', 'route' => ['buildings-business.destroy', $model->id]]);
 
-                if (Auth::user()->ability('super-admin', 'edit-building-business')) {
+               
                     $content .= '<a title="Edit" href="' . action("BuildingBusinessController@edit", [$model->id]) . '" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a> ';
-                }
+                
 
-                if (Auth::user()->ability('super-admin', 'view-building-business')) {
+               
                     $content .= '<a title="Detail" href="' . action("BuildingBusinessController@show", [$model->id]) . '" class="btn btn-info btn-xs"><i class="fa fa-list"></i></a> ';
-                }
+                
 
-                if (Auth::user()->ability('super-admin', 'delete-building-business')) {
+            
                     $content .= '<button title="Delete" type="submit" class="btn btn-info btn-xs" onclick="return confirm(\'Are you sure?\')">&nbsp;<i class="fa fa-trash"></i>&nbsp;</button> ';
-                }
+                
 
-                if (Auth::user()->ability('super-admin', 'view-map')) {
+                
                     $content .= '<a title="Map" href="'.action("MapsController@index", ['layer'=>'bldg_business_tax','field'=>'id','val'=>$model->id]).'" class="btn btn-info btn-xs"><i class="fa fa-map-marker"></i></a> ';
-                }
+                
 
                 $content .= \Form::close();
                 return $content;
@@ -381,7 +381,7 @@ class BuildingBusinessController extends Controller
         $businessmaintype = isset($_GET['businessmaintype']) ? $_GET['businessmaintype'] : null;
         $businesstype = isset($_GET['businesstype']) ? $_GET['businesstype'] : null;
         $oldinternalnumber = isset($_GET['oldinternalnumber']) ? $_GET['oldinternalnumber'] : null;
-        $columns = ['ward','roadname','houseno','bin','houseownername','ownerphone','houseownermail','businesowner','businessname','businesstype','category','businessoprdate','registration','registration_status','taxlastdate','oldinternalnumber','rent','rentresponsible','businessownermobile','email','remarks', 'businessmaintype'];
+        $columns = ['Ward','Road Name','House Number','BIN','House Owner Name','Owner Phone','House Owner Mail','Business Owner','Business Name','Business Type','Category','Business Operation Date','Registeration','Registeration Status','Tax Last Date','Old Internl Number','Rent','Rent Responsible','Business Owner Mobile','Email','Remarks', 'Business Main Type'];
 
         $query = BuildingBusiness::select('ward','roadname','houseno','bin','houseownername','ownerphone','houseownermail','businesowner','businessname','businesstype','category','businessoprdate','registration','registration_status','taxlastdate','oldinternalnumber','rent','rentresponsible','businessownermobile','email','remarks','businessmaintype');
 
@@ -575,7 +575,7 @@ class BuildingBusinessController extends Controller
   }
 
   public function businessTaxReportPdf(){
-
+  
     $query = "SELECT w.ward, count(b.registration),
     COUNT(DISTINCT b.registration) filter (where btps.due_year = '0' AND due_year is not Null)  AS no_due,
     COUNT(DISTINCT b.registration) filter (where btps.due_year > '0'AND due_year is not Null)  AS due,

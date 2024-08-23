@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use Exception;
+// use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -33,9 +33,9 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $e
      * @return void
      */
-    public function report(Exception $e)
+    public function report(Throwable $exception)
     {
-        return parent::report($e);
+        return parent::report($exception);
     }
 
     /**
@@ -45,16 +45,16 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $e
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e)
+    public function render($request, Throwable $exception)
     {
-        if ($e instanceof TokenMismatchException) {
+        if ($exception instanceof TokenMismatchException) {
             return redirect()
                   ->back()
                   ->with("csrf_error", "Sorry, we have encountered an error.");
         }
-
-        return parent::render($request, $e);
+        return parent::render($request, $exception);
     }
+    
 
     /**
      * Convert an authentication exception into an unauthenticated response.

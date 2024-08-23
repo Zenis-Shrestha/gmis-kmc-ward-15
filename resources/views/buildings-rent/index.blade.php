@@ -5,21 +5,18 @@
     <div class="col-xs-12">
         <div class="box">
             <div class="box-header">
-                @ability('super-admin', 'add-building-business')
+             
                 <a href="{{ action('BuildingRentController@add') }}" class="btn btn-info">Add Rent</a>
-                @endability
-                @ability('super-admin', 'export-buildings-rent-excel')
+          
                 <a href="{{ action('BuildingRentController@export') }}" id="export" class="btn btn-info">Export to Excel</a>
-                @endability
-                @ability('super-admin', 'export-buildings-rent-shape')
+              
+            
                 <a href="#" id="export-shp" class="btn btn-info">Export to Shape File</a>
-                @endability
-                @ability('super-admin', 'export-buildings-rent-kml')
+                
                 <a href="#" id="export-kml" class="btn btn-info">Export to KML</a>
-                @endability
-                @ability('super-admin', 'export-buildings-rent-pdf')
+              
                 <a href="#" id="export-pdf" class="btn btn-info">Export to PDF</a>
-                @endability
+              
                
             </div><!-- /.box-header -->
             <div class="box-body">

@@ -20,11 +20,11 @@ class StreetController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('ability:super-admin,list-streets', ['only' => ['index']]);
-        $this->middleware('ability:super-admin,view-street', ['only' => ['show']]);
-        $this->middleware('ability:super-admin,add-street', ['only' => ['add', 'store']]);
-        $this->middleware('ability:super-admin,edit-street', ['only' => ['edit', 'update']]);
-        $this->middleware('ability:super-admin,delete-street', ['only' => ['destroy']]);
+        // $this->middleware('ability:super-admin,list-streets', ['only' => ['index']]);
+        // $this->middleware('ability:super-admin,view-street', ['only' => ['show']]);
+        // $this->middleware('ability:super-admin,add-street', ['only' => ['add', 'store']]);
+        // $this->middleware('ability:super-admin,edit-street', ['only' => ['edit', 'update']]);
+        // $this->middleware('ability:super-admin,delete-street', ['only' => ['destroy']]);
     }
 
     /**
@@ -36,7 +36,6 @@ class StreetController extends Controller
     {
         $pageTitle = "Street List";
         $addZones = AddZone::orderBy('name')->pluck('name', 'value');
-
         return view('streets.index', compact('pageTitle', 'addZones'));
     }
 
@@ -64,17 +63,17 @@ class StreetController extends Controller
                     $content .= '<a title="Edit" href="' . action("HumanResourceController@edit", [$model->id]) . '" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a> ';
                 }*/
 
-                if (Auth::user()->ability('super-admin', 'view-street')) {
+              
                     $content .= '<a title="Detail" href="' . action("StreetController@show", [$model->id]) . '" class="btn btn-info btn-xs"><i class="fa fa-list"></i></a> ';
-                }
+                
 
                 /*if (Auth::user()->ability('super-admin', 'delete-human-resource')) {
                     $content .= '<button title="Delete" type="submit" class="btn btn-info btn-xs" onclick="return confirm(\'Are you sure?\')">&nbsp;<i class="fa fa-trash"></i>&nbsp;</button> ';
                 }*/
 
-                if (Auth::user()->ability('super-admin', 'view-map')) {
+              
                     $content .= '<a title="Map" href="'.action("MapsController@index", ['layer'=>'street','field'=>'gid','val'=>$model->gid]).'" class="btn btn-info btn-xs"><i class="fa fa-map-marker"></i></a> ';
-                }
+                
 
                 $content .= \Form::close();
                 return $content;
@@ -106,10 +105,10 @@ class StreetController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'id' => 'required|unique:street,id',
-        ]);
-
+        // $this->validate($request, [
+        //     'id' => 'required|unique:street,id',
+        // ]);
+      
         $building = new Building();
         $building->bldgasc = $request->bldgasc ? $request->bldgasc : null;
         $building->save();

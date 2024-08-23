@@ -11,13 +11,6 @@
       'SnappyImage' => 'Barryvdh\\Snappy\\Facades\\SnappyImage',
     ),
   ),
-  'bensampo/laravel-enum' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'BenSampo\\Enum\\EnumServiceProvider',
-    ),
-  ),
   'intervention/image' => 
   array (
     'providers' => 
@@ -96,6 +89,17 @@
     'providers' => 
     array (
       0 => 'Carbon\\Laravel\\ServiceProvider',
+    ),
+  ),
+  'safaeean/zizaco-entrust-laravel-7.0' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Zizaco\\Entrust\\EntrustServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Entrust' => 'Zizaco\\Entrust\\EntrustFacade',
     ),
   ),
   'spatie/laravel-html' => 

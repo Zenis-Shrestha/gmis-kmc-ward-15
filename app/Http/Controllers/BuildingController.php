@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Building;
@@ -28,17 +27,17 @@ use App\DueYear;
 use App\BuildingOwner;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\BuildingsWithTaxStatusExport;
-
+   
 class BuildingController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('ability:super-admin,list-buildings', ['only' => ['index']]);
-        $this->middleware('ability:super-admin,view-building', ['only' => ['show']]);
-        $this->middleware('ability:super-admin,add-building', ['only' => ['add', 'store']]);
-        $this->middleware('ability:super-admin,edit-building', ['only' => ['edit', 'update']]);
-        $this->middleware('ability:super-admin,delete-building', ['only' => ['destroy']]);
+        // $this->middleware('ability:super-admin,list-buildings', ['only' => ['index']]);
+        // $this->middleware('ability:super-admin,view-building', ['only' => ['show']]);
+        // $this->middleware('ability:super-admin,add-building', ['only' => ['add', 'store']]);
+        // $this->middleware('ability:super-admin,edit-building', ['only' => ['edit', 'update']]);
+        // $this->middleware('ability:super-admin,delete-building', ['only' => ['destroy']]);
     }
 
     /**
@@ -59,23 +58,19 @@ class BuildingController extends Controller
                             ->whereBetween('yoc', [2060, $currentYear])
                             ->orderBy('yoc', 'desc')
                             ->pluck('yoc');
-        
+        $functional_use = BuildingUse::orderBy('name')->pluck('name', 'id')->all();
 
-        return view('buildings.index', compact('pageTitle', 'wards', 'dueYears', 'yesNo','yearOfConstruction'));
+        return view('buildings.index', compact('pageTitle', 'wards', 'dueYears', 'yesNo','yearOfConstruction','functional_use'));
     }
 
     public function getData(Request $request)
     {
-       
         $buildingData = DB::table('bldg')
         ->leftJoin('bldg_tax_payment_status AS tax', 'bldg.bin', '=', 'tax.bin')
         ->leftjoin('due_years AS due', 'due.value', '=', 'tax.due_year')
         ->leftjoin('bldg_owners AS bo', 'bo.bin', '=', 'bldg.bin')
         ->select('bldg.*', 'due.name AS taxName', 'tax.due_year', 'bo.owner_name AS owner_name')
-        
-    ;
-
-
+        ;
         return Datatables::of($buildingData)
             ->filter(function ($query) use ($request) {
                
@@ -112,21 +107,21 @@ class BuildingController extends Controller
             ->addColumn('action', function ($model) {
                 $content = \Form::open(['method' => 'DELETE', 'route' => ['buildings.destroy', $model->bin]]);
 
-                if (Auth::user()->ability('super-admin', 'edit-building')) {
+            
                     $content .= '<a title="Edit" href="' . action("BuildingController@edit", [$model->bin]) . '" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a> ';
-                }
+                
 
-                if (Auth::user()->ability('super-admin', 'view-building')) {
+              
                     $content .= '<a title="Detail" href="' . action("BuildingController@show", [$model->bin]) . '" class="btn btn-info btn-xs"><i class="fa fa-list"></i></a> ';
-                }
+                
 
-                if (Auth::user()->ability('super-admin', 'delete-building')) {
+                
                     $content .= '<button title="Delete" type="submit" class="btn btn-info btn-xs" onclick="return confirm(\'Are you sure?\')">&nbsp;<i class="fa fa-trash"></i>&nbsp;</button> ';
-                }
+                
 
-                if (Auth::user()->ability('super-admin', 'view-map')) {
+                
                     $content .= '<a title="Map" href="'.action("MapsController@index", ['layer'=>'bldg','field'=>'bin','val'=>$model->bin]).'" class="btn btn-info btn-xs"><i class="fa fa-map-marker"></i></a> ';
-                }
+                
 
                 $content .= \Form::close();
                 return $content;
@@ -134,14 +129,14 @@ class BuildingController extends Controller
             
             ->make(true);
     }
-
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function add()
-    {
+    {   
+        
         $pageTitle = "Add Building";
         $wards = Ward::orderBy('ward')->pluck('ward', 'ward');
         $streets = Street::orderBy('strtcd')->pluck('strtcd', 'strtcd');
@@ -150,8 +145,8 @@ class BuildingController extends Controller
         $taxStatuses = TaxStsCode::pluck('name', 'value');
         $yesNo = YesNo::pluck('name', 'value');
         $nextBin = Building::max('bin') + 1;
-
-        return view('buildings.add', compact('pageTitle', 'wards', 'streets', 'buildingUses', 'constructionTypes', 'taxStatuses', 'yesNo', 'nextBin'));
+        $functional_use = BuildingUse::orderBy('name')->pluck('name', 'id')->all();
+        return view('buildings.add', compact('pageTitle', 'wards', 'streets', 'buildingUses', 'constructionTypes', 'taxStatuses', 'yesNo', 'nextBin','functional_use'));
     }
 
     /**

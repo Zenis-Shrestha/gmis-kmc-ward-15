@@ -806,11 +806,14 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         todayHighlight: true
     });
 
-    var layer = '{{ Input::get('layer') }}';
-    var field = '{{ Input::get('field') }}';
-    var val = '{{ Input::get('val') }}';
-    var action = '{{ Input::get('action') }}';
+
+    var layer = "{{ request()->get('layer') }}";
+    var field = "{{ request()->get('field') }}";
+    var val = "{{ request()->get('val') }}";
+    var action = "{{ request()->get('action') }}";
     var currentControl = '';
+
+
    
     // OpenLayers Map
     var map = new ol.Map({
@@ -843,8 +846,8 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
 //    console.log(mapbounds.transform('EPSG:4326', 'EPSG:3857'));
     // URL of GeoServer
   
-     var gurl = "http://10.10.10.15:8080/geoserver/dharan_gmis/";
-    // var gurl = "http://localhost:8080/geoserver/dharan_gmis/";
+     var gurl = "http://202.52.0.116:8080/geoserver/gmis_kmc/";
+    // var gurl = "http://localhost:8080/geoserver/gmis_kmc/";
     var gurl_wms = gurl + 'wms';
     var gurl_wfs = gurl + 'wfs';
     // URL of GeoServer Legends
@@ -1163,8 +1166,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
             group: 'buildings',
         },
         
-        @if(auth()->user()->can('Tax Payment Status Buildings Map Layer') || auth()->user()->can('Water Payment Status Map Layer'))
-        @can('Tax Payment Status Buildings Map Layer')
+     
         bldg_tax_status_layer: {
             name: 'Building Tax Payment Status',
             styles: {},
@@ -1172,8 +1174,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
             showCount: true,
             filters: [],
         },
-        @endcan
-        @endif
+       
 //        bldg_business_tax: {
 //            name: 'Business Tax',
 //            styles: {},
@@ -1510,7 +1511,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
             source: new ol.source.TileWMS({
                 url: gurl_wms,
                 params: {
-                    'LAYERS': 'dharan_gmis:' + key,
+                    'LAYERS': 'gmis_kmc:' + key,
                     'TILED': true,
                     'CQL_FILTER': null
                 },
@@ -1591,7 +1592,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
             }
             else { // if the current Overlay does not have styles
                 // Set legend image HTML for the Overlay
-                var html = '<img class="' + (mLayer[key].clipLegend ? 'clip-legend' : '') + '" src="' + gurl_legend + 'dharan_gmis:' + key + (mLayer[key].showCount ? '&LEGEND_OPTIONS=countMatched:TRUE': '') + '" id="'+ key + '" />';
+                var html = '<img class="' + (mLayer[key].clipLegend ? 'clip-legend' : '') + '" src="' + gurl_legend + 'gmis_kmc:' + key + (mLayer[key].showCount ? '&LEGEND_OPTIONS=countMatched:TRUE': '') + '" id="'+ key + '" />';
                 // Set HTML to the Overlay container
                 $('#' + key + '_overlay_legend_container').html(html);
             }
@@ -1613,9 +1614,9 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         // Get selected style
         var style = $(this).val();
         // Set selected style to parameters
-        mLayer[key].layer.get('source').updateParams({STYLES: 'dharan_gmis:' + style});
+        mLayer[key].layer.get('source').updateParams({STYLES: 'gmis_kmc:' + style});
         // Set legend image HTML for the Overlay with selected style
-        var html = '<img class="' + (mLayer[key].styles[style].clipLegend ? 'clip-legend' : '') + '" src="' + gurl_legend + 'dharan_gmis:' + key + (mLayer[key].styles[style].showCount ? '&LEGEND_OPTIONS=countMatched:TRUE': '') + '&STYLE=dharan_gmis:' + style + '" id="'+ key + '" />';
+        var html = '<img class="' + (mLayer[key].styles[style].clipLegend ? 'clip-legend' : '') + '" src="' + gurl_legend + 'gmis_kmc:' + key + (mLayer[key].styles[style].showCount ? '&LEGEND_OPTIONS=countMatched:TRUE': '') + '&STYLE=gmis_kmc:' + style + '" id="'+ key + '" />';
         // Set HTML to the Overlay container
         $('#' + key + '_overlay_legend_container').html(html);
     });
@@ -1648,7 +1649,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
     /*
     map.getView().on('change:resolution', function(){
         if(map.getView().getZoom() < 16) {
-            mLayer.contain.layer.get('source').updateParams({STYLES: 'dharan_gmis:cluster_contain'});
+            mLayer.contain.layer.get('source').updateParams({STYLES: 'gmis_kmc:cluster_contain'});
         }
         else {
             mLayer.contain.layer.get('source').updateParams({STYLES: null});
@@ -1697,7 +1698,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
             // Make the Extra Overlay layer visible in map
             eLayer[key].layer.setVisible(true);
             // Set legend image HTML for the Extra Overlay
-            // html = '<img src="' + gurl_legend + 'dharan_gmis:' + key + '" style="display:block;padding-left:15px;" id="'+ key + '" />';
+            // html = '<img src="' + gurl_legend + 'gmis_kmc:' + key + '" style="display:block;padding-left:15px;" id="'+ key + '" />';
 
             if(key == 'measure' && staticMeasureTooltip) {
                 staticMeasureTooltip.getElement().classList.remove('hidden');
@@ -2786,7 +2787,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         var layers = [];
         $.each(mLayer, function(key, value) {
             // if(value.layer.getVisible()) {
-                layers.push('dharan_gmis:' + key);
+                layers.push('gmis_kmc:' + key);
             // }
         });
 
@@ -3355,7 +3356,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         var wmsSource = new ol.source.TileWMS({
             url: gurl_wms,
             params: {
-                'LAYERS': 'dharan_gmis:view_road',
+                'LAYERS': 'gmis_kmc:view_road',
                 'FEATURE_COUNT': 10
             }
         });
@@ -3447,7 +3448,7 @@ $('.panel-group').on('shown.bs.collapse', toggleIcon);
         var layers = [];
         $.each(mLayer, function(key, value) {
             if(value.layer.getVisible()) {
-                layers.push('dharan_gmis:' + key);
+                layers.push('gmis_kmc:' + key);
             }
         });
 
@@ -4026,7 +4027,7 @@ popupAreaCloser.onclick = function() {
                 filters.push('ward=' + value);
             });
 
-            mFilter.ward = "INTERSECTS(geom, collectGeometries(queryCollection('dharan_gmis:wardpl', 'geom', '" + filters.join(' OR ') + "')))";
+            mFilter.ward = "INTERSECTS(geom, collectGeometries(queryCollection('gmis_kmc:wardpl', 'geom', '" + filters.join(' OR ') + "')))";
 
             $.each(mLayer, function(key, value){
                 if(selectedLayers.indexOf(key) != -1) {
@@ -4181,7 +4182,7 @@ popupAreaCloser.onclick = function() {
 
         var layers = [];
         $.each(selectedLayers, function(index, value) {
-            layers.push('dharan_gmis:' + value);
+            layers.push('gmis_kmc:' + value);
         });
 
         var outputFormat;
@@ -4195,7 +4196,7 @@ popupAreaCloser.onclick = function() {
             outputFormat = 'SHAPE-ZIP';
         }
         
-        var exportLink = gurl_wfs + "?request=GetFeature&service=WFS&version=1.0.0&authkey=1f74cf78-a13c-4b0c-a5d1-dd67f7ce671a&typeName=" + layers.join(',') + "&CQL_FILTER=INTERSECTS(geom, collectGeometries(queryCollection('dharan_gmis:wardpl', 'geom', '" + filters.join(' OR ') + "')))&outputFormat=" + outputFormat;
+        var exportLink = gurl_wfs + "?request=GetFeature&service=WFS&version=1.0.0&authkey=1f74cf78-a13c-4b0c-a5d1-dd67f7ce671a&typeName=" + layers.join(',') + "&CQL_FILTER=INTERSECTS(geom, collectGeometries(queryCollection('gmis_kmc:wardpl', 'geom', '" + filters.join(' OR ') + "')))&outputFormat=" + outputFormat;
         
 
         window.open(exportLink);
@@ -4211,7 +4212,7 @@ popupAreaCloser.onclick = function() {
                 filters.push("name=''" + value + "''");
             });
 
-            mFilter.bylaw = "INTERSECTS(geom, collectGeometries(queryCollection('dharan_gmis:bylaws', 'geom', '" + filters.join(' OR ') + "')))";
+            mFilter.bylaw = "INTERSECTS(geom, collectGeometries(queryCollection('gmis_kmc:bylaws', 'geom', '" + filters.join(' OR ') + "')))";
 
             $.each(mLayer, function(key, value){
                 if(selectedLayers.indexOf(key) != -1) {
@@ -4284,7 +4285,7 @@ popupAreaCloser.onclick = function() {
 
         var layers = [];
         $.each(selectedLayers, function(index, value) {
-            layers.push('dharan_gmis:' + value);
+            layers.push('gmis_kmc:' + value);
         });
 
         var outputFormat;
@@ -4298,7 +4299,7 @@ popupAreaCloser.onclick = function() {
             outputFormat = 'SHAPE-ZIP';
         }
         
-        var exportLink = gurl_wfs + "?request=GetFeature&service=WFS&version=1.0.0&authkey=1f74cf78-a13c-4b0c-a5d1-dd67f7ce671a&typeName=" + layers.join(',') + "&CQL_FILTER=INTERSECTS(geom, collectGeometries(queryCollection('dharan_gmis:bylaws', 'geom', '" + filters.join(' OR ') + "')))&outputFormat=" + outputFormat;
+        var exportLink = gurl_wfs + "?request=GetFeature&service=WFS&version=1.0.0&authkey=1f74cf78-a13c-4b0c-a5d1-dd67f7ce671a&typeName=" + layers.join(',') + "&CQL_FILTER=INTERSECTS(geom, collectGeometries(queryCollection('gmis_kmc:bylaws', 'geom', '" + filters.join(' OR ') + "')))&outputFormat=" + outputFormat;
         
 
         window.open(exportLink);
@@ -4453,7 +4454,7 @@ popupAreaCloser.onclick = function() {
     $('#watlog_form').submit(function(){
         var selectedLayers = $('#watlog_overlay').val();
         if(selectedLayers) {
-            mFilter.watlog = "INTERSECTS(geom, collectGeometries(queryCollection('dharan_gmis:watlog', 'geom', 'INCLUDE')))"
+            mFilter.watlog = "INTERSECTS(geom, collectGeometries(queryCollection('gmis_kmc:watlog', 'geom', 'INCLUDE')))"
 
             $.each(mLayer, function(key, value){
                 if(selectedLayers.indexOf(key) != -1) {

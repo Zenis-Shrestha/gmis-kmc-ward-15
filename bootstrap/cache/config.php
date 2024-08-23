@@ -7,7 +7,7 @@
     'timezone' => 'UTC',
     'locale' => 'en',
     'fallback_locale' => 'en',
-    'key' => 'base64:b47v+AO8ABSmGPx718/F2sVNj/pht5VH0fqVVgTkbic=',
+    'key' => 'base64:EA8eboDK/4S2oMsB5x0e+lYPkkWHJ74jUHhWyNKTGrU=',
     'cipher' => 'AES-256-CBC',
     'log' => 'single',
     'providers' => 
@@ -38,14 +38,13 @@
       23 => 'App\\Providers\\EventServiceProvider',
       24 => 'App\\Providers\\RouteServiceProvider',
       25 => 'App\\Providers\\BroadcastServiceProvider',
-      26 => 'Collective\\Html\\HtmlServiceProvider',
-      27 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
-      28 => 'Phaza\\LaravelPostgis\\DatabaseServiceProvider',
+      26 => 'App\\Providers\\AuthServiceProvider',
+      27 => 'Collective\\Html\\HtmlServiceProvider',
+      28 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
       29 => 'Yajra\\Datatables\\DatatablesServiceProvider',
       30 => 'Laracasts\\Flash\\FlashServiceProvider',
-      31 => 'Zizaco\\Entrust\\EntrustServiceProvider',
-      32 => 'Barryvdh\\Snappy\\ServiceProvider',
-      33 => 'Intervention\\Image\\ImageServiceProvider',
+      31 => 'Barryvdh\\Snappy\\ServiceProvider',
+      32 => 'Intervention\\Image\\ImageServiceProvider',
     ),
     'aliases' => 
     array (
@@ -63,7 +62,6 @@
       'Event' => 'Illuminate\\Support\\Facades\\Event',
       'File' => 'Illuminate\\Support\\Facades\\File',
       'Hash' => 'Illuminate\\Support\\Facades\\Hash',
-      'Input' => 'Illuminate\\Support\\Facades\\Input',
       'Inspiring' => 'Illuminate\\Foundation\\Inspiring',
       'Lang' => 'Illuminate\\Support\\Facades\\Lang',
       'Log' => 'Illuminate\\Support\\Facades\\Log',
@@ -87,13 +85,11 @@
       'Flash' => 'Laracasts\\Flash\\Flash',
       'Excel' => 'Maatwebsite\\Excel\\Facades\\Excel',
       'Datatables' => 'yajra\\Datatables\\Datatables',
-      'Entrust' => 'Zizaco\\Entrust\\EntrustFacade',
       'DataTables' => 'Yajra\\DataTables\\Facades\\DataTables',
       'Pusher' => 'Pusher\\Pusher',
       'PDF' => 'Barryvdh\\Snappy\\Facades\\SnappyPdf',
       'SnappyImage' => 'Barryvdh\\Snappy\\Facades\\SnappyImage',
       'Image' => 'Intervention\\Image\\Facades\\Image',
-      'ChannelLog' => 'App\\Contracts\\Facades\\ChannelLog',
     ),
   ),
   'auth' => 
@@ -112,7 +108,7 @@
       ),
       'api' => 
       array (
-        'driver' => 'token',
+        'driver' => 'passport',
         'provider' => 'users',
       ),
     ),
@@ -160,21 +156,21 @@
   array (
     'backup' => 
     array (
-      'name' => 'Dharan-GMIS',
+      'name' => 'IMIS-Revamp2.0',
       'source' => 
       array (
         'files' => 
         array (
           'include' => 
           array (
-            0 => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0',
+            0 => 'C:\\wamp64\\www\\dharangmis2.0',
           ),
           'exclude' => 
           array (
-            0 => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\vendor',
-            1 => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\node_modules',
-            2 => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\nbproject',
-            3 => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\storage/app/public/buildings',
+            0 => 'C:\\wamp64\\www\\dharangmis2.0\\vendor',
+            1 => 'C:\\wamp64\\www\\dharangmis2.0\\node_modules',
+            2 => 'C:\\wamp64\\www\\dharangmis2.0\\nbproject',
+            3 => 'C:\\wamp64\\www\\dharangmis2.0\\storage/app/public/buildings',
           ),
           'followLinks' => false,
         ),
@@ -192,7 +188,7 @@
           0 => 'local',
         ),
       ),
-      'temporary_directory' => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\storage\\app/backup-temp',
+      'temporary_directory' => 'C:\\wamp64\\www\\dharangmis2.0\\storage\\app/backup-temp',
       'database_dump_file_extension' => 'backup',
     ),
     'notifications' => 
@@ -241,7 +237,7 @@
     array (
       0 => 
       array (
-        'name' => 'Dharan-GMIS',
+        'name' => 'IMIS-Revamp2.0',
         'disks' => 
         array (
           0 => 'local',
@@ -322,7 +318,7 @@
   ),
   'cache' => 
   array (
-    'default' => 'array',
+    'default' => 'file',
     'stores' => 
     array (
       'apc' => 
@@ -342,7 +338,7 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\storage\\framework/cache',
+        'path' => 'C:\\wamp64\\www\\dharangmis2.0\\storage\\framework/cache',
       ),
       'memcached' => 
       array (
@@ -376,10 +372,10 @@
   ),
   'constants' => 
   array (
-    'GEOSERVER_WORKSPACE' => 'dharan_gmis',
-    'GURL_URL' => 'http://10.10.10.15:8080/geoserver/dharan_gmis/',
+    'GEOSERVER_WORKSPACE' => 'gmis_kmc',
+    'GURL_URL' => NULL,
     'PGSQL_BIN_PATH' => NULL,
-    'AUTH_KEY' => NULL,
+    'AUTH_KEY' => '9499949e-6318-4ffd-8384-ed94c5d84770',
   ),
   'database' => 
   array (
@@ -390,16 +386,16 @@
       'sqlite' => 
       array (
         'driver' => 'sqlite',
-        'database' => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\storage\\database.sqlite',
+        'database' => 'C:\\wamp64\\www\\dharangmis2.0\\storage\\database.sqlite',
         'prefix' => '',
       ),
       'mysql' => 
       array (
         'driver' => 'mysql',
         'host' => '127.0.0.1',
-        'database' => 'dharangmis',
+        'database' => 'kmc15',
         'username' => 'postgres',
-        'password' => 'postgres',
+        'password' => 'laravel',
         'charset' => 'utf8',
         'collation' => 'utf8_unicode_ci',
         'prefix' => '',
@@ -409,10 +405,10 @@
       array (
         'driver' => 'pgsql',
         'host' => '127.0.0.1',
-        'port' => '5433',
-        'database' => 'dharangmis',
+        'port' => '5432',
+        'database' => 'kmc15',
         'username' => 'postgres',
-        'password' => 'postgres',
+        'password' => 'laravel',
         'charset' => 'utf8',
         'prefix' => '',
         'schema' => 'public',
@@ -428,9 +424,9 @@
       array (
         'driver' => 'sqlsrv',
         'host' => '127.0.0.1',
-        'database' => 'dharangmis',
+        'database' => 'kmc15',
         'username' => 'postgres',
-        'password' => 'postgres',
+        'password' => 'laravel',
         'charset' => 'utf8',
         'prefix' => '',
       ),
@@ -561,13 +557,26 @@
     array (
       'default' => 'Maatwebsite\\Excel\\DefaultValueBinder',
     ),
+    'cache' => 
+    array (
+      'driver' => 'memory',
+      'batch' => 
+      array (
+        'memory_limit' => 60000,
+      ),
+      'illuminate' => 
+      array (
+        'store' => NULL,
+      ),
+      'default_ttl' => 10800,
+    ),
     'transactions' => 
     array (
       'handler' => 'db',
     ),
     'temporary_files' => 
     array (
-      'local_path' => 'C:\\Users\\Admin\\AppData\\Local\\Temp',
+      'local_path' => 'C:\\Users\\Jenish\\AppData\\Local\\Temp',
       'remote_disk' => NULL,
       'remote_prefix' => NULL,
     ),
@@ -581,12 +590,12 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\storage\\app',
+        'root' => 'C:\\wamp64\\www\\dharangmis2.0\\storage\\app',
       ),
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\storage\\app/public',
+        'root' => 'C:\\wamp64\\www\\dharangmis2.0\\storage\\app/public',
         'url' => 'http://localhost/storage',
         'visibility' => 'public',
       ),
@@ -600,12 +609,12 @@
       'importtax' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\taxpayment',
+        'root' => NULL,
       ),
       'importbusinesstax' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\businesstaxpayment',
+        'root' => NULL,
       ),
       's3' => 
       array (
@@ -649,13 +658,13 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\storage\\logs/laravel.log',
+        'path' => 'C:\\wamp64\\www\\dharangmis2.0\\storage\\logs/laravel.log',
         'level' => 'debug',
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\storage\\logs/laravel.log',
+        'path' => 'C:\\wamp64\\www\\dharangmis2.0\\storage\\logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
       ),
@@ -706,23 +715,23 @@
       ),
       'emergency' => 
       array (
-        'path' => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\storage\\logs/laravel.log',
+        'path' => 'C:\\wamp64\\www\\dharangmis2.0\\storage\\logs/laravel.log',
       ),
     ),
   ),
   'mail' => 
   array (
     'driver' => 'smtp',
-    'host' => 'smtp.zoho.com',
-    'port' => '587',
+    'host' => 'smtp.gmail.com',
+    'port' => 587,
     'from' => 
     array (
-      'address' => 'test@innovativesolution.com.np',
-      'name' => 'Dharan-GMIS',
+      'address' => 'hello@example.com',
+      'name' => 'Example',
     ),
-    'encryption' => 'TLS',
-    'username' => 'test@innovativesolution.com.np',
-    'password' => 'Test@321',
+    'encryption' => 'tls',
+    'username' => NULL,
+    'password' => NULL,
     'sendmail' => '/usr/sbin/sendmail -bs',
     'pretend' => false,
   ),
@@ -764,6 +773,16 @@
     array (
       0 => 'BS',
       1 => 'AD',
+    ),
+  ),
+  'passport' => 
+  array (
+    'private_key' => NULL,
+    'public_key' => NULL,
+    'keys' => 
+    array (
+      'private' => 'C:\\wamp64\\www\\dharangmis2.0\\storage\\oauth-private.key',
+      'public' => 'C:\\wamp64\\www\\dharangmis2.0\\storage\\oauth-public.key',
     ),
   ),
   'queue' => 
@@ -850,7 +869,7 @@
     'lifetime' => 120,
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\storage\\framework/sessions',
+    'files' => 'C:\\wamp64\\www\\dharangmis2.0\\storage\\framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'lottery' => 
@@ -868,7 +887,7 @@
     'pdf' => 
     array (
       'enabled' => true,
-      'binary' => '"C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe"',
+      'binary' => '/usr/local/bin/wkhtmltopdf',
       'timeout' => false,
       'options' => 
       array (
@@ -958,12 +977,65 @@
   array (
     'paths' => 
     array (
-      0 => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\resources\\views',
+      0 => 'C:\\wamp64\\www\\dharangmis2.0\\resources\\views',
     ),
-    'compiled' => 'D:\\programs-files\\wamp64\\www\\dharangmis2.0\\storage\\framework\\views',
+    'compiled' => 'C:\\wamp64\\www\\dharangmis2.0\\storage\\framework\\views',
+  ),
+  'permission' => 
+  array (
+    'models' => 
+    array (
+      'permission' => 'Spatie\\Permission\\Models\\Permission',
+      'role' => 'Spatie\\Permission\\Models\\Role',
+    ),
+    'table_names' => 
+    array (
+      'roles' => 'roles',
+      'permissions' => 'permissions',
+      'model_has_permissions' => 'model_has_permissions',
+      'model_has_roles' => 'model_has_roles',
+      'role_has_permissions' => 'role_has_permissions',
+    ),
+    'column_names' => 
+    array (
+      'role_pivot_key' => NULL,
+      'permission_pivot_key' => NULL,
+      'model_morph_key' => 'model_id',
+      'team_foreign_key' => 'team_id',
+    ),
+    'register_permission_check_method' => true,
+    'teams' => false,
+    'display_permission_in_exception' => false,
+    'display_role_in_exception' => false,
+    'enable_wildcard_permission' => false,
+    'cache' => 
+    array (
+      'expiration_time' => 
+      DateInterval::__set_state(array(
+         'y' => 0,
+         'm' => 0,
+         'd' => 0,
+         'h' => 24,
+         'i' => 0,
+         's' => 0,
+         'f' => 0.0,
+         'weekday' => 0,
+         'weekday_behavior' => 0,
+         'first_last_day_of' => 0,
+         'invert' => 0,
+         'days' => false,
+         'special_type' => 0,
+         'special_amount' => 0,
+         'have_weekday_relative' => 0,
+         'have_special_relative' => 0,
+      )),
+      'key' => 'spatie.permission.cache',
+      'store' => 'default',
+    ),
   ),
   'postgis' => 
   array (
     'schema' => 'public',
+    'precision' => 6,
   ),
 );

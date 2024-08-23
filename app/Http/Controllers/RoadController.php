@@ -18,11 +18,11 @@ class RoadController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('ability:super-admin,list-roads', ['only' => ['index']]);
-        $this->middleware('ability:super-admin,view-road', ['only' => ['show']]);
-        $this->middleware('ability:super-admin,add-road', ['only' => ['add', 'store']]);
-        $this->middleware('ability:super-admin,edit-road', ['only' => ['edit', 'update']]);
-        $this->middleware('ability:super-admin,delete-road', ['only' => ['destroy']]);
+        // $this->middleware('ability:super-admin,list-roads', ['only' => ['index']]);
+        // $this->middleware('ability:super-admin,view-road', ['only' => ['show']]);
+        // $this->middleware('ability:super-admin,add-road', ['only' => ['add', 'store']]);
+        // $this->middleware('ability:super-admin,edit-road', ['only' => ['edit', 'update']]);
+        // $this->middleware('ability:super-admin,delete-road', ['only' => ['destroy']]);
     }
     /**
      * Display a listing of the resource.
@@ -70,17 +70,17 @@ class RoadController extends Controller
                     $content .= '<a title="Edit" href="' . action("RoadController@edit", [$model->gid]) . '" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a> ';
                 }*/
 
-                if (Auth::user()->ability('super-admin', 'view-road')) {
+                
                     $content .= '<a title="Detail" href="' . action("RoadController@show", [$model->gid]) . '" class="btn btn-info btn-xs"><i class="fa fa-list"></i></a> ';
-                }
+              
 
                 /*if (Auth::user()->ability('super-admin', 'delete-road')) {
                     $content .= '<button title="Delete" type="submit" class="btn btn-info btn-xs" onclick="return confirm(\'Are you sure?\')">&nbsp;<i class="fa fa-trash"></i>&nbsp;</button> ';
                 }*/
 
-                if (Auth::user()->ability('super-admin', 'view-map')) {
+               
                     $content .= '<a title="Map" href="'.action("MapsController@index", ['layer'=>'road','field'=>'gid','val'=>$model->gid]).'" class="btn btn-info btn-xs"><i class="fa fa-map-marker"></i></a> ';
-                }
+                
 
                 $content .= \Form::close();
                 return $content;
@@ -112,25 +112,29 @@ class RoadController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        $this->validate($request, [
-            'rdsgcd' => 'required|unique:road,rdsgcd',
-        ]);
+    {   
+       
+        // $this->validate($request, [
+        //     'rdsgcd' => 'required|unique:road,rdsgcd',
+        // ]);
 
         $road = new Road();
+        $road->addrzn = $request->addrzn ? $request->addrzn : null;
+
         $road->rdsgcd = $request->rdsgcd ? $request->rdsgcd : null;
         $road->strtcd = $request->strtcd ? $request->strtcd : null;
         $road->strtnm = $request->strtnm ? $request->strtnm : null;
         $road->rdlen = $request->rdlen ? $request->rdlen : null;
         $road->rdwidth = $request->rdwidth ? $request->rdwidth : null;
         $road->row = $request->row ? $request->row : null;
+       
         $road->vflag = $request->vflag ? $request->vflag : null;
         $road->addrzn = $request->addrzn ? $request->addrzn : null;
         $road->rdhier = $request->rdhier ? $request->rdhier : null;
         $road->rdsurf = $request->rdsurf ? $request->rdsurf : null;
         $road->save();
-
-        Flash::success('Road added successfully');
+    
+        
         return redirect()->action('RoadController@index');
     }
 
@@ -166,7 +170,7 @@ class RoadController extends Controller
             $pageTitle = "Edit Road";
             $streets = Street::orderBy('strtcd')->pluck('strtcd', 'strtcd');
             $addZones = AddZone::orderBy('name')->pluck('name', 'value');
-            $roadHierarchies = RoadHierarchy::pluck('name', 'value');
+            $roadHierarchies = RoadHierarchy::pluck('id', 'name');
             $roadSurfaces = RoadSurface::pluck('name', 'value');
             $verfYesNo = VerfYesNo::pluck('name', 'value');
             

@@ -13,11 +13,11 @@ class RoadSurfaceController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('ability:super-admin,list-road-surfaces', ['only' => ['index']]);
-        $this->middleware('ability:super-admin,view-road-surface', ['only' => ['show']]);
-        $this->middleware('ability:super-admin,add-road-surface', ['only' => ['add', 'store']]);
-        $this->middleware('ability:super-admin,edit-road-surface', ['only' => ['edit', 'update']]);
-        $this->middleware('ability:super-admin,delete-road-surface', ['only' => ['destroy']]);
+        // $this->middleware('ability:super-admin,list-road-surfaces', ['only' => ['index']]);
+        // $this->middleware('ability:super-admin,view-road-surface', ['only' => ['show']]);
+        // $this->middleware('ability:super-admin,add-road-surface', ['only' => ['add', 'store']]);
+        // $this->middleware('ability:super-admin,edit-road-surface', ['only' => ['edit', 'update']]);
+        // $this->middleware('ability:super-admin,delete-road-surface', ['only' => ['destroy']]);
     }
 
     /**
@@ -46,17 +46,17 @@ class RoadSurfaceController extends Controller
             ->addColumn('action', function ($model) {
                 $content = \Form::open(['method' => 'DELETE', 'route' => ['road-surfaces.destroy', $model->id]]);
 
-                if (Auth::user()->ability('super-admin', 'edit-road-surface')) {
+                
                     $content .= '<a title="Edit" href="' . action("RoadSurfaceController@edit", [$model->id]) . '" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a> ';
-                }
+                
 
-                if (Auth::user()->ability('super-admin', 'view-road-surface')) {
+                
                     $content .= '<a title="Detail" href="' . action("RoadSurfaceController@show", [$model->id]) . '" class="btn btn-info btn-xs"><i class="fa fa-list"></i></a> ';
-                }
+                
 
-                if (Auth::user()->ability('super-admin', 'delete-road-surface')) {
+               
                     $content .= '<button title="Delete" type="submit" class="btn btn-info btn-xs" onclick="return confirm(\'Are you sure?\')">&nbsp;<i class="fa fa-trash"></i>&nbsp;</button> ';
-                }
+                
 
                 $content .= \Form::close();
                 return $content;

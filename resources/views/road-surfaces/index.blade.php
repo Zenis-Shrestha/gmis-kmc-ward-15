@@ -5,9 +5,9 @@
     <div class="col-xs-12">
         <div class="box">
             <div class="box-header">
-                @ability('super-admin', 'add-road-surface')
+           
                     <a href="{{ action('RoadSurfaceController@add') }}" class="btn btn-info">{{ __('Add new Road Surface') }}</a>
-                @endability
+               
             </div>
             <div class="box-body">
                 <table id="data-table" class="table table-bordered table-striped" width="100%">

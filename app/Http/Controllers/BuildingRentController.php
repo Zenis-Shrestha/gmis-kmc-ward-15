@@ -27,11 +27,11 @@ class BuildingRentController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('ability:super-admin,list-buildings-rent', ['only' => ['index']]);
-        $this->middleware('ability:super-admin,view-building-rent', ['only' => ['show']]);
-        $this->middleware('ability:super-admin,add-building-rent', ['only' => ['add', 'store']]);
-        $this->middleware('ability:super-admin,edit-building-rent', ['only' => ['edit', 'update']]);
-        $this->middleware('ability:super-admin,delete-building-rent', ['only' => ['destroy']]);
+        // $this->middleware('ability:super-admin,list-buildings-rent', ['only' => ['index']]);
+        // $this->middleware('ability:super-admin,view-building-rent', ['only' => ['show']]);
+        // $this->middleware('ability:super-admin,add-building-rent', ['only' => ['add', 'store']]);
+        // $this->middleware('ability:super-admin,edit-building-rent', ['only' => ['edit', 'update']]);
+        // $this->middleware('ability:super-admin,delete-building-rent', ['only' => ['destroy']]);
     }
 
     /**
@@ -80,21 +80,21 @@ class BuildingRentController extends Controller
             ->addColumn('action', function ($model) {
                 $content = \Form::open(['method' => 'DELETE', 'route' => ['buildings-rent.destroy', $model->id]]);
 
-                if (Auth::user()->ability('super-admin', 'edit-building-rent')) {
+              
                     $content .= '<a title="Edit" href="' . action("BuildingRentController@edit", [$model->id]) . '" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a> ';
-                }
+                
 
-                if (Auth::user()->ability('super-admin', 'view-building-rent')) {
+              
                     $content .= '<a title="Detail" href="' . action("BuildingRentController@show", [$model->id]) . '" class="btn btn-info btn-xs"><i class="fa fa-list"></i></a> ';
-                }
+                
 
-                if (Auth::user()->ability('super-admin', 'delete-building-rent')) {
+               
                     $content .= '<button title="Delete" type="submit" class="btn btn-info btn-xs" onclick="return confirm(\'Are you sure?\')">&nbsp;<i class="fa fa-trash"></i>&nbsp;</button> ';
-                }
+                
 
-                if (Auth::user()->ability('super-admin', 'view-map')) {
+                
                     $content .= '<a title="Map" href="'.action("MapsController@index", ['layer'=>'bldg_rent_tax','field'=>'id','val'=>$model->id]).'" class="btn btn-info btn-xs"><i class="fa fa-map-marker"></i></a> ';
-                }
+                
 
                 $content .= \Form::close();
                 return $content;
@@ -116,7 +116,6 @@ class BuildingRentController extends Controller
         $constructionTypes = BuildingConstr::pluck('name', 'value');
         $taxStatuses = TaxStsCode::pluck('name', 'value');
         $yesNo = YesNo::pluck('name', 'value');
-
         return view('buildings-rent.add', compact('pageTitle', 'wards', 'streets', 'buildingUses', 'constructionTypes', 'taxStatuses', 'yesNo'));
     }
 
@@ -128,12 +127,12 @@ class BuildingRentController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'bin' => 'required',
-            'length' => 'numeric',
-            'width' => 'numeric',
-            'area' => 'numeric',
-        ]);
+        // $this->validate($request, [
+        //     'bin' => 'required',
+        //     'length' => 'numeric',
+        //     'width' => 'numeric',
+        //     'area' => 'numeric',
+        // ]);
         $building = Building::where('bin', $request->bin)->first();
         $centroid = DB::select(DB::raw("SELECT (ST_AsText(st_centroid(st_union(geom)))) AS central_point FROM bldg WHERE bin = '$request->bin'"));
         $buildingRent = new BuildingRent();
@@ -161,7 +160,6 @@ class BuildingRentController extends Controller
         $buildingRent->remarks = $request->remarks ? $request->remarks : null;
         $buildingRent->geom = DB::raw("ST_GeomFromText('".$centroid[0]->central_point."', 4326)");    
         $buildingRent->save();
-
         Flash::success('Rent added successfully');
         return redirect()->action('BuildingRentController@add', ['bin' =>  $buildingRent->bin, 'ward' =>  $buildingRent->ward]);
     }
@@ -175,10 +173,8 @@ class BuildingRentController extends Controller
     public function show($id)
     {
         $building_business = BuildingRent::find($id);
-
         if ($building_business) {
             $pageTitle = "Rent Details";
-
             return view('buildings-rent.show', compact('pageTitle', 'building_business'));
         } else {
             abort(404);

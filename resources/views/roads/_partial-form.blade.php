@@ -6,13 +6,13 @@
         </div>
     </div>
     <div class="form-group col-md-6">
-        {!! Form::label('strtcd', __('Street'), ['class' => 'col-sm-3 control-label']) !!}
+        {!! Form::label('strtcd', __('Road Code'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
-            {!! Form::select('strtcd', $streets, null, ['class' => 'form-control', 'placeholder' => __('--- Choose street ---')]) !!}
+            {!! Form::select('strtcd', $streets, null, ['class' => 'form-control', 'placeholder' => __('--- Choose Road ---')]) !!}
         </div>
     </div>
     <div class="form-group col-md-6">
-        {!! Form::label('strtnm', __('Street Name'), ['class' => 'col-sm-3 control-label']) !!}
+        {!! Form::label('strtnm', __('Road  Name'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
             {!! Form::text('strtnm', null, ['class' => 'form-control', 'placeholder' => __('Street Name')]) !!}
         </div>
@@ -35,12 +35,12 @@
             {!! Form::text('row', null, ['class' => 'form-control', 'placeholder' => __('Right Of Way')]) !!}
         </div>
     </div>
-    <div class="form-group col-md-6">
+    {{-- <div class="form-group col-md-6">
         {!! Form::label('vflag', __('Verification'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
             {!! Form::select('vflag', $verfYesNo, null, ['class' => 'form-control', 'placeholder' => __('--- Choose verification status ---')]) !!}
         </div>
-    </div>
+    </div> --}}
     <div class="form-group col-md-6">
         {!! Form::label('addrzn', __('Address Zone'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -57,6 +57,13 @@
         {!! Form::label('rdsurf', __('Road Surface'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
             {!! Form::select('rdsurf', $roadSurfaces, null, ['class' => 'form-control', 'placeholder' => __('--- Choose surface ---')]) !!}
+        </div>
+    </div>
+
+    <div class="form-group col-md-6">
+        {!! Form::label('Kmc_road_code', __('KMC Road Code'), ['class' => 'col-sm-3 control-label']) !!}
+        <div class="col-sm-9">
+            {!! Form::text('Kmc_road_code', null, ['class' => 'form-control', 'placeholder' => __('KMC Road Code')]) !!}
         </div>
     </div>
 </div>

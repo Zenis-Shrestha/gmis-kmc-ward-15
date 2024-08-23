@@ -162,13 +162,12 @@ return [
         Collective\Html\HtmlServiceProvider::class,
         //Bestmomo\Scafold\ScafoldServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-        Phaza\LaravelPostgis\DatabaseServiceProvider::class,
+        // Phaza\LaravelPostgis\DatabaseServiceProvider::class,
         Yajra\Datatables\DatatablesServiceProvider::class,
         Laracasts\Flash\FlashServiceProvider::class,
-        Zizaco\Entrust\EntrustServiceProvider::class,
+
         Barryvdh\Snappy\ServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class
-
     ],
 
     /*
@@ -198,7 +197,7 @@ return [
         'Event'     => Illuminate\Support\Facades\Event::class,
         'File'      => Illuminate\Support\Facades\File::class,
         'Hash'      => Illuminate\Support\Facades\Hash::class,
-        'Input'     => Illuminate\Support\Facades\Input::class,
+        // 'Input'     => Illuminate\Support\Facades\Input::class,
         'Inspiring' => Illuminate\Foundation\Inspiring::class,
         'Lang'      => Illuminate\Support\Facades\Lang::class,
         'Log'       => Illuminate\Support\Facades\Log::class,
@@ -217,22 +216,22 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
+            // 'SomeAlias' => Some\Namespace\ClassName::class,
 
         // 'Form'      => Illuminate\Html\FormFacade::class,
         // 'Html'      => Illuminate\Html\HtmlFacade::class,
-        'Form'      => Collective\Html\FormFacade::class,
-        'Html'      => Collective\Html\HtmlFacade::class,
+        'Form' => Collective\Html\FormFacade::class,
+        'Html' => Collective\Html\HtmlFacade::class,
         'Flash'     => Laracasts\Flash\Flash::class,
         'Excel'     => Maatwebsite\Excel\Facades\Excel::class,
         'Datatables'=> yajra\Datatables\Datatables::class,
-        'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'Pusher' => \Pusher\Pusher::class,
         'PDF' => Barryvdh\Snappy\Facades\SnappyPdf::class,
         'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
         'Image' => Intervention\Image\Facades\Image::class,
-        'ChannelLog' => App\Contracts\Facades\ChannelLog::class,
+        // 'ChannelLog' => App\Contracts\Facades\ChannelLog::class,
 
 
 

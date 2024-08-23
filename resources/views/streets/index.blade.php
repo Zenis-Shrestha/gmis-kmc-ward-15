@@ -5,18 +5,15 @@
     <div class="col-xs-12">
         <div class="box">
             <div class="box-header">
-                @ability('super-admin', 'add-street')
+            
                 <a href="{{ action('StreetController@add') }}" class="btn btn-info">Add Road</a>
-                @endability
-                @ability('super-admin', 'export-streets-excel')
+              
                 <a href="#{{-- action('StreetController@export') --}}" id="export" class="btn btn-info">Export to Excel</a>
-                @endability
-                @ability('super-admin', 'export-streets-shape')
+             
                 <a href="<?php echo Config::get("constants.GURL_URL"); ?>/wfs?service=WFS&version=1.0.0&request=GetFeature&authkey=1f74cf78-a13c-4b0c-a5d1-dd67f7ce671a&typeName=dharan_gmis:street&outputFormat=SHAPE-ZIP" class="btn btn-info">Export to Shape File</a>
-                @endability
-                @ability('super-admin', 'export-streets-kml')
+                
                 <a href="<?php echo Config::get("constants.GURL_URL"); ?>/wfs?service=WFS&version=1.0.0&request=GetFeature&authkey=1f74cf78-a13c-4b0c-a5d1-dd67f7ce671a&typeName=dharan_gmis:street&outputFormat=KML" class="btn btn-info">Export to KML</a>
-                @endability
+             
             </div><!-- /.box-header -->
             <div class="box-body">
                 <form class="form-inline" id="filter-form">

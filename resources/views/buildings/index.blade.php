@@ -5,21 +5,19 @@
     <div class="col-xs-12">
         <div class="box">
             <div class="box-header">
-                @ability('super-admin', 'add-building')
+               
                 <a href="{{ action('BuildingController@add') }}" class="btn btn-info">Add Building</a>
-                @endability
-                @ability('super-admin', 'export-buildings-excel')
+              
+              
                 <a href="#" id="export" class="btn btn-info">Export to Excel</a>
-                @endability
-                @ability('super-admin', 'export-buildings-shape')
+             
+              
                 <a href="#" id="export-shp" class="btn btn-info">Export to Shape File</a>
-                @endability
-                @ability('super-admin', 'export-buildings-kml')
+              
                 <a href="#" id="export-kml" class="btn btn-info">Export to KML</a>
-                @endability
-                @ability('super-admin', 'export-buildings-pdf')
+               
                 <a href="#" id="export-pdf" class="btn btn-info">Export to PDF</a>
-                @endability
+               
             </div><!-- /.box-header -->
             <div class="box-body">
                 <form class="form-horizontal" id="filter-form">
